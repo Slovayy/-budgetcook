@@ -1,3032 +1,1131 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta charset="UTF-8">
 
-<meta name="theme-color" content="#11140f">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="BudgetCook">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+  >
 
-<link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#11140f">
 
-<title>BudgetCook V3</title>
+  <meta
+    name="apple-mobile-web-app-capable"
+    content="yes"
+  >
 
-<style>
-:root{
-  --bg:#f3f5ef;
-  --card:#ffffff;
-  --ink:#11140f;
-  --muted:#7b8278;
-  --line:#e1e5dc;
-  --lime:#c7ef58;
-  --soft:#edf7d5;
-  --danger:#ffe0db;
-}
+  <meta
+    name="apple-mobile-web-app-status-bar-style"
+    content="black-translucent"
+  >
 
-*{
-  box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
-}
+  <meta
+    name="apple-mobile-web-app-title"
+    content="BudgetCook"
+  >
 
-body{
-  margin:0;
-  background:var(--bg);
-  color:var(--ink);
-  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;
-}
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
 
-body.dark{
-  --bg:#0d0f0c;
-  --card:#181b16;
-  --ink:#f1f4ec;
-  --muted:#969d91;
-  --line:#30352d;
-  --soft:#27351a;
-  --danger:#40251f;
-}
-
-button,input,select{
-  font:inherit;
-}
-
-button{
-  cursor:pointer;
-}
-
-#app{
-  max-width:520px;
-  margin:auto;
-  padding:14px 15px 100px;
-}
-
-.top{
-  height:48px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-}
-
-.logo{
-  font-size:21px;
-  font-weight:950;
-}
-
-.avatar{
-  border:0;
-  background:var(--ink);
-  color:var(--bg);
-  width:40px;
-  height:40px;
-  border-radius:50%;
-  font-weight:950;
-}
-
-.page{
-  display:none;
-}
-
-.page.active{
-  display:block;
-  animation:up .18s ease;
-}
-
-@keyframes up{
-  from{
-    opacity:0;
-    transform:translateY(5px);
-  }
-  to{
-    opacity:1;
-    transform:none;
-  }
-}
-
-.eyebrow{
-  margin-top:22px;
-  color:var(--muted);
-  font-size:9px;
-  font-weight:950;
-  letter-spacing:1.4px;
-}
-
-h1{
-  font-size:35px;
-  letter-spacing:-2px;
-  margin:5px 0 18px;
-}
-
-h2{
-  font-size:18px;
-  margin:0;
-}
-
-.head{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin:22px 2px 10px;
-}
-
-.head button{
-  border:0;
-  background:none;
-  color:var(--muted);
-  font-size:9px;
-  font-weight:900;
-}
-
-.card,
-.meal,
-.recipe,
-.stat{
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:21px;
-  padding:15px;
-}
-
-.hero{
-  background:var(--ink);
-  color:var(--bg);
-  border-radius:25px;
-  padding:19px;
-}
-
-.hero small,
-.hero .sub{
-  color:#aab0a5;
-}
-
-.big{
-  font-size:42px;
-  font-weight:950;
-  letter-spacing:-2px;
-}
-
-.bar{
-  height:9px;
-  background:#383c35;
-  border-radius:99px;
-  overflow:hidden;
-  margin-top:17px;
-}
-
-.bar i{
-  display:block;
-  height:100%;
-  width:0;
-  background:var(--lime);
-  transition:.35s;
-}
-
-.herofoot{
-  display:flex;
-  justify-content:space-between;
-  font-size:9px;
-  margin-top:8px;
-  color:#aab0a5;
-}
-
-.herofoot b{
-  color:var(--bg);
-}
-
-.macros,
-.stats,
-.two{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:8px;
-  margin-top:8px;
-}
-
-.stats{
-  grid-template-columns:1fr 1fr;
-}
-
-.stat{
-  padding:14px;
-}
-
-.stat small{
-  color:var(--muted);
-  font-size:8px;
-}
-
-.stat strong{
-  display:block;
-  font-size:20px;
-  margin-top:4px;
-}
-
-.meal{
-  display:flex;
-  gap:10px;
-  align-items:center;
-  margin-bottom:8px;
-  padding:11px;
-}
-
-.emoji{
-  width:58px;
-  height:58px;
-  border-radius:16px;
-  display:grid;
-  place-items:center;
-  background:linear-gradient(135deg,#e5f1c9,#f4d6a4);
-  font-size:26px;
-  flex:none;
-}
-
-.grow{
-  flex:1;
-  min-width:0;
-}
-
-.type{
-  color:var(--muted);
-  font-size:8px;
-  font-weight:950;
-  letter-spacing:.8px;
-}
-
-.meal h3,
-.recipe h3{
-  font-size:13px;
-  margin:3px 0;
-}
-
-.meta{
-  color:var(--muted);
-  font-size:9px;
-}
-
-.add{
-  width:32px;
-  height:32px;
-  border:0;
-  border-radius:10px;
-  background:var(--lime);
-  font-weight:950;
-}
-
-.del{
-  width:30px;
-  height:30px;
-  border:0;
-  border-radius:9px;
-  background:var(--danger);
-}
-
-.primary{
-  width:100%;
-  border:0;
-  border-radius:14px;
-  padding:14px;
-  background:var(--ink);
-  color:var(--bg);
-  font-size:11px;
-  font-weight:950;
-}
-
-.secondary{
-  border:1px solid var(--line);
-  background:var(--card);
-  color:var(--ink);
-  border-radius:13px;
-  padding:10px 12px;
-  font-size:9px;
-  font-weight:900;
-}
-
-.input{
-  width:100%;
-  padding:12px;
-  border:1px solid var(--line);
-  border-radius:13px;
-  background:var(--card);
-  color:var(--ink);
-  outline:0;
-}
-
-.label{
-  display:block;
-  margin:12px 0 6px;
-  font-size:9px;
-  font-weight:950;
-}
-
-.recipe{
-  margin-bottom:8px;
-  padding:0;
-  overflow:hidden;
-}
-
-.recipeTop{
-  display:flex;
-  gap:10px;
-  padding:14px;
-}
-
-.recipeDetail{
-  display:none;
-  border-top:1px solid var(--line);
-  padding:12px 14px;
-}
-
-.recipe.open .recipeDetail{
-  display:block;
-}
-
-.ing{
-  display:flex;
-  justify-content:space-between;
-  border-bottom:1px solid var(--line);
-  padding:7px 0;
-  font-size:9px;
-}
-
-.portion{
-  display:flex;
-  gap:6px;
-  align-items:center;
-  margin-top:8px;
-}
-
-.portion button{
-  width:27px;
-  height:27px;
-  border:1px solid var(--line);
-  border-radius:8px;
-  background:var(--card);
-  color:var(--ink);
-}
-
-.week{
-  display:flex;
-  gap:7px;
-  overflow:auto;
-  padding-bottom:5px;
-}
-
-.day{
-  min-width:86px;
-  border:1px solid var(--line);
-  background:var(--card);
-  color:var(--ink);
-  border-radius:15px;
-  padding:9px;
-  text-align:center;
-  font-size:9px;
-  font-weight:900;
-}
-
-.day.active{
-  background:var(--ink);
-  color:var(--bg);
-}
-
-.plannerMeal{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:11px 0;
-  border-bottom:1px solid var(--line);
-}
-
-.plannerMeal:last-child{
-  border:0;
-}
-
-.list{
-  padding:0 15px;
-}
-
-.listrow{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:12px 0;
-  border-bottom:1px solid var(--line);
-  font-size:10px;
-}
-
-.check{
-  width:23px;
-  height:23px;
-  border:2px solid #cbd0c7;
-  border-radius:7px;
-  background:none;
-}
-
-.check.done{
-  background:var(--ink);
-  color:var(--bg);
-  border-color:var(--ink);
-}
-
-.chat{
-  background:var(--ink);
-  color:var(--bg);
-  border-radius:23px;
-  padding:15px;
-}
-
-.msg{
-  padding:10px 11px;
-  border-radius:13px;
-  background:#292e27;
-  margin:7px 0;
-  font-size:10px;
-  line-height:1.45;
-}
-
-.msg.me{
-  background:var(--lime);
-  color:#11140f;
-  margin-left:22px;
-}
-
-.chatrow{
-  display:flex;
-  gap:6px;
-  margin-top:10px;
-}
-
-.chatrow input{
-  flex:1;
-  background:#292e27;
-  border:0;
-  border-radius:12px;
-  padding:11px;
-  color:#fff;
-  outline:0;
-}
-
-.chatrow button{
-  width:42px;
-  border:0;
-  border-radius:12px;
-  background:var(--lime);
-}
-
-.bottom{
-  position:fixed;
-  z-index:10;
-  bottom:0;
-  left:50%;
-  transform:translateX(-50%);
-  max-width:520px;
-  width:100%;
-  display:flex;
-  padding:7px 3px calc(7px + env(safe-area-inset-bottom));
-  background:rgba(255,255,255,.94);
-  backdrop-filter:blur(16px);
-  border-top:1px solid var(--line);
-}
-
-body.dark .bottom{
-  background:rgba(24,27,22,.94);
-}
-
-.nav{
-  flex:1;
-  border:0;
-  background:none;
-  color:#899087;
-}
-
-.nav span{
-  display:block;
-  font-size:18px;
-}
-
-.nav small{
-  font-size:7px;
-  font-weight:900;
-}
-
-.nav.active{
-  color:var(--ink);
-}
-
-.toast{
-  position:fixed;
-  z-index:30;
-  bottom:95px;
-  left:50%;
-  transform:translate(-50%,20px);
-  background:var(--ink);
-  color:var(--bg);
-  padding:10px 14px;
-  border-radius:13px;
-  font-size:9px;
-  font-weight:900;
-  opacity:0;
-  transition:.2s;
-}
-
-.toast.show{
-  opacity:1;
-  transform:translate(-50%,0);
-}
-
-.chart{
-  height:170px;
-  display:flex;
-  align-items:flex-end;
-  gap:7px;
-  padding:15px 4px;
-}
-
-.col{
-  flex:1;
-  background:var(--lime);
-  border-radius:7px 7px 2px 2px;
-  min-height:5px;
-  position:relative;
-}
-
-.col span{
-  position:absolute;
-  bottom:-15px;
-  width:100%;
-  text-align:center;
-  font-size:7px;
-  color:var(--muted);
-}
-
-.pill{
-  display:inline-block;
-  background:var(--lime);
-  color:#11140f;
-  border-radius:99px;
-  padding:7px 9px;
-  font-size:8px;
-  font-weight:950;
-}
-
-.modal{
-  display:none;
-  position:fixed;
-  inset:0;
-  z-index:20;
-  background:#0008;
-  align-items:flex-end;
-  padding:12px;
-}
-
-.modal.open{
-  display:flex;
-}
-
-.sheet{
-  background:var(--card);
-  color:var(--ink);
-  width:100%;
-  max-width:520px;
-  margin:auto;
-  border-radius:24px;
-  padding:16px;
-  max-height:85vh;
-  overflow:auto;
-}
-
-.food{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:11px 0;
-  border-bottom:1px solid var(--line);
-  font-size:10px;
-}
-</style>
+  <title>BudgetCook V4</title>
 </head>
 
 <body>
 
-<div id="app">
+  <div id="app">
 
-<header class="top">
-  <div class="logo">🍝 BudgetCook</div>
-  <button class="avatar" onclick="show('profile')">B</button>
-</header>
+    <!-- HEADER -->
+    <header class="topbar">
 
-<section id="home" class="page active">
+      <div class="logo">
+        <span class="logoIcon">🍝</span>
+        <span>BudgetCook</span>
+        <small>V4</small>
+      </div>
 
-<div class="eyebrow">TABLEAU DE BORD</div>
+      <button
+        class="profile-button"
+        id="profileButton"
+        aria-label="Profil"
+      >
+        👤
+      </button>
 
-<h1>
-Bonjour <span id="hello">👋</span>
-</h1>
+    </header>
 
-<div class="hero">
 
-<div style="display:flex;justify-content:space-between">
+    <!-- ========================= -->
+    <!-- ACCUEIL -->
+    <!-- ========================= -->
 
-<div>
-<small>Objectif calories</small>
+    <main>
 
-<div class="big">
-<span id="target">0</span>
-<span style="font-size:11px">kcal</span>
-</div>
+      <section
+        class="page active"
+        id="homePage"
+      >
 
-</div>
+        <div class="eyebrow">
+          TABLEAU DE BORD
+        </div>
 
-<span class="pill" id="goalPill">
-Profil
-</span>
+        <h1>
+          Bonjour 👋
+        </h1>
 
-</div>
+        <!-- CALORIES -->
+        <div class="calorie-card">
 
-<div class="bar">
-<i id="calBar"></i>
-</div>
+          <div class="calorie-top">
 
-<div class="herofoot">
+            <div>
+              <span class="label">
+                Objectif quotidien
+              </span>
 
-<span>
-<b id="eaten">0</b>
-consommées
-</span>
+              <div class="calorie-number">
+                <span id="dailyTarget">
+                  0
+                </span>
 
-<span>
-<b id="left">0</b>
-restantes
-</span>
+                <small>
+                  kcal
+                </small>
+              </div>
+            </div>
 
-</div>
+            <div
+              class="goal-pill"
+              id="goalPill"
+            >
+              Profil
+            </div>
 
-</div>
+          </div>
 
-<div class="macros">
+          <div class="progress-track">
 
-<div class="stat">
-🥩
-<strong id="p">0g</strong>
-<small>Protéines</small>
-</div>
+            <div
+              class="progress-fill"
+              id="calorieProgress"
+            ></div>
 
-<div class="stat">
-🍚
-<strong id="c">0g</strong>
-<small>Glucides</small>
-</div>
+          </div>
 
-<div class="stat">
-🥑
-<strong id="f">0g</strong>
-<small>Lipides</small>
-</div>
+          <div class="calorie-bottom">
 
-</div>
+            <span>
+              <strong id="consumedCalories">
+                0
+              </strong>
+              consommées
+            </span>
 
-<div class="head">
+            <span>
+              <strong id="remainingCalories">
+                0
+              </strong>
+              restantes
+            </span>
 
-<h2>Repas du jour</h2>
+          </div>
 
-<button onclick="show('planner')">
-Planning
-</button>
+        </div>
 
-</div>
 
-<div id="todayMeals"></div>
+        <!-- MACROS -->
+        <div class="stats-grid">
 
-<div class="head">
-<h2>🔥 Série</h2>
-</div>
+          <div class="stat-card">
 
-<div class="card">
+            <span class="stat-icon">
+              🥩
+            </span>
 
-<b id="streak">
-0 jour
-</b>
+            <strong id="homeProtein">
+              0 g
+            </strong>
 
-<div class="meta">
-Ouvre l'application et enregistre au moins un repas chaque jour pour faire progresser ta série.
-</div>
+            <small>
+              Protéines
+            </small>
 
-</div>
+          </div>
 
-</section>
 
+          <div class="stat-card">
 
-<section id="planner" class="page">
+            <span class="stat-icon">
+              🍚
+            </span>
 
-<div class="eyebrow">
-PLANIFICATION
-</div>
+            <strong id="homeCarbs">
+              0 g
+            </strong>
 
-<h1>
-Ma semaine 📅
-</h1>
+            <small>
+              Glucides
+            </small>
 
-<div class="card">
+          </div>
 
-<div class="week" id="days"></div>
 
-<div style="margin-top:12px" id="daySummary"></div>
+          <div class="stat-card">
 
-</div>
+            <span class="stat-icon">
+              🥑
+            </span>
 
-<div class="head">
+            <strong id="homeFat">
+              0 g
+            </strong>
 
-<h2 id="selectedDay">
-Aujourd'hui
-</h2>
+            <small>
+              Lipides
+            </small>
 
-<button onclick="generateWeek()">
-✨ Recalculer
-</button>
+          </div>
 
-</div>
+        </div>
 
-<div class="card" id="dayMeals"></div>
 
-</section>
+        <!-- REPAS -->
+        <div class="section-header">
 
+          <h2>
+            Repas du jour
+          </h2>
 
-<section id="journal" class="page">
+          <button
+            class="text-button"
+            data-page="journalPage"
+          >
+            Voir tout
+          </button>
 
-<div class="eyebrow">
-NUTRITION
-</div>
+        </div>
 
-<h1>
-Journal 🍽️
-</h1>
+        <div id="homeMeals"></div>
 
-<div class="stats">
 
-<div class="stat">
-<small>Calories</small>
-<strong id="jc">0</strong>
-</div>
+        <!-- SERIE -->
+        <div class="section-header">
 
-<div class="stat">
-<small>Protéines</small>
-<strong id="jp">0g</strong>
-</div>
+          <h2>
+            🔥 Ma série
+          </h2>
 
-<div class="stat">
-<small>Glucides</small>
-<strong id="jg">0g</strong>
-</div>
+        </div>
 
-<div class="stat">
-<small>Lipides</small>
-<strong id="jf">0g</strong>
-</div>
+        <div class="card streak-card">
 
-</div>
+          <div class="streak-number">
 
-<div class="head">
+            <span id="streakNumber">
+              0
+            </span>
 
-<h2>Aliments</h2>
+            <small>
+              jour
+            </small>
 
-<button onclick="clearJournal()">
-Vider
-</button>
+          </div>
 
-</div>
+          <div>
 
-<div id="journalList"></div>
+            <strong>
+              Continue comme ça !
+            </strong>
 
-<button class="primary" onclick="openFood()">
-+ Ajouter un aliment
-</button>
+            <p>
+              Enregistre au moins un repas chaque jour.
+            </p>
 
-</section>
+          </div>
 
+        </div>
 
-<section id="recipes" class="page">
+      </section>
 
-<div class="eyebrow">
-RECETTES
-</div>
 
-<h1>
-Mes recettes 🍳
-</h1>
+      <!-- ========================= -->
+      <!-- JOURNAL -->
+      <!-- ========================= -->
 
-<div class="card">
+      <section
+        class="page"
+        id="journalPage"
+      >
 
-<b>
-Portions intelligentes
-</b>
+        <div class="eyebrow">
+          NUTRITION
+        </div>
 
-<div class="meta" style="margin:5px 0 10px">
-Les quantités sont ajustées autour de ton objectif calorique.
-</div>
+        <h1>
+          Journal 🍽️
+        </h1>
 
-<button class="primary" onclick="generateWeek()">
-Générer ma semaine
-</button>
 
-</div>
+        <div class="macro-grid">
 
-<div class="head">
-<h2>Bibliothèque</h2>
-</div>
+          <div class="mini-stat">
+            <small>
+              Calories
+            </small>
 
-<div id="recipeList"></div>
+            <strong id="journalCalories">
+              0
+            </strong>
+          </div>
 
-</section>
+          <div class="mini-stat">
+            <small>
+              Protéines
+            </small>
 
+            <strong id="journalProtein">
+              0 g
+            </strong>
+          </div>
 
-<section id="shopping" class="page">
+          <div class="mini-stat">
+            <small>
+              Glucides
+            </small>
 
-<div class="eyebrow">
-BUDGET
-</div>
+            <strong id="journalCarbs">
+              0 g
+            </strong>
+          </div>
 
-<h1>
-Courses 🛒
-</h1>
+          <div class="mini-stat">
+            <small>
+              Lipides
+            </small>
 
-<div class="card">
+            <strong id="journalFat">
+              0 g
+            </strong>
+          </div>
 
-<div style="display:flex;justify-content:space-between">
+        </div>
 
-<div>
 
-<div class="meta">
-Panier de la semaine
-</div>
+        <div class="section-header">
 
-<div class="big" style="font-size:30px">
+          <h2>
+            Aujourd'hui
+          </h2>
 
-<span id="shopTotal">
-0
-</span>
+          <button
+            class="text-button"
+            id="clearJournalButton"
+          >
+            Vider
+          </button>
 
-€
+        </div>
 
-</div>
+        <div id="journalList"></div>
 
-</div>
 
-<span class="pill">
-Auto
-</span>
+        <button
+          class="primary-button"
+          id="addFoodButton"
+        >
+          + Ajouter un aliment
+        </button>
 
-</div>
+      </section>
 
-</div>
 
-<div class="head">
+      <!-- ========================= -->
+      <!-- RECETTES -->
+      <!-- ========================= -->
 
-<h2>
-Liste générée
-</h2>
+      <section
+        class="page"
+        id="recipesPage"
+      >
 
-<button onclick="checkAll()">
-Tout cocher
-</button>
+        <div class="eyebrow">
+          CUISINE
+        </div>
 
-</div>
+        <h1>
+          Recettes 🍳
+        </h1>
 
-<div class="card list" id="shopList"></div>
 
-<div class="head">
-<h2>Budget</h2>
-</div>
+        <div class="card smart-card">
 
-<div class="stats">
+          <div class="smart-icon">
+            ✨
+          </div>
 
-<div class="stat">
-<small>Budget</small>
-<strong>
-<span id="budget">0</span>€
-</strong>
-</div>
+          <div>
 
-<div class="stat">
-<small>Reste</small>
-<strong>
-<span id="budgetLeft">0</span>€
-</strong>
-</div>
+            <h2>
+              Portion intelligente
+            </h2>
 
-</div>
+            <p>
+              BudgetCook adapte la quantité à tes objectifs.
+            </p>
 
-</section>
+          </div>
 
+          <button
+            class="primary-button"
+            id="smartMealButton"
+          >
+            Me proposer un repas
+          </button>
 
-<section id="progress" class="page">
+        </div>
 
-<div class="eyebrow">
-ÉVOLUTION
-</div>
 
-<h1>
-Progrès 📈
-</h1>
+        <div class="section-header">
 
-<div class="stats">
+          <h2>
+            Mes recettes
+          </h2>
 
-<div class="stat">
-<small>Poids</small>
-<strong>
-<span id="weightNow">0</span> kg
-</strong>
-</div>
+        </div>
 
-<div class="stat">
-<small>Cible</small>
-<strong id="targetGoal">—</strong>
-</div>
+        <div id="recipeList"></div>
 
-<div class="stat">
-<small>Entretien</small>
-<strong id="maint">0</strong>
-</div>
+      </section>
 
-<div class="stat">
-<small>Calories</small>
-<strong id="ptarget">0</strong>
-</div>
 
-</div>
+      <!-- ========================= -->
+      <!-- PLANNING -->
+      <!-- ========================= -->
 
-<div class="head">
-<h2>Historique</h2>
-</div>
+      <section
+        class="page"
+        id="plannerPage"
+      >
 
-<div class="card">
-<div class="chart" id="chart"></div>
-</div>
+        <div class="eyebrow">
+          PLANIFICATION
+        </div>
 
-<div class="head">
-<h2>Nouvelle mesure</h2>
-</div>
+        <h1>
+          Ma semaine 📅
+        </h1>
 
-<div class="card">
 
-<div style="display:flex;gap:7px">
+        <div
+          class="days-container"
+          id="daysContainer"
+        ></div>
 
-<input
-id="newWeight"
-class="input"
-type="number"
-step=".1"
-placeholder="80.0"
->
 
-<button
-class="secondary"
-onclick="addWeight()"
->
-Ajouter
-</button>
+        <div class="card">
 
-</div>
+          <div class="section-header no-margin">
 
-</div>
+            <h2 id="selectedDayTitle">
+              Lundi
+            </h2>
 
-</section>
+            <button
+              class="text-button"
+              id="regenerateWeekButton"
+            >
+              Régénérer
+            </button>
 
+          </div>
 
-<section id="pantry" class="page">
+          <div id="dayMeals"></div>
 
-<div class="eyebrow">
-MAISON
-</div>
+        </div>
 
-<h1>
-Garde-manger 🥫
-</h1>
+      </section>
 
-<div class="card">
 
-<div style="display:flex;gap:7px">
+      <!-- ========================= -->
+      <!-- COURSES -->
+      <!-- ========================= -->
 
-<input
-id="pantryInput"
-class="input"
-placeholder="Ex : riz"
->
+      <section
+        class="page"
+        id="shoppingPage"
+      >
 
-<button
-class="add"
-onclick="addPantry()"
->
-+
-</button>
+        <div class="eyebrow">
+          BUDGET
+        </div>
 
-</div>
+        <h1>
+          Liste de courses 🛒
+        </h1>
 
-</div>
 
-<div class="head">
-<h2>Disponible</h2>
-</div>
+        <div class="stats-grid two">
 
-<div class="card list" id="pantryList"></div>
+          <div class="stat-card">
 
-</section>
+            <small>
+              Budget semaine
+            </small>
 
+            <strong>
+              <span id="weeklyBudget">
+                0
+              </span>
+              €
+            </strong>
 
-<section id="coach" class="page">
+          </div>
 
-<div class="eyebrow">
-ASSISTANT
-</div>
 
-<h1>
-Coach 🤖
-</h1>
+          <div class="stat-card">
 
-<div class="chat">
+            <small>
+              Panier estimé
+            </small>
 
-<div id="messages">
+            <strong>
+              <span id="estimatedBasket">
+                0
+              </span>
+              €
+            </strong>
 
-<div class="msg">
-Salut 👋 Je peux analyser tes calories, protéines, repas, budget et ta semaine.
-</div>
+          </div>
 
-</div>
+        </div>
 
-<div class="chatrow">
 
-<input
-id="chatInput"
-placeholder="Ex : combien de calories me reste-t-il ?"
->
+        <div class="section-header">
 
-<button onclick="chat()">
-➤
-</button>
+          <h2>
+            Courses automatiques
+          </h2>
 
-</div>
+          <button
+            class="text-button"
+            id="checkAllButton"
+          >
+            Tout cocher
+          </button>
 
-</div>
+        </div>
 
-<div class="two" style="grid-template-columns:1fr 1fr;margin-top:8px">
 
-<button
-class="secondary"
-onclick="ask('Que manger ce soir ?')"
->
-🍝 Repas
-</button>
+        <div
+          class="card shopping-card"
+          id="shoppingList"
+        ></div>
 
-<button
-class="secondary"
-onclick="ask('Comment économiser ?')"
->
-💰 Budget
-</button>
+      </section>
 
-</div>
 
-</section>
+      <!-- ========================= -->
+      <!-- PROGRESSION -->
+      <!-- ========================= -->
 
+      <section
+        class="page"
+        id="progressPage"
+      >
 
-<section id="profile" class="page">
+        <div class="eyebrow">
+          OBJECTIFS
+        </div>
 
-<div class="eyebrow">
-PERSONNALISATION
-</div>
+        <h1>
+          Mes progrès 📈
+        </h1>
 
-<h1>
-Mon profil 👤
-</h1>
 
-<div class="card">
+        <div class="stats-grid two">
 
-<label class="label">
-Prénom
-</label>
+          <div class="stat-card">
 
-<input
-id="name"
-class="input"
->
+            <small>
+              Poids actuel
+            </small>
 
-<label class="label">
-Âge
-</label>
+            <strong>
+              <span id="currentWeight">
+                0
+              </span>
+              kg
+            </strong>
 
-<input
-id="age"
-class="input"
-type="number"
->
+          </div>
 
-<label class="label">
-Sexe
-</label>
 
-<select
-id="sex"
-class="input"
->
+          <div class="stat-card">
 
-<option value="male">
-Homme
-</option>
+            <small>
+              Calories entretien
+            </small>
 
-<option value="female">
-Femme
-</option>
+            <strong id="maintenanceCalories">
+              0
+            </strong>
 
-</select>
+          </div>
 
-<label class="label">
-Taille (cm)
-</label>
 
-<input
-id="height"
-class="input"
-type="number"
->
+          <div class="stat-card">
 
-<label class="label">
-Poids (kg)
-</label>
+            <small>
+              Objectif
+            </small>
 
-<input
-id="weight"
-class="input"
-type="number"
-step=".1"
->
+            <strong id="progressCalories">
+              0
+            </strong>
 
-<label class="label">
-Activité
-</label>
+          </div>
 
-<select
-id="activity"
-class="input"
->
 
-<option value="1.2">
-Sédentaire
-</option>
+          <div class="stat-card">
 
-<option value="1.35">
-Légèrement actif
-</option>
+            <small>
+              Protéines
+            </small>
 
-<option value="1.5">
-Modérément actif
-</option>
+            <strong id="progressProtein">
+              0 g
+            </strong>
 
-<option value="1.65">
-Actif
-</option>
+          </div>
 
-<option value="1.75">
-Très actif
-</option>
+        </div>
 
-</select>
 
-<label class="label">
-Entraînements / semaine
-</label>
+        <div class="section-header">
 
-<input
-id="training"
-class="input"
-type="number"
->
+          <h2>
+            Historique du poids
+          </h2>
 
-<label class="label">
-Objectif
-</label>
+        </div>
 
-<select
-id="goal"
-class="input"
->
 
-<option value="cut">
-🔥 Perdre du gras
-</option>
+        <div
+          class="card weight-chart"
+          id="weightChart"
+        >
+          <span class="empty-text">
+            Ajoute ton premier poids.
+          </span>
+        </div>
 
-<option value="maintain">
-⚖️ Maintenir
-</option>
 
-<option value="bulk">
-💪 Prendre du muscle
-</option>
+        <div class="card input-card">
 
-</select>
+          <input
+            id="newWeight"
+            type="number"
+            step="0.1"
+            placeholder="Ex : 87.5"
+          >
 
-<label class="label">
-Déficit / surplus
-</label>
+          <button
+            class="secondary-button"
+            id="addWeightButton"
+          >
+            Ajouter
+          </button>
 
-<select
-id="adjust"
-class="input"
->
+        </div>
 
-<option value="200">
-200 kcal
-</option>
+      </section>
 
-<option value="300">
-300 kcal
-</option>
 
-<option value="400">
-400 kcal
-</option>
+      <!-- ========================= -->
+      <!-- GARDE-MANGER -->
+      <!-- ========================= -->
 
-<option value="500">
-500 kcal
-</option>
+      <section
+        class="page"
+        id="pantryPage"
+      >
 
-</select>
+        <div class="eyebrow">
+          STOCK
+        </div>
 
-<label class="label">
-Budget / semaine (€)
-</label>
+        <h1>
+          Garde-manger 🥫
+        </h1>
 
-<input
-id="budgetInput"
-class="input"
-type="number"
->
 
-<button
-class="primary"
-style="margin-top:14px"
-onclick="saveProfile()"
->
-Enregistrer
-</button>
+        <div class="card input-card">
 
-</div>
+          <input
+            id="pantryInput"
+            type="text"
+            placeholder="Ex : riz, thon, œufs..."
+          >
 
-<div class="head">
-<h2>Calcul</h2>
-</div>
+          <button
+            class="secondary-button"
+            id="addPantryButton"
+          >
+            Ajouter
+          </button>
 
-<div class="stats">
+        </div>
 
-<div class="stat">
-<small>BMR</small>
-<strong id="bmr">0</strong>
-</div>
 
-<div class="stat">
-<small>Entretien</small>
-<strong id="m">0</strong>
-</div>
+        <div class="section-header">
 
-<div class="stat">
-<small>Cible</small>
-<strong id="t">0</strong>
-</div>
+          <h2>
+            Disponible chez moi
+          </h2>
 
-<div class="stat">
-<small>Protéines</small>
-<strong id="tp">0g</strong>
-</div>
+        </div>
 
-<div class="stat">
-<small>Glucides</small>
-<strong id="tg">0g</strong>
-</div>
 
-<div class="stat">
-<small>Lipides</small>
-<strong id="tf">0g</strong>
-</div>
+        <div
+          class="card"
+          id="pantryList"
+        ></div>
 
-</div>
+      </section>
 
-<button
-class="secondary"
-style="width:100%;margin-top:10px"
-onclick="toggleDark()"
->
-🌙 Mode sombre
-</button>
 
-</section>
+      <!-- ========================= -->
+      <!-- COACH -->
+      <!-- ========================= -->
 
+      <section
+        class="page"
+        id="coachPage"
+      >
 
-<nav class="bottom">
+        <div class="eyebrow">
+          ASSISTANT
+        </div>
 
-<button class="nav active" data-p="home">
-<span>⌂</span>
-<small>Accueil</small>
-</button>
+        <h1>
+          Coach nutrition 🤖
+        </h1>
 
-<button class="nav" data-p="planner">
-<span>📅</span>
-<small>Semaine</small>
-</button>
 
-<button class="nav" data-p="journal">
-<span>🍽️</span>
-<small>Journal</small>
-</button>
+        <div class="coach-card">
 
-<button class="nav" data-p="shopping">
-<span>🛒</span>
-<small>Courses</small>
-</button>
+          <div id="coachMessages">
 
-<button class="nav" data-p="profile">
-<span>👤</span>
-<small>Profil</small>
-</button>
+            <div class="coach-message">
+              Salut 👋 Je suis ton coach BudgetCook.
+              Demande-moi tes calories restantes,
+              tes protéines ou une idée de repas.
+            </div>
 
-</nav>
+          </div>
 
-</div>
 
+          <div class="coach-input">
 
-<div class="modal" id="foodModal">
+            <input
+              id="coachInput"
+              type="text"
+              placeholder="Écris ta question..."
+            >
 
-<div class="sheet">
+            <button id="sendCoachButton">
+              ➤
+            </button>
 
-<div style="display:flex;justify-content:space-between;align-items:center">
+          </div>
 
-<h2>
-Ajouter un aliment
-</h2>
+        </div>
 
-<button
-class="secondary"
-onclick="closeFood()"
->
-×
-</button>
 
-</div>
+        <div class="quick-buttons">
 
-<input
-id="foodSearch"
-class="input"
-placeholder="Rechercher..."
-style="margin-top:10px"
->
+          <button class="secondary-button quick-button">
+            Que manger ce soir ?
+          </button>
 
-<div id="foodResults"></div>
+          <button class="secondary-button quick-button">
+            Combien de protéines me reste-t-il ?
+          </button>
 
-</div>
+          <button class="secondary-button quick-button">
+            Comment économiser ?
+          </button>
 
-</div>
+        </div>
 
+      </section>
 
-<div class="toast" id="toast"></div>
 
+      <!-- ========================= -->
+      <!-- PROFIL -->
+      <!-- ========================= -->
 
-<script>
+      <section
+        class="page"
+        id="profilePage"
+      >
 
-const foods=[
+        <div class="eyebrow">
+          PERSONNALISATION
+        </div>
 
-["Poulet","🍗",165,31,0,3.6,.95],
-["Riz","🍚",360,7,79,.7,.16],
-["Œufs","🥚",143,13,1,10,.24],
-["Skyr","🥛",63,10,4,.2,.42],
-["Banane","🍌",89,1.1,23,.3,.22],
-["Flocons d'avoine","🥣",370,13,60,7,.15],
-["Pâtes","🍝",350,12,70,2,.16],
-["Thon","🐟",116,26,0,1,1.05],
-["Pomme","🍎",52,.3,14,.2,.25],
-["Pain complet","🍞",247,13,41,4,.12],
-["Lentilles","🫘",116,9,20,.4,.18],
-["Pommes de terre","🥔",77,2,17,.1,.12],
-["Brocoli","🥦",34,2.8,7,.4,.25],
-["Carottes","🥕",41,.9,10,.2,.12],
-["Fromage blanc","🥣",70,8,4,2,.35],
-["Beurre de cacahuète","🥜",588,25,20,50,.30]
+        <h1>
+          Mon profil 👤
+        </h1>
 
-];
 
+        <div class="card profile-card">
 
-const recipes=[
+          <label>
+            Prénom
 
-{
-id:1,
-n:"Porridge banane & skyr",
-type:"PETIT-DÉJEUNER",
-e:"🥣",
-k:470,
-p:31,
-g:66,
-f:8,
-price:1.35,
-ing:[
-["Flocons d'avoine","60 g"],
-["Skyr","200 g"],
-["Banane","1"],
-["Beurre de cacahuète","10 g"]
-]
-},
+            <input
+              id="profileName"
+              type="text"
+              placeholder="Ton prénom"
+            >
+          </label>
 
-{
-id:2,
-n:"Poulet, riz & brocoli",
-type:"DÉJEUNER",
-e:"🍗",
-k:650,
-p:55,
-g:78,
-f:9,
-price:2.70,
-ing:[
-["Poulet","180 g"],
-["Riz","100 g"],
-["Brocoli","150 g"]
-]
-},
 
-{
-id:3,
-n:"Skyr & banane",
-type:"COLLATION",
-e:"🥛",
-k:210,
-p:18,
-g:31,
-f:1,
-price:.85,
-ing:[
-["Skyr","200 g"],
-["Banane","1"]
-]
-},
+          <div class="form-grid">
 
-{
-id:4,
-n:"Pâtes au thon",
-type:"DÎNER",
-e:"🍝",
-k:590,
-p:47,
-g:72,
-f:10,
-price:2.20,
-ing:[
-["Pâtes","100 g"],
-["Thon","120 g"],
-["Carottes","100 g"]
-]
-}
+            <label>
+              Âge
 
-];
+              <input
+                id="profileAge"
+                type="number"
+                placeholder="20"
+              >
+            </label>
 
 
-const key="budgetcook_v3";
+            <label>
+              Sexe
 
+              <select id="profileSex">
 
-let S=
-JSON.parse(
-localStorage.getItem(key)||"null"
-)
-||
-{
-profile:{
-name:"",
-age:"",
-sex:"male",
-height:"",
-weight:"",
-activity:"1.5",
-training:"0",
-goal:"cut",
-adjust:300,
-budget:50
-},
+                <option value="male">
+                  Homme
+                </option>
 
-journal:[],
-weights:[],
-pantry:[],
-checked:[],
-streak:0,
-dark:false,
-week:[],
-selectedDay:0
-};
+                <option value="female">
+                  Femme
+                </option>
 
+              </select>
 
-function save(){
+            </label>
 
-localStorage.setItem(
-key,
-JSON.stringify(S)
-);
 
-}
+            <label>
+              Taille (cm)
 
+              <input
+                id="profileHeight"
+                type="number"
+                placeholder="179"
+              >
+            </label>
 
-function $(x){
 
-return document.getElementById(x);
+            <label>
+              Poids (kg)
 
-}
+              <input
+                id="profileWeight"
+                type="number"
+                step="0.1"
+                placeholder="88"
+              >
+            </label>
 
+          </div>
 
-function esc(x){
 
-return String(x)
-.replaceAll("&","&amp;")
-.replaceAll("<","&lt;")
-.replaceAll(">","&gt;")
-.replaceAll('"',"&quot;");
+          <label>
+            Niveau d'activité
 
-}
+            <select id="profileActivity">
 
+              <option value="1.2">
+                Sédentaire
+              </option>
 
-function toast(x){
+              <option value="1.35">
+                Légèrement actif
+              </option>
 
-let t=$("toast");
+              <option value="1.5">
+                Modérément actif
+              </option>
 
-t.textContent=x;
+              <option value="1.65">
+                Actif
+              </option>
 
-t.classList.add("show");
+              <option value="1.75">
+                Très actif
+              </option>
 
-clearTimeout(window.tt);
+            </select>
 
-window.tt=
-setTimeout(
-()=>t.classList.remove("show"),
-1700
-);
+          </label>
 
-}
 
+          <label>
+            Entraînements par semaine
 
-function show(p){
+            <input
+              id="profileTraining"
+              type="number"
+              min="0"
+              max="14"
+              placeholder="5"
+            >
+          </label>
 
-document
-.querySelectorAll(".page")
-.forEach(
-x=>x.classList.remove("active")
-);
 
-$(p).classList.add("active");
+          <label>
+            Objectif
 
-document
-.querySelectorAll(".nav")
-.forEach(
-x=>x.classList.toggle(
-"active",
-x.dataset.p===p
-)
-);
+            <select id="profileGoal">
 
-scrollTo(0,0);
+              <option value="cut">
+                🔥 Perdre du gras
+              </option>
 
-}
+              <option value="maintain">
+                ⚖️ Maintenir
+              </option>
 
+              <option value="bulk">
+                💪 Prendre du muscle
+              </option>
 
-document
-.querySelectorAll(".nav")
-.forEach(
-x=>x.onclick=
-()=>show(x.dataset.p)
-);
+            </select>
 
+          </label>
 
-function nutrition(){
 
-let p=S.profile;
+          <label>
+            Déficit / surplus
 
-let w=+p.weight;
-let h=+p.height;
-let a=+p.age;
-let act=+p.activity||1.5;
-let adj=+p.adjust||300;
+            <select id="profileAdjustment">
 
-if(!w||!h||!a){
+              <option value="200">
+                200 kcal
+              </option>
 
-return{
-bmr:0,
-m:0,
-t:0,
-p:0,
-g:0,
-f:0
-};
+              <option value="300">
+                300 kcal
+              </option>
 
-}
+              <option value="400">
+                400 kcal
+              </option>
 
+              <option value="500">
+                500 kcal
+              </option>
 
-let bmr=
-p.sex==="female"
-?
-10*w+6.25*h-5*a-161
-:
-10*w+6.25*h-5*a+5;
+            </select>
 
+          </label>
 
-let m=
-Math.round(
-bmr*act
-);
 
+          <label>
+            Budget nourriture / semaine
 
-let t=
-p.goal==="cut"
-?
-m-adj
-:
-p.goal==="bulk"
-?
-m+adj
-:
-m;
+            <input
+              id="profileBudget"
+              type="number"
+              min="0"
+              placeholder="50"
+            >
+          </label>
 
 
-t=
-Math.max(
-p.sex==="female"?1200:1500,
-Math.round(t)
-);
+          <button
+            class="primary-button"
+            id="saveProfileButton"
+          >
+            Enregistrer mon profil
+          </button>
 
+        </div>
 
-let pr=
-Math.min(
-Math.round(w*2),
-Math.floor(t*.35/4)
-);
 
+        <div class="section-header">
 
-let f=
-Math.min(
-Math.round(w*.8),
-Math.floor(t*.35/9)
-);
+          <h2>
+            Calcul personnalisé
+          </h2>
 
+        </div>
 
-let g=
-Math.max(
-0,
-Math.round(
-(t-pr*4-f*9)/4
-)
-);
 
+        <div class="stats-grid">
 
-return{
-bmr:Math.round(bmr),
-m,
-t,
-p:pr,
-g,
-f
-};
+          <div class="stat-card">
+            <small>BMR</small>
+            <strong id="profileBmr">0</strong>
+          </div>
 
-}
+          <div class="stat-card">
+            <small>Entretien</small>
+            <strong id="profileTdee">0</strong>
+          </div>
 
+          <div class="stat-card">
+            <small>Objectif</small>
+            <strong id="profileTarget">0</strong>
+          </div>
 
-function totals(){
+        </div>
 
-return S.journal.reduce(
-(a,x)=>(
-a.k+=x.k,
-a.p+=x.p,
-a.g+=x.g,
-a.f+=x.f,
-a
-),
-{
-k:0,
-p:0,
-g:0,
-f:0
-}
-);
 
-}
+        <button
+          class="secondary-button full-button"
+          id="darkModeButton"
+        >
+          🌙 Mode sombre
+        </button>
 
+      </section>
 
-function renderHome(){
+    </main>
 
-let n=nutrition();
 
-let x=totals();
+    <!-- ========================= -->
+    <!-- NAVIGATION -->
+    <!-- ========================= -->
 
-$("hello").textContent=
-S.profile.name||"👋";
+    <nav class="bottom-navigation">
 
-$("target").textContent=n.t;
+      <button
+        class="nav-button active"
+        data-page="homePage"
+      >
+        🏠
+        <small>
+          Accueil
+        </small>
+      </button>
 
-$("eaten").textContent=
-Math.round(x.k);
 
-$("left").textContent=
-Math.max(
-0,
-Math.round(n.t-x.k)
-);
+      <button
+        class="nav-button"
+        data-page="plannerPage"
+      >
+        📅
+        <small>
+          Semaine
+        </small>
+      </button>
 
-$("p").textContent=
-Math.round(x.p)+"g";
 
-$("c").textContent=
-Math.round(x.g)+"g";
+      <button
+        class="nav-button"
+        data-page="journalPage"
+      >
+        🍽️
+        <small>
+          Journal
+        </small>
+      </button>
 
-$("f").textContent=
-Math.round(x.f)+"g";
 
-$("goalPill").textContent=
-n.t
-?
-(
-S.profile.goal==="cut"
-?
-"Perte de gras"
-:
-S.profile.goal==="bulk"
-?
-"Prise de muscle"
-:
-"Maintien"
-)
-:
-"Profil";
+      <button
+        class="nav-button"
+        data-page="shoppingPage"
+      >
+        🛒
+        <small>
+          Courses
+        </small>
+      </button>
 
-$("calBar").style.width=
-(
-n.t
-?
-Math.min(
-100,
-x.k/n.t*100
-)
-:
-0
-)+"%";
 
-$("streak").textContent=
-S.streak+
-" "+
-(
-S.streak===1
-?
-"jour"
-:
-"jours"
-);
+      <button
+        class="nav-button"
+        data-page="profilePage"
+      >
+        👤
+        <small>
+          Profil
+        </small>
+      </button>
 
+    </nav>
 
-$("todayMeals").innerHTML=
-(
-S.week[S.selectedDay]||
-recipes
-)
-.slice(0,4)
-.map(
-r=>meal(r,1)
-)
-.join("");
+  </div>
 
-}
 
+  <!-- ========================= -->
+  <!-- MODALE ALIMENT -->
+  <!-- ========================= -->
 
-function meal(r,portion=1){
+  <div
+    class="modal"
+    id="foodModal"
+  >
 
-return`
+    <div class="modal-sheet">
 
-<div class="meal">
+      <div class="modal-header">
 
-<div class="emoji">
-${r.e}
-</div>
+        <h2>
+          Ajouter un aliment
+        </h2>
 
-<div class="grow">
+        <button
+          class="secondary-button"
+          id="closeFoodModal"
+        >
+          ✕
+        </button>
 
-<div class="type">
-${r.type}
-</div>
+      </div>
 
-<h3>
-${esc(r.n)}
-</h3>
 
-<div class="meta">
-${Math.round(r.k*portion)}
-kcal ·
-${Math.round(r.p*portion)}
-g protéines ·
-${(r.price*portion).toFixed(2)}
-€
-</div>
+      <input
+        class="search-input"
+        id="foodSearch"
+        type="search"
+        placeholder="Rechercher un aliment..."
+      >
 
-</div>
 
-<button
-class="add"
-onclick="addRecipe(${r.id},${portion})"
->
-+
-</button>
+      <div id="foodResults"></div>
 
-</div>
+    </div>
 
-`;
+  </div>
 
-}
 
+  <!-- ========================= -->
+  <!-- TOAST -->
+  <!-- ========================= -->
 
-function renderJournal(){
+  <div
+    class="toast"
+    id="toast"
+  ></div>
 
-let x=totals();
 
-$("jc").textContent=
-Math.round(x.k);
+  <!-- ========================= -->
+  <!-- SCRIPTS -->
+  <!-- ========================= -->
 
-$("jp").textContent=
-Math.round(x.p)+"g";
-
-$("jg").textContent=
-Math.round(x.g)+"g";
-
-$("jf").textContent=
-Math.round(x.f)+"g";
-
-
-$("journalList").innerHTML=
-
-S.journal.length
-
-?
-
-S.journal.map(
-(x,i)=>
-
-`
-
-<div class="meal">
-
-<div class="emoji">
-${x.e}
-</div>
-
-<div class="grow">
-
-<div class="type">
-${x.type||"ALIMENT"}
-</div>
-
-<h3>
-${esc(x.n)}
-</h3>
-
-<div class="meta">
-${Math.round(x.k)} kcal ·
-${Math.round(x.p)}g P ·
-${Math.round(x.g)}g G ·
-${Math.round(x.f)}g L
-</div>
-
-</div>
-
-<button
-class="del"
-onclick="delJournal(${i})"
->
-×
-</button>
-
-</div>
-
-`
-).join("")
-
-:
-
-`
-
-<div
-class="card"
-style="margin-bottom:8px;text-align:center;color:var(--muted);font-size:10px"
->
-Aucun aliment aujourd'hui.
-</div>
-
-`;
-
-}
-
-
-function addRecipe(id,portion=1){
-
-let r=
-recipes.find(
-x=>x.id===id
-);
-
-if(!r)return;
-
-S.journal.push({
-
-n:r.n,
-e:r.e,
-type:r.type,
-k:r.k*portion,
-p:r.p*portion,
-g:r.g*portion,
-f:r.f*portion
-
-});
-
-save();
-
-renderAll();
-
-toast("Ajouté au journal ✅");
-
-}
-
-
-function delJournal(i){
-
-S.journal.splice(i,1);
-
-save();
-
-renderAll();
-
-}
-
-
-function clearJournal(){
-
-S.journal=[];
-
-save();
-
-renderAll();
-
-toast("Journal vidé");
-
-}
-
-
-function renderRecipes(){
-
-$("recipeList").innerHTML=
-
-recipes.map(
-r=>
-
-`
-
-<div
-class="recipe"
-id="r${r.id}"
->
-
-<div class="recipeTop">
-
-<div class="emoji">
-${r.e}
-</div>
-
-<div class="grow">
-
-<h3>
-${esc(r.n)}
-</h3>
-
-<div class="meta">
-${r.k} kcal ·
-${r.p}g P ·
-${r.g}g G ·
-${r.f}g L
-</div>
-
-<div class="portion">
-
-<button onclick="portion(${r.id},-.25)">
-−
-</button>
-
-<b id="po${r.id}">
-1×
-</b>
-
-<button onclick="portion(${r.id},.25)">
-+
-</button>
-
-<button
-class="secondary"
-onclick="addRecipe(${r.id},getPo(${r.id}))"
->
-Ajouter
-</button>
-
-</div>
-
-</div>
-
-<button
-class="secondary"
-onclick="$('r${r.id}').classList.toggle('open')"
->
-⋯
-</button>
-
-</div>
-
-<div class="recipeDetail">
-
-<b style="font-size:9px">
-Ingrédients
-</b>
-
-${r.ing.map(
-i=>
-
-`
-
-<div class="ing">
-
-<span>
-${esc(i[0])}
-</span>
-
-<b>
-${i[1]}
-</b>
-
-</div>
-
-`
-).join("")}
-
-</div>
-
-</div>
-
-`
-).join("");
-
-}
-
-
-let pos={};
-
-
-function getPo(id){
-
-return pos[id]||1;
-
-}
-
-
-function portion(id,d){
-
-pos[id]=Math.max(
-.25,
-Math.min(
-4,
-Math.round(
-(getPo(id)+d)*4
-)/4
-)
-);
-
-$("po"+id).textContent=
-pos[id]+"×";
-
-}
-
-
-function weekDefault(){
-
-return Array.from(
-{length:7},
-(_,d)=>
-
-recipes.map(
-(r,i)=>({
-
-...r,
-
-portion:
-d%2&&i===1
-?
-1.1
-:
-1
-
-})
-)
-
-);
-
-}
-
-
-function generateWeek(){
-
-S.week=
-weekDefault();
-
-S.selectedDay=0;
-
-save();
-
-renderPlanner();
-
-renderShopping();
-
-toast(
-"Semaine recalculée ✨"
-);
-
-}
-
-
-function renderPlanner(){
-
-if(!S.week.length)
-S.week=weekDefault();
-
-const names=[
-"Lun",
-"Mar",
-"Mer",
-"Jeu",
-"Ven",
-"Sam",
-"Dim"
-];
-
-
-$("days").innerHTML=
-
-names.map(
-(n,i)=>
-
-`
-
-<button
-class="day ${i===S.selectedDay?"active":""}"
-onclick="selectDay(${i})"
->
-
-${n}
-
-<br>
-
-<span
-style="font-size:7px;color:var(--muted)"
->
-${Math.round(
-S.week[i].reduce(
-(a,r)=>
-a+r.k*r.portion,
-0
-)
-)}
-kcal
-</span>
-
-</button>
-
-`
-).join("");
-
-
-$("selectedDay").textContent=
-names[S.selectedDay];
-
-
-$("dayMeals").innerHTML=
-
-S.week[S.selectedDay].map(
-(r,i)=>
-
-`
-
-<div class="plannerMeal">
-
-<div>
-
-<b style="font-size:10px">
-${r.e} ${esc(r.n)}
-</b>
-
-<div class="meta">
-${Math.round(r.k*r.portion)}
-kcal ·
-${(r.price*r.portion).toFixed(2)}
-€
-</div>
-
-</div>
-
-<button
-class="secondary"
-onclick="replaceMeal(${S.selectedDay},${i})"
->
-Remplacer
-</button>
-
-</div>
-
-`
-).join("");
-
-}
-
-
-function selectDay(i){
-
-S.selectedDay=i;
-
-save();
-
-renderPlanner();
-
-}
-
-
-function replaceMeal(d,i){
-
-let pool=
-recipes.filter(
-r=>r.id!==S.week[d][i].id
-);
-
-let r=
-pool[
-Math.floor(
-Math.random()*pool.length
-)
-];
-
-S.week[d][i]={
-...r,
-portion:1
-};
-
-save();
-
-renderPlanner();
-
-renderShopping();
-
-toast(
-"Repas remplacé 🔄"
-);
-
-}
-
-
-function renderShopping(){
-
-let map={};
-
-S.week
-.flat()
-.forEach(
-r=>
-r.ing.forEach(
-i=>{
-map[i[0]]=
-(map[i[0]]||0)+1;
-}
-)
-);
-
-
-let base=
-Object.entries(map)
-.map(
-([n,q])=>({
-
-n,
-q,
-e:
-(
-foods.find(
-f=>f[0]===n
-)||[]
-)[1]||"🛒"
-
-})
-);
-
-
-let total=
-base.reduce(
-(a,x)=>
-a+
-(
-foods.find(
-f=>f[0]===x.n
-)||
-["","","","","","",.5]
-)[6]
-*x.q
-*1.5,
-0
-);
-
-
-$("shopTotal").textContent=
-total.toFixed(2);
-
-$("budget").textContent=
-(+S.profile.budget||0)
-.toFixed(0);
-
-$("budgetLeft").textContent=
-Math.max(
-0,
-(+S.profile.budget||0)-total
-).toFixed(2);
-
-
-$("shopList").innerHTML=
-
-base.length
-
-?
-
-base.map(
-(x,i)=>
-
-`
-
-<div class="listrow">
-
-<div
-style="display:flex;align-items:center;gap:8px"
->
-
-<button
-class="check ${S.checked.includes(i)?"done":""}"
-onclick="check(${i})"
->
-
-${S.checked.includes(i)?"✓":""}
-
-</button>
-
-<span>
-${x.e} ${esc(x.n)} · ${x.q}
-</span>
-
-</div>
-
-<b>
-${(
-(
-foods.find(
-f=>f[0]===x.n
-)||
-["","","","","","",.5]
-)[6]
-*x.q*1.5
-).toFixed(2)}
-€
-</b>
-
-</div>
-
-`
-).join("")
-
-:
-
-`
-
-<div
-style="padding:18px 0;text-align:center;color:var(--muted);font-size:9px"
->
-Génère ta semaine pour créer la liste.
-</div>
-
-`;
-
-}
-
-
-function check(i){
-
-S.checked.includes(i)
-
-?
-
-S.checked=
-S.checked.filter(
-x=>x!==i
-)
-
-:
-
-S.checked.push(i);
-
-save();
-
-renderShopping();
-
-}
-
-
-function checkAll(){
-
-let count=
-Object.keys(
-Object.fromEntries(
-S.week
-.flat()
-.flatMap(
-r=>r.ing.map(
-i=>i[0]
-)
-)
-)
-).length;
-
-S.checked=
-Array.from(
-{length:count},
-(_,i)=>i
-);
-
-save();
-
-renderShopping();
-
-}
-
-
-function renderProgress(){
-
-let n=nutrition();
-
-$("weightNow").textContent=
-S.profile.weight||0;
-
-$("targetGoal").textContent=
-S.profile.goal==="cut"
-?
-"Perte"
-:
-S.profile.goal==="bulk"
-?
-"Muscle"
-:
-"Maintien";
-
-$("maint").textContent=n.m;
-
-$("ptarget").textContent=n.t;
-
-
-let a=
-S.weights.slice(-14);
-
-$("chart").innerHTML=
-
-a.length
-
-?
-
-a.map(
-x=>{
-
-let vals=
-a.map(
-z=>+z.w
-);
-
-let min=Math.min(...vals);
-let max=Math.max(...vals);
-
-let h=
-max===min
-?
-50
-:
-15+
-(x.w-min)/
-(max-min)*
-75;
-
-return`
-
-<div
-class="col"
-style="height:${h}%"
->
-
-<span>
-${x.w}
-</span>
-
-</div>
-
-`;
-
-}
-).join("")
-
-:
-
-`
-
-<div
-style="width:100%;text-align:center;color:var(--muted);font-size:9px"
->
-Ajoute une mesure.
-</div>
-
-`;
-
-}
-
-
-function addWeight(){
-
-let w=
-+$("newWeight").value;
-
-if(w<30||w>300)
-return toast("Poids invalide");
-
-S.profile.weight=w;
-
-S.weights.push({
-w,
-date:Date.now()
-});
-
-$("newWeight").value="";
-
-save();
-
-renderAll();
-
-toast(
-"Poids enregistré 📈"
-);
-
-}
-
-
-function renderPantry(){
-
-$("pantryList").innerHTML=
-
-S.pantry.length
-
-?
-
-S.pantry.map(
-(x,i)=>
-
-`
-
-<div class="listrow">
-
-<span>
-🥫 ${esc(x)}
-</span>
-
-<button
-class="del"
-onclick="S.pantry.splice(${i},1);save();renderPantry()"
->
-×
-</button>
-
-</div>
-
-`
-).join("")
-
-:
-
-`
-
-<div
-style="padding:18px 0;text-align:center;color:var(--muted);font-size:9px"
->
-Garde-manger vide.
-</div>
-
-`;
-
-}
-
-
-function addPantry(){
-
-let x=
-$("pantryInput")
-.value
-.trim();
-
-if(!x)return;
-
-S.pantry.push(x);
-
-$("pantryInput").value="";
-
-save();
-
-renderPantry();
-
-toast(
-"Ajouté 🥫"
-);
-
-}
-
-
-function loadProfile(){
-
-let p=S.profile;
-
-for(
-let [id,v]
-of
-[
-["name",p.name],
-["age",p.age],
-["sex",p.sex],
-["height",p.height],
-["weight",p.weight],
-["activity",p.activity],
-["training",p.training],
-["goal",p.goal],
-["adjust",p.adjust],
-["budgetInput",p.budget]
-]
-){
-
-$(id).value=
-v??"";
-
-}
-
-}
-
-
-function saveProfile(){
-
-S.profile={
-
-name:$("name").value.trim(),
-
-age:$("age").value,
-
-sex:$("sex").value,
-
-height:$("height").value,
-
-weight:$("weight").value,
-
-activity:$("activity").value,
-
-training:$("training").value,
-
-goal:$("goal").value,
-
-adjust:+$("adjust").value,
-
-budget:+$("budgetInput").value
-
-};
-
-save();
-
-renderAll();
-
-toast(
-"Profil enregistré ✅"
-);
-
-}
-
-
-function renderProfile(){
-
-let n=nutrition();
-
-$("bmr").textContent=n.bmr;
-
-$("m").textContent=n.m;
-
-$("t").textContent=n.t;
-
-$("tp").textContent=n.p+"g";
-
-$("tg").textContent=n.g+"g";
-
-$("tf").textContent=n.f+"g";
-
-}
-
-
-function toggleDark(){
-
-S.dark=!S.dark;
-
-document.body.classList.toggle(
-"dark",
-S.dark
-);
-
-save();
-
-}
-
-
-function openFood(){
-
-$("foodModal")
-.classList.add("open");
-
-$("foodSearch").value="";
-
-renderFood("");
-
-}
-
-
-function closeFood(){
-
-$("foodModal")
-.classList.remove("open");
-
-}
-
-
-function renderFood(q){
-
-q=q.toLowerCase();
-
-$("foodResults").innerHTML=
-
-foods
-.filter(
-f=>f[0]
-.toLowerCase()
-.includes(q)
-)
-.map(
-(f,i)=>
-
-`
-
-<div class="food">
-
-<span>
-
-<b>
-${f[1]} ${esc(f[0])}
-</b>
-
-<br>
-
-<small>
-${f[2]} kcal / 100g ·
-${f[3]}g P
-</small>
-
-</span>
-
-<button
-class="add"
-onclick="addFood(${i})"
->
-+
-</button>
-
-</div>
-
-`
-).join("");
-
-}
-
-
-function addFood(i){
-
-let f=foods[i];
-
-S.journal.push({
-
-n:f[0],
-e:f[1],
-type:"ALIMENT",
-k:f[2],
-p:f[3],
-g:f[4],
-f:f[5]
-
-});
-
-save();
-
-closeFood();
-
-renderAll();
-
-toast(
-f[0]+" ajouté ✅"
-);
-
-}
-
-
-$("foodSearch")
-.addEventListener(
-"input",
-e=>
-renderFood(
-e.target.value
-)
-);
-
-
-function answer(q){
-
-q=q.toLowerCase();
-
-let n=nutrition();
-
-let t=totals();
-
-
-if(q.includes("proté"))
-return`
-
-Ton objectif est d'environ
-<b>${n.p} g</b>.
-Tu as consommé
-${Math.round(t.p)} g.
-`;
-
-
-if(q.includes("calorie"))
-return`
-
-Objectif :
-<b>${n.t} kcal</b>.
-
-Il te reste environ
-<b>${Math.max(
-0,
-Math.round(n.t-t.k)
-)} kcal</b>.
-`;
-
-
-if(
-q.includes("budget")||
-q.includes("économ")
-)
-return`
-
-Ton budget est de
-<b>${S.profile.budget||0} €</b>.
-
-Le planning génère automatiquement
-un panier et estime son coût.
-`;
-
-
-if(
-q.includes("soir")||
-q.includes("repas")
-)
-return`
-
-Je choisirais
-<b>pâtes au thon</b>
-ou
-<b>poulet, riz & brocoli</b>,
-puis j'ajusterais la portion selon
-tes calories restantes.
-`;
-
-
-return`
-
-Je peux analyser tes calories,
-protéines, repas, planning et budget.
-
-Essaie :
-« combien de calories me reste-t-il ? »
-`;
-
-}
-
-
-function chat(){
-
-let i=$("chatInput");
-
-let q=i.value.trim();
-
-if(!q)return;
-
-$("messages").innerHTML+=`
-
-<div class="msg me">
-${esc(q)}
-</div>
-`;
-
-i.value="";
-
-setTimeout(
-()=>{
-
-$("messages").innerHTML+=`
-
-<div class="msg">
-🤖 ${answer(q)}
-</div>
-`;
-
-},
-100
-);
-
-}
-
-
-function ask(q){
-
-$("chatInput").value=q;
-
-chat();
-
-}
-
-
-function renderAll(){
-
-renderHome();
-
-renderJournal();
-
-renderRecipes();
-
-renderPlanner();
-
-renderShopping();
-
-renderProgress();
-
-renderPantry();
-
-renderProfile();
-
-}
-
-
-loadProfile();
-
-document.body.classList.toggle(
-"dark",
-S.dark
-);
-
-if(!S.week.length)
-S.week=weekDefault();
-
-renderAll();
-
-
-if(
-"serviceWorker"
-in navigator
-){
-
-window.addEventListener(
-"load",
-()=>
-navigator
-.serviceWorker
-.register("sw.js")
-.catch(
-()=>{}
-)
-);
-
-}
-
-</script>
+  <script src="data.js"></script>
+  <script src="app.js"></script>
 
 </body>
 </html>
