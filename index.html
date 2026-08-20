@@ -2,325 +2,364 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#171a17">
 <title>BudgetCook</title>
 
 <style>
-
 :root{
---bg:#f3f4ee;
---card:#ffffff;
---dark:#171a17;
---grey:#747970;
---green:#b8e34b;
---light:#eaf6c9;
---border:#e1e4db;
+ --bg:#f3f4ee;
+ --card:#fff;
+ --dark:#171a17;
+ --muted:#737970;
+ --green:#b8e34b;
+ --soft:#eaf6c9;
+ --line:#e1e4db;
+ --danger:#ffded8;
 }
 
-*{
-box-sizing:border-box;
-}
+*{box-sizing:border-box}
 
 body{
-margin:0;
-background:var(--bg);
-color:var(--dark);
-font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+ margin:0;
+ background:var(--bg);
+ color:var(--dark);
+ font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
 }
 
 .app{
-max-width:430px;
-margin:auto;
-min-height:100vh;
-padding:20px 17px 100px;
+ max-width:430px;
+ margin:auto;
+ min-height:100vh;
+ padding:20px 17px 100px;
 }
 
-/* HEADER */
-
 header{
-display:flex;
-justify-content:space-between;
-align-items:center;
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
 }
 
 .logo{
-font-size:24px;
-font-weight:900;
-letter-spacing:-1px;
+ font-size:24px;
+ font-weight:900;
+ letter-spacing:-1px;
 }
 
 .avatar{
-width:40px;
-height:40px;
-border-radius:50%;
-background:var(--dark);
-color:white;
-display:grid;
-place-items:center;
-font-weight:800;
+ width:40px;
+ height:40px;
+ border-radius:50%;
+ background:var(--dark);
+ color:white;
+ display:grid;
+ place-items:center;
+ font-weight:800;
 }
 
-/* PAGES */
-
-.page{
-display:none;
-}
-
-.page.active{
-display:block;
-}
-
-/* TITRES */
+.page{display:none}
+.page.active{display:block}
 
 .eyebrow{
-margin-top:25px;
-color:var(--grey);
-font-size:13px;
-font-weight:700;
+ margin-top:25px;
+ color:var(--muted);
+ font-size:12px;
+ font-weight:800;
 }
 
 .title{
-font-size:31px;
-line-height:1.05;
-letter-spacing:-1.2px;
-margin:5px 0 0;
+ font-size:31px;
+ line-height:1.04;
+ letter-spacing:-1.2px;
+ margin:5px 0 0;
 }
 
-/* HERO */
+.card{
+ background:var(--card);
+ border:1px solid var(--line);
+ border-radius:21px;
+ padding:16px;
+ margin-top:12px;
+}
 
 .hero{
-margin-top:20px;
-padding:21px;
-background:var(--dark);
-color:white;
-border-radius:25px;
+ margin-top:20px;
+ padding:21px;
+ background:var(--dark);
+ color:white;
+ border-radius:25px;
 }
 
-.hero small{
-color:#c7ccc3;
-}
+.hero small{color:#c7ccc3}
 
 .calories{
-font-size:38px;
-font-weight:900;
-margin-top:8px;
+ font-size:38px;
+ font-weight:900;
+ margin-top:7px;
 }
 
 .calories span{
-font-size:16px;
+ font-size:15px;
 }
 
 .hero-info{
-font-size:13px;
-color:#c7ccc3;
+ color:#c7ccc3;
+ font-size:12px;
 }
 
 .progress{
-height:9px;
-background:#3d423b;
-border-radius:20px;
-margin-top:17px;
-overflow:hidden;
+ height:9px;
+ background:#3d423b;
+ border-radius:20px;
+ margin-top:16px;
+ overflow:hidden;
 }
 
 .progress-bar{
-height:100%;
-width:48%;
-background:var(--green);
-border-radius:20px;
+ height:100%;
+ width:0%;
+ background:var(--green);
+ border-radius:20px;
+ transition:.4s;
 }
 
-/* MACROS */
-
 .macros{
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:9px;
-margin-top:12px;
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:9px;
+ margin-top:11px;
 }
 
 .macro{
-background:white;
-border:1px solid var(--border);
-border-radius:18px;
-padding:13px 10px;
+ background:white;
+ border:1px solid var(--line);
+ border-radius:18px;
+ padding:13px 10px;
 }
 
+.macro-icon{font-size:18px}
+
 .macro-value{
-font-size:20px;
-font-weight:900;
-margin-top:5px;
+ font-size:20px;
+ font-weight:900;
+ margin-top:4px;
 }
 
 .macro-text{
-color:var(--grey);
-font-size:11px;
-line-height:1.3;
+ color:var(--muted);
+ font-size:10px;
+ margin-top:2px;
 }
 
-/* SECTIONS */
-
 .section{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin:26px 2px 11px;
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ margin:25px 2px 10px;
 }
 
 .section h2{
-margin:0;
-font-size:19px;
+ margin:0;
+ font-size:19px;
 }
 
-/* MEALS */
+.section span{
+ color:var(--muted);
+ font-size:11px;
+ font-weight:800;
+}
 
 .meal{
-display:flex;
-gap:12px;
-background:white;
-border:1px solid var(--border);
-border-radius:20px;
-padding:12px;
-margin-bottom:10px;
+ display:flex;
+ gap:12px;
+ background:white;
+ border:1px solid var(--line);
+ border-radius:20px;
+ padding:12px;
+ margin-bottom:9px;
 }
 
-.meal-image{
-width:68px;
-height:68px;
-border-radius:17px;
-display:grid;
-place-items:center;
-font-size:31px;
-background:linear-gradient(135deg,#dce9b9,#f3d5a6);
+.meal-img{
+ width:67px;
+ height:67px;
+ border-radius:16px;
+ display:grid;
+ place-items:center;
+ font-size:30px;
+ background:linear-gradient(135deg,#dce9b9,#f3d5a6);
 }
 
 .meal-type{
-color:var(--grey);
-font-size:10px;
-font-weight:900;
+ color:var(--muted);
+ font-size:9px;
+ font-weight:900;
 }
 
-.meal-title{
-font-size:15px;
-font-weight:800;
-margin:5px 0;
+.meal-name{
+ font-size:15px;
+ font-weight:850;
+ margin:4px 0;
 }
 
-.meal-stats{
-color:var(--grey);
-font-size:12px;
+.meal-info{
+ color:var(--muted);
+ font-size:11px;
 }
 
-/* PROFILE */
+.store{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ padding:12px 0;
+ border-bottom:1px solid var(--line);
+}
+
+.store:last-child{border-bottom:0}
+
+.store-name{font-weight:850}
+
+.store-sub{
+ color:var(--muted);
+ font-size:10px;
+ margin-top:2px;
+}
+
+.store-price{font-weight:900}
+
+.best{
+ margin-top:11px;
+ padding:12px;
+ border-radius:14px;
+ background:var(--soft);
+ font-size:12px;
+}
 
 .profile-card{
-background:white;
-border:1px solid var(--border);
-border-radius:22px;
-padding:18px;
-margin-top:20px;
+ margin-top:20px;
+ background:white;
+ border:1px solid var(--line);
+ border-radius:22px;
+ padding:17px;
 }
 
 label{
-display:block;
-font-size:13px;
-font-weight:800;
-margin-top:16px;
-margin-bottom:7px;
+ display:block;
+ margin-top:15px;
+ margin-bottom:6px;
+ font-size:12px;
+ font-weight:850;
 }
 
-input,
-select{
-width:100%;
-padding:14px;
-border:1px solid var(--border);
-border-radius:13px;
-font-size:16px;
-background:#fafbf8;
-outline:none;
+input,select{
+ width:100%;
+ padding:13px;
+ border:1px solid var(--line);
+ border-radius:13px;
+ background:#fafbf8;
+ font-size:16px;
+ outline:none;
 }
 
-input:focus,
-select:focus{
-border-color:var(--dark);
+input:focus,select:focus{
+ border-color:var(--dark);
 }
 
-.save{
-width:100%;
-margin-top:22px;
-padding:16px;
-border:0;
-border-radius:14px;
-background:var(--dark);
-color:white;
-font-size:16px;
-font-weight:900;
+.primary{
+ width:100%;
+ border:0;
+ border-radius:14px;
+ background:var(--dark);
+ color:white;
+ padding:16px;
+ margin-top:20px;
+ font-size:15px;
+ font-weight:900;
 }
 
 .success{
-display:none;
-background:var(--light);
-padding:13px;
-border-radius:13px;
-margin-top:13px;
-font-size:13px;
-font-weight:700;
+ display:none;
+ background:var(--soft);
+ padding:12px;
+ border-radius:13px;
+ margin-top:11px;
+ font-size:12px;
+ font-weight:800;
 }
 
-/* BUDGET */
-
-.budget-card{
-margin-top:20px;
-background:white;
-border:1px solid var(--border);
-border-radius:20px;
-padding:18px;
+.stat-grid{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:10px;
+ margin-top:12px;
 }
 
-.budget-number{
-font-size:32px;
-font-weight:900;
+.stat{
+ background:white;
+ border:1px solid var(--line);
+ border-radius:18px;
+ padding:15px;
 }
 
-.budget-sub{
-color:var(--grey);
-font-size:13px;
+.stat strong{
+ display:block;
+ font-size:23px;
+ margin-top:4px;
 }
 
-/* NAVIGATION */
+.stat small{
+ color:var(--muted);
+ font-size:10px;
+}
+
+.day{
+ display:flex;
+ justify-content:space-between;
+ padding:13px 0;
+ border-bottom:1px solid var(--line);
+}
+
+.day:last-child{border-bottom:0}
+
+.day strong{font-size:13px}
+.day span{font-size:12px;color:var(--muted)}
 
 .navigation{
-position:fixed;
-bottom:0;
-left:50%;
-transform:translateX(-50%);
-width:100%;
-max-width:430px;
-display:flex;
-background:rgba(255,255,255,.96);
-backdrop-filter:blur(12px);
-border-top:1px solid var(--border);
-padding:8px 5px;
+ position:fixed;
+ bottom:0;
+ left:50%;
+ transform:translateX(-50%);
+ width:100%;
+ max-width:430px;
+ display:flex;
+ background:rgba(255,255,255,.96);
+ backdrop-filter:blur(14px);
+ border-top:1px solid var(--line);
+ padding:7px 4px calc(7px + env(safe-area-inset-bottom));
+ z-index:20;
 }
 
 .navigation button{
-flex:1;
-border:none;
-background:transparent;
-color:#7c827a;
-font-size:10px;
-font-weight:800;
+ flex:1;
+ border:0;
+ background:transparent;
+ color:#7b8178;
+ font-size:9px;
+ font-weight:850;
 }
 
 .navigation button span{
-display:block;
-font-size:20px;
-margin-bottom:3px;
+ display:block;
+ font-size:20px;
+ margin-bottom:2px;
 }
 
-.navigation button.active{
-color:var(--dark);
+.navigation button.active{color:var(--dark)}
+
+.empty{
+ text-align:center;
+ color:var(--muted);
+ padding:30px 15px;
+ font-size:13px;
 }
 
 </style>
@@ -331,54 +370,36 @@ color:var(--dark);
 <div class="app">
 
 <header>
-
-<div class="logo">
-🍝 BudgetCook
-</div>
-
-<div class="avatar" id="avatar">
-E
-</div>
-
+ <div class="logo">🍝 BudgetCook</div>
+ <div class="avatar" id="avatar">E</div>
 </header>
 
 
-<!-- ACCUEIL -->
+<!-- ================= ACCUEIL ================= -->
 
 <section id="home" class="page active">
 
-<div class="eyebrow">
-AUJOURD'HUI
-</div>
+<div class="eyebrow">AUJOURD'HUI</div>
 
 <h1 class="title">
 Bonjour 👋<br>
 Voici ta journée.
 </h1>
 
-
 <div class="hero">
 
-<small>
-Calories restantes
-</small>
+<small>Objectif calories</small>
 
 <div class="calories">
-<span id="calories">2450</span>
-<span>kcal</span>
+<span id="calories">—</span> <span>kcal</span>
 </div>
 
-<div class="hero-info">
-Objectif quotidien
+<div class="hero-info" id="goalText">
+Configure ton profil pour commencer.
 </div>
 
 <div class="progress">
-
-<div
-class="progress-bar"
-id="progressBar">
-</div>
-
+<div class="progress-bar" id="progress"></div>
 </div>
 
 </div>
@@ -386,165 +407,47 @@ id="progressBar">
 
 <div class="macros">
 
+<div class="macro">
+<div class="macro-icon">🥩</div>
+<div class="macro-value" id="protein">—</div>
+<div class="macro-text">Protéines</div>
+</div>
 
 <div class="macro">
-
-🥩
-
-<div
-class="macro-value"
-id="protein">
-160 g
+<div class="macro-icon">🍚</div>
+<div class="macro-value" id="carbs">—</div>
+<div class="macro-text">Glucides</div>
 </div>
-
-<div class="macro-text">
-Protéines
-</div>
-
-</div>
-
 
 <div class="macro">
-
-🍚
-
-<div
-class="macro-value"
-id="carbs">
-270 g
-</div>
-
-<div class="macro-text">
-Glucides
-</div>
-
-</div>
-
-
-<div class="macro">
-
-🥑
-
-<div
-class="macro-value"
-id="fats">
-82 g
-</div>
-
-<div class="macro-text">
-Lipides
-</div>
-
-</div>
-
-
-</div>
-
-
-<div class="section">
-
-<h2>
-🍽️ Tes repas
-</h2>
-
-</div>
-
-
-<div class="meal">
-
-<div class="meal-image">
-🥣
-</div>
-
-<div>
-
-<div class="meal-type">
-PETIT-DÉJEUNER
-</div>
-
-<div class="meal-title">
-Skyr, avoine & banane
-</div>
-
-<div class="meal-stats">
-420 kcal · 31 g protéines
-</div>
-
-</div>
-
-</div>
-
-
-<div class="meal">
-
-<div class="meal-image">
-🍗
-</div>
-
-<div>
-
-<div class="meal-type">
-DÉJEUNER
-</div>
-
-<div class="meal-title">
-Poulet, riz & légumes
-</div>
-
-<div class="meal-stats">
-650 kcal · 52 g protéines
-</div>
-
-</div>
-
-</div>
-
-
-<div class="meal">
-
-<div class="meal-image">
-🌯
-</div>
-
-<div>
-
-<div class="meal-type">
-DÎNER
-</div>
-
-<div class="meal-title">
-Wraps poulet & crudités
-</div>
-
-<div class="meal-stats">
-580 kcal · 45 g protéines
-</div>
-
+<div class="macro-icon">🥑</div>
+<div class="macro-value" id="fats">—</div>
+<div class="macro-text">Lipides</div>
 </div>
 
 </div>
 
 
 <div class="section">
-
-<h2>
-💰 Ton budget
-</h2>
-
+<h2>🍽️ Tes repas</h2>
+<span>aujourd'hui</span>
 </div>
 
+<div id="homeMeals"></div>
 
-<div class="budget-card">
 
-<div class="budget-number">
-
-<span id="budget">
-50
-</span> €
-
+<div class="section">
+<h2>💰 Ton budget</h2>
+<span>7 jours</span>
 </div>
 
-<div class="budget-sub">
+<div class="card">
+
+<div style="font-size:28px;font-weight:900">
+<span id="homeBudget">—</span> €
+</div>
+
+<div style="font-size:12px;color:var(--muted)">
 Budget courses hebdomadaire
 </div>
 
@@ -553,119 +456,278 @@ Budget courses hebdomadaire
 </section>
 
 
+<!-- ================= REPAS ================= -->
 
-<!-- PROFIL -->
+<section id="meals" class="page">
+
+<div class="eyebrow">PLAN ALIMENTAIRE</div>
+
+<h1 class="title">
+Tes repas 🍽️
+</h1>
+
+<div class="card">
+
+<div style="font-weight:900">
+Objectif du jour
+</div>
+
+<div style="color:var(--muted);font-size:12px;margin-top:4px">
+Des repas simples, riches en protéines et adaptés à ton budget.
+</div>
+
+</div>
+
+<div class="section">
+<h2>Journée exemple</h2>
+</div>
+
+<div id="mealList"></div>
+
+</section>
+
+
+<!-- ================= COURSES ================= -->
+
+<section id="shopping" class="page">
+
+<div class="eyebrow">LISTE DE COURSES</div>
+
+<h1 class="title">
+Ton panier 🛒
+</h1>
+
+<div class="card">
+
+<div style="font-size:12px;color:var(--muted)">
+Budget hebdomadaire
+</div>
+
+<div style="font-size:30px;font-weight:900">
+<span id="shoppingBudget">—</span> €
+</div>
+
+</div>
+
+<div class="section">
+<h2>🏪 Comparaison</h2>
+<span>estimation</span>
+</div>
+
+<div class="card">
+
+<div class="store">
+<div>
+<div class="store-name">🏆 Lidl</div>
+<div class="store-sub">Meilleure estimation</div>
+</div>
+<div class="store-price">49,20 €</div>
+</div>
+
+<div class="store">
+<div class="store-name">ALDI</div>
+<div class="store-price">50,70 €</div>
+</div>
+
+<div class="store">
+<div class="store-name">E.Leclerc</div>
+<div class="store-price">52,40 €</div>
+</div>
+
+<div class="store">
+<div class="store-name">Intermarché</div>
+<div class="store-price">54,10 €</div>
+</div>
+
+<div class="store">
+<div class="store-name">Carrefour</div>
+<div class="store-price">57,40 €</div>
+</div>
+
+<div class="best">
+💰 <strong>Prix indicatifs</strong><br>
+Les prix sont fictifs dans cette version. Nous ajouterons les vraies données plus tard.
+</div>
+
+</div>
+
+<div class="section">
+<h2>Produits</h2>
+</div>
+
+<div class="card">
+
+<div class="day">
+<strong>🍗 Poulet</strong>
+<span>1,5 kg</span>
+</div>
+
+<div class="day">
+<strong>🥚 Œufs</strong>
+<span>24</span>
+</div>
+
+<div class="day">
+<strong>🥛 Skyr</strong>
+<span>2 kg</span>
+</div>
+
+<div class="day">
+<strong>🍚 Riz</strong>
+<span>2 kg</span>
+</div>
+
+<div class="day">
+<strong>🍌 Bananes</strong>
+<span>1,5 kg</span>
+</div>
+
+<div class="day">
+<strong>🥦 Légumes</strong>
+<span>2 kg</span>
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ================= PROGRES ================= -->
+
+<section id="progressPage" class="page">
+
+<div class="eyebrow">SUIVI</div>
+
+<h1 class="title">
+Tes progrès 📊
+</h1>
+
+<div class="stat-grid">
+
+<div class="stat">
+<small>Poids actuel</small>
+<strong id="progressWeight">—</strong>
+<small>kg</small>
+</div>
+
+<div class="stat">
+<small>Objectif</small>
+<strong id="progressGoal">—</strong>
+</div>
+
+</div>
+
+<div class="section">
+<h2>Cette semaine</h2>
+</div>
+
+<div class="card">
+
+<div class="day">
+<strong>Lundi</strong>
+<span>— kg</span>
+</div>
+
+<div class="day">
+<strong>Mardi</strong>
+<span>— kg</span>
+</div>
+
+<div class="day">
+<strong>Mercredi</strong>
+<span>— kg</span>
+</div>
+
+<div class="day">
+<strong>Jeudi</strong>
+<span id="todayWeight">Aujourd'hui</span>
+</div>
+
+</div>
+
+<div class="card">
+
+<div style="font-size:12px;color:var(--muted)">
+À venir
+</div>
+
+<div style="font-size:16px;font-weight:900;margin-top:5px">
+📈 Ton graphique de progression
+</div>
+
+<div style="font-size:12px;color:var(--muted);margin-top:5px">
+Nous ajouterons le vrai suivi du poids dans une prochaine version.
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ================= PROFIL ================= -->
 
 <section id="profile" class="page">
 
-<div class="eyebrow">
-TON PROFIL
-</div>
+<div class="eyebrow">TON PROFIL</div>
 
 <h1 class="title">
 Configure<br>
 ton objectif.
 </h1>
 
-
 <div class="profile-card">
 
+<label>Âge</label>
+<input id="age" type="number" placeholder="Ex : 20">
 
-<label>
-Âge
-</label>
-
-<input
-id="age"
-type="number"
-placeholder="Ex : 20"
->
-
-
-<label>
-Sexe
-</label>
+<label>Sexe</label>
 
 <select id="sex">
-
-<option value="male">
-Homme
-</option>
-
-<option value="female">
-Femme
-</option>
-
+<option value="male">Homme</option>
+<option value="female">Femme</option>
 </select>
 
+<label>Taille (cm)</label>
+<input id="height" type="number" placeholder="Ex : 179">
 
-<label>
-Taille (cm)
-</label>
+<label>Poids (kg)</label>
+<input id="weight" type="number" placeholder="Ex : 88">
 
-<input
-id="height"
-type="number"
-placeholder="Ex : 180"
->
-
-
-<label>
-Poids (kg)
-</label>
-
-<input
-id="weight"
-type="number"
-placeholder="Ex : 80"
->
-
-
-<label>
-Activité
-</label>
+<label>Niveau d'activité</label>
 
 <select id="activity">
 
 <option value="1.2">
-Très peu actif
+Sédentaire
 </option>
 
-<option value="1.375">
+<option value="1.35">
 Légèrement actif
 </option>
 
-<option value="1.55">
+<option value="1.5">
 Modérément actif
 </option>
 
-<option value="1.725">
-Très actif
+<option value="1.65">
+Actif
 </option>
 
-<option value="1.9">
-Extrêmement actif
+<option value="1.75">
+Très actif
 </option>
 
 </select>
 
+<label>Entraînements / semaine</label>
 
-<label>
-Entraînements par semaine
-</label>
-
-<input
-id="training"
+<input id="training"
 type="number"
 min="0"
 max="14"
-placeholder="Ex : 4"
->
+placeholder="Ex : 5">
 
-
-<label>
-Objectif
-</label>
+<label>Objectif</label>
 
 <select id="goal">
 
@@ -674,7 +736,7 @@ Objectif
 </option>
 
 <option value="maintain">
-⚖️ Maintenir
+⚖️ Maintenir mon poids
 </option>
 
 <option value="bulk">
@@ -683,473 +745,399 @@ Objectif
 
 </select>
 
+<label>Budget courses / semaine (€)</label>
 
-<label>
-Budget courses / semaine (€)
-</label>
-
-<input
-id="weeklyBudget"
+<input id="budget"
 type="number"
-placeholder="Ex : 50"
->
+placeholder="Ex : 50">
 
-
-<button
-class="save"
-onclick="saveProfile()"
->
+<button class="primary" onclick="saveProfile()">
 Enregistrer mon profil
 </button>
 
-
-<div
-class="success"
-id="success"
->
+<div class="success" id="success">
 ✅ Profil enregistré !
 </div>
-
 
 </div>
 
 </section>
 
 
-
-<!-- NAVIGATION -->
+<!-- ================= NAV ================= -->
 
 <nav class="navigation">
 
-
-<button
-id="homeButton"
-class="active"
-onclick="showPage('home')"
->
-
-<span>
-⌂
-</span>
-
+<button class="active" onclick="showPage('home',this)">
+<span>⌂</span>
 Accueil
-
 </button>
 
-
-<button
-onclick="alert('La section Repas arrive dans la prochaine version 🍽️')"
->
-
-<span>
-🍽️
-</span>
-
+<button onclick="showPage('meals',this)">
+<span>🍽️</span>
 Repas
-
 </button>
 
-
-<button
-onclick="alert('La liste de courses arrive bientôt 🛒')"
->
-
-<span>
-🛒
-</span>
-
+<button onclick="showPage('shopping',this)">
+<span>🛒</span>
 Courses
-
 </button>
 
-
-<button
-onclick="alert('Le suivi des progrès arrive bientôt 📊')"
->
-
-<span>
-📊
-</span>
-
+<button onclick="showPage('progressPage',this)">
+<span>📊</span>
 Progrès
-
 </button>
 
-
-<button
-onclick="showPage('profile')"
->
-
-<span>
-👤
-</span>
-
+<button onclick="showPage('profile',this)">
+<span>👤</span>
 Profil
-
 </button>
-
 
 </nav>
-
 
 </div>
 
 
 <script>
 
+/* ================= NAVIGATION ================= */
 
-/* NAVIGATION */
+function showPage(page,button){
 
-function showPage(page){
-
-document
-.querySelectorAll(".page")
-.forEach(function(element){
-
-element.classList.remove("active");
-
+document.querySelectorAll(".page")
+.forEach(function(p){
+p.classList.remove("active");
 });
 
-
-document
-.getElementById(page)
+document.getElementById(page)
 .classList.add("active");
 
-
-document
-.querySelectorAll(".navigation button")
-.forEach(function(button){
-
-button.classList.remove("active");
-
+document.querySelectorAll(".navigation button")
+.forEach(function(b){
+b.classList.remove("active");
 });
 
-
-if(page === "home"){
-
-document
-.getElementById("homeButton")
-.classList.add("active");
-
+if(button){
+button.classList.add("active");
 }
 
 }
 
 
-/* CALCUL NUTRITION */
+/* ================= CALCUL ================= */
 
 function calculateNutrition(){
 
-let age =
-Number(document.getElementById("age").value);
+const age=Number(document.getElementById("age").value);
+const height=Number(document.getElementById("height").value);
+const weight=Number(document.getElementById("weight").value);
 
-let height =
-Number(document.getElementById("height").value);
-
-let weight =
-Number(document.getElementById("weight").value);
-
-let sex =
-document.getElementById("sex").value;
-
-let activity =
-Number(document.getElementById("activity").value);
-
-let goal =
-document.getElementById("goal").value;
-
+const sex=document.getElementById("sex").value;
+const activity=Number(document.getElementById("activity").value);
+const goal=document.getElementById("goal").value;
 
 if(!age || !height || !weight){
-
-return;
-
+return null;
 }
 
 
-/*
-Mifflin-St Jeor
-*/
+/* Mifflin St Jeor */
 
 let bmr;
 
+if(sex==="male"){
 
-if(sex === "male"){
-
-bmr =
-10 * weight +
-6.25 * height -
-5 * age +
+bmr=
+10*weight+
+6.25*height-
+5*age+
 5;
 
 }else{
 
-bmr =
-10 * weight +
-6.25 * height -
-5 * age -
+bmr=
+10*weight+
+6.25*height-
+5*age-
 161;
 
 }
 
 
-let calories =
-bmr * activity;
+let calories=bmr*activity;
 
 
-/*
-Objectif
-*/
+/* Objectif */
 
-if(goal === "cut"){
-
-calories -= 400;
-
+if(goal==="cut"){
+calories-=300;
 }
 
-if(goal === "bulk"){
-
-calories += 250;
-
+if(goal==="bulk"){
+calories+=200;
 }
 
 
-calories =
-Math.round(calories);
+/*
+On garde une estimation raisonnable.
+*/
+
+calories=Math.round(calories);
+
+
+/* Protéines */
+
+let protein=Math.round(weight*1.8);
+
+
+/* Lipides */
+
+let fats=Math.round(weight*0.8);
 
 
 /*
-Protéines
+Glucides = reste des calories.
 */
 
-let protein =
-Math.round(weight * 1.8);
-
-
-/*
-Lipides
-*/
-
-let fats =
-Math.round(weight * 0.8);
-
-
-/*
-Glucides
-*/
-
-let carbs =
-Math.round(
-(calories -
-protein * 4 -
-fats * 9) / 4
+let carbs=Math.round(
+(calories-(protein*4)-(fats*9))/4
 );
 
 
-return {
+/*
+Sécurité : éviter une valeur absurde.
+*/
 
+if(carbs<80){
+carbs=80;
+}
+
+return{
 calories,
 protein,
 fats,
 carbs
-
 };
 
 }
 
 
-/* SAUVEGARDE */
+/* ================= SAUVEGARDE ================= */
 
 function saveProfile(){
 
-let result =
-calculateNutrition();
+const nutrition=calculateNutrition();
 
+if(!nutrition){
 
-if(!result){
-
-alert("Remplis ton âge, ta taille et ton poids.");
+alert("Remplis au minimum ton âge, ta taille et ton poids.");
 
 return;
 
 }
 
+const profile={
 
-let budget =
-Number(
-document.getElementById("weeklyBudget").value
-);
+age:document.getElementById("age").value,
 
+sex:document.getElementById("sex").value,
 
-let profile = {
+height:document.getElementById("height").value,
 
-age:
-document.getElementById("age").value,
+weight:document.getElementById("weight").value,
 
-height:
-document.getElementById("height").value,
+activity:document.getElementById("activity").value,
 
-weight:
-document.getElementById("weight").value,
+training:document.getElementById("training").value,
 
-sex:
-document.getElementById("sex").value,
+goal:document.getElementById("goal").value,
 
-activity:
-document.getElementById("activity").value,
+budget:document.getElementById("budget").value,
 
-training:
-document.getElementById("training").value,
-
-goal:
-document.getElementById("goal").value,
-
-budget:
-budget,
-
-nutrition:
-result
+nutrition:nutrition
 
 };
-
 
 localStorage.setItem(
 "budgetcookProfile",
 JSON.stringify(profile)
 );
 
+updateDashboard(profile);
 
-/*
-Dashboard
-*/
-
-document
-.getElementById("calories")
-.textContent =
-result.calories;
-
-document
-.getElementById("protein")
-.textContent =
-result.protein + " g";
-
-document
-.getElementById("carbs")
-.textContent =
-result.carbs + " g";
-
-document
-.getElementById("fats")
-.textContent =
-result.fats + " g";
-
-
-if(budget){
-
-document
-.getElementById("budget")
-.textContent =
-budget;
-
-}
-
-
-document
-.getElementById("success")
-.style.display =
-"block";
-
+document.getElementById("success")
+.style.display="block";
 
 setTimeout(function(){
 
-showPage("home");
+document.getElementById("success")
+.style.display="none";
 
-},800);
+showPage("home",
+document.querySelector(".navigation button"));
+
+},700);
 
 }
 
 
-/* CHARGER PROFIL */
+/* ================= DASHBOARD ================= */
+
+function updateDashboard(profile){
+
+const n=profile.nutrition;
+
+document.getElementById("calories")
+.textContent=n.calories;
+
+document.getElementById("protein")
+.textContent=n.protein+" g";
+
+document.getElementById("carbs")
+.textContent=n.carbs+" g";
+
+document.getElementById("fats")
+.textContent=n.fats+" g";
+
+document.getElementById("homeBudget")
+.textContent=profile.budget || "—";
+
+document.getElementById("shoppingBudget")
+.textContent=profile.budget || "—";
+
+document.getElementById("progressWeight")
+.textContent=profile.weight || "—";
+
+document.getElementById("avatar")
+.textContent="E";
+
+
+let goalText="Maintien";
+
+if(profile.goal==="cut"){
+goalText="🔥 Objectif perte de gras";
+}
+
+if(profile.goal==="bulk"){
+goalText="💪 Objectif prise de muscle";
+}
+
+document.getElementById("goalText")
+.textContent=goalText;
+
+}
+
+
+/* ================= REPAS ================= */
+
+function renderMeals(){
+
+const meals=[
+
+["🥣","PETIT-DÉJEUNER","Skyr, avoine & banane","420 kcal · 31 g protéines"],
+
+["🍗","DÉJEUNER","Poulet, riz & légumes","650 kcal · 52 g protéines"],
+
+["🍎","COLLATION","Skyr & fruit","220 kcal · 20 g protéines"],
+
+["🌯","DÎNER","Wraps poulet & crudités","580 kcal · 45 g protéines"]
+
+];
+
+const container=document.getElementById("mealList");
+const home=document.getElementById("homeMeals");
+
+container.innerHTML="";
+home.innerHTML="";
+
+meals.forEach(function(meal){
+
+const html=`
+
+<div class="meal">
+
+<div class="meal-img">
+${meal[0]}
+</div>
+
+<div>
+
+<div class="meal-type">
+${meal[1]}
+</div>
+
+<div class="meal-name">
+${meal[2]}
+</div>
+
+<div class="meal-info">
+${meal[3]}
+</div>
+
+</div>
+
+</div>
+
+`;
+
+container.innerHTML+=html;
+
+if(meal[1]!=="COLLATION"){
+home.innerHTML+=html;
+}
+
+});
+
+}
+
+
+/* ================= CHARGEMENT ================= */
 
 function loadProfile(){
 
-let saved =
-localStorage.getItem(
-"budgetcookProfile"
-);
-
+const saved=
+localStorage.getItem("budgetcookProfile");
 
 if(!saved){
+
+renderMeals();
 
 return;
 
 }
 
+const profile=JSON.parse(saved);
 
-let profile =
-JSON.parse(saved);
+document.getElementById("age").value=profile.age || "";
 
+document.getElementById("sex").value=profile.sex || "male";
 
-document.getElementById("age").value =
-profile.age;
+document.getElementById("height").value=profile.height || "";
 
-document.getElementById("height").value =
-profile.height;
+document.getElementById("weight").value=profile.weight || "";
 
-document.getElementById("weight").value =
-profile.weight;
+document.getElementById("activity").value=profile.activity || "1.5";
 
-document.getElementById("sex").value =
-profile.sex;
+document.getElementById("training").value=profile.training || "";
 
-document.getElementById("activity").value =
-profile.activity;
+document.getElementById("goal").value=profile.goal || "cut";
 
-document.getElementById("training").value =
-profile.training;
-
-document.getElementById("goal").value =
-profile.goal;
-
-document.getElementById("weeklyBudget").value =
-profile.budget;
-
+document.getElementById("budget").value=profile.budget || "";
 
 if(profile.nutrition){
-
-document.getElementById("calories")
-.textContent =
-profile.nutrition.calories;
-
-document.getElementById("protein")
-.textContent =
-profile.nutrition.protein + " g";
-
-document.getElementById("carbs")
-.textContent =
-profile.nutrition.carbs + " g";
-
-document.getElementById("fats")
-.textContent =
-profile.nutrition.fats + " g";
-
+updateDashboard(profile);
 }
 
-
-if(profile.budget){
-
-document.getElementById("budget")
-.textContent =
-profile.budget;
+renderMeals();
 
 }
-
-}
-
 
 loadProfile();
 
-
 </script>
+
+</body>
+</html>
 
 </body>
 </html>
