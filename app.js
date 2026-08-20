@@ -1,1246 +1,2410 @@
-const DATA = window.BUDGETCOOK_DATA;
+/* =========================================================
+   BUDGETCOOK V4 — APP.JS
+========================================================= */
+
+const STORAGE_KEY = "budgetcook_v4";
+
+
+/* =========================================================
+   ÉTAT DE L'APPLICATION
+========================================================= */
 
 const defaultState = {
   profile: {
-    firstName:"",
-    age:"",
-    sex:"male",
-    height:"",
-    weight:"",
-    activity:"1.5",
-    training:"0",
-    goal:"cut",
-    adjustment:"300",
-    budget:"50"
+    name: "",
+    age: 20,
+    sex: "male",
+    height: 179,
+    weight: 88,
+    activity: 1.5,
+    training: 5,
+    goal: "cut",
+    adjustment: 300,
+    budget: 50
   },
 
-  consumed:[],
-  pantry:[],
-  weights:[],
-  shoppingChecked:[],
-  streak:0
+  journal: [],
+
+  weights: [],
+
+  pantry: [],
+
+  shopping: {},
+
+  streak: {
+    count: 0,
+    lastDate: null
+  },
+
+  planner: {},
+
+  darkMode: false
 };
+
 
 let state = loadState();
 
-function loadState(){
+let selectedDay = 0;
 
-  try{
 
-    const saved = localStorage.getItem("budgetcook_state");
+/* =========================================================
+   INITIALISATION
+========================================================= */
 
-    if(saved){
+document.addEventListener("DOMContentLoaded", () => {
 
-      return {
-        ...defaultState,
-        ...JSON.parse(saved)
-      };
+  setupNavigation();
+
+  setupProfile();
+
+  setupFoodModal();
+
+  setupShopping();
+
+  setupWeightTracking();
+
+  setupPantry();
+
+  setupCoach();
+
+  setupPlanner();
+
+  setupRecipeButtons();
+
+  setupDarkMode();
+
+  updateEverything();
+
+  registerServiceWorker();
+
+});
+
+
+/* =========================================================
+   STORAGE
+========================================================= */
+
+function loadState() {
+
+  try {
+
+    const saved = localStorage.getItem(STORAGE_KEY);
+
+    if (!saved) {
+
+      return structuredClone(defaultState);
 
     }
 
-  }catch(e){}
+    const parsed = JSON.parse(saved);
 
-  return JSON.parse(JSON.stringify(defaultState));
+    return {
+      ...structuredClone(defaultState),
+      ...parsed,
+
+      profile: {
+        ...defaultState.profile,
+        ...(parsed.profile || {})
+      },
+
+      streak: {
+        ...defaultState.streak,
+        ...(parsed.streak || {})
+      }
+
+    };
+
+  } catch (error) {
+
+    console.error("Erreur chargement :", error);
+
+    return structuredClone(defaultState);
+
+  }
+
 }
 
-function saveState(){
+
+function saveState() {
 
   localStorage.setItem(
-    "budgetcook_state",
+    STORAGE_KEY,
     JSON.stringify(state)
   );
 
 }
 
-function $(id){
+
+/* =========================================================
+   UTILITAIRES
+========================================================= */
+
+function $(id) {
   return document.getElementById(id);
 }
 
 
-/* ================= CALCUL NUTRITION ================= */
+function round(number, decimals = 0) {
 
-function calculateNutrition(){
+  const factor = Math.pow(10, decimals);
 
-  const p = state.profile;
+  return Math.round(number * factor) / factor;
 
-  const age = Number(p.age);
-  const height = Number(p.height);
-  const weight = Number(p.weight);
-  const activity = Number(p.activity);
-  const adjustment = Number(p.adjustment) || 300;
+}
 
-  if(!age || !height || !weight){
 
-    return {
-      bmr:0,
-      maintenance:0,
-      target:0,
-      protein:0,
-      fat:0,
-      carbs:0
-    };
+function formatNumber(number) {
 
-  }
+  return Math.round(number).toLocaleString("fr-FR");
 
-  let bmr;
+}
 
-  if(p.sex === "female"){
 
-    bmr =
-      10 * weight +
-      6.25 * height -
-      5 * age -
-      161;
+function todayKey() {
 
-  }else{
+  const date = new Date();
 
-    bmr =
-      10 * weight +
-      6.25 * height -
-      5 * age +
-      5;
+  const y = date.getFullYear();
 
-  }
+  const m = String(date.getMonth() + 1).padStart(2, "0");
 
-  const maintenance = Math.round(bmr * activity);
+  const d = String(date.getDate()).padStart(2, "0");
 
-  let target = maintenance;
+  return `${y}-${m}-${d}`;
 
-  if(p.goal === "cut"){
-    target = maintenance - adjustment;
-  }
+}
 
-  if(p.goal === "bulk"){
-    target = maintenance + adjustment;
-  }
 
-  /*
-    On protège contre des objectifs trop bas.
-    Le calcul reste volontairement conservateur.
-  */
+function showToast(message) {
 
-  target = Math.max(
-    p.sex === "female" ? 1200 : 1500,
-    target
-  );
+  const toast = $("toast");
 
-  target = Math.round(target);
+  if (!toast) return;
 
-  /*
-    Protéines :
-    environ 2 g/kg.
-    Limité à 35% des calories pour éviter
-    des résultats absurdes.
-  */
+  toast.textContent = message;
 
-  let protein = Math.round(weight * 2);
+  toast.classList.add("show");
 
-  protein = Math.min(
-    protein,
-    Math.floor((target * .35) / 4)
-  );
+  clearTimeout(window.toastTimer);
 
-  /*
-    Lipides :
-    environ 0,8 g/kg.
-  */
+  window.toastTimer = setTimeout(() => {
 
-  let fat = Math.round(weight * .8);
+    toast.classList.remove("show");
 
-  fat = Math.min(
-    fat,
-    Math.floor((target * .35) / 9)
-  );
+  }, 2200);
 
-  /*
-    Glucides = calories restantes.
-  */
+}
 
-  let remaining =
-    target -
-    protein * 4 -
-    fat * 9;
 
-  let carbs =
-    Math.round(Math.max(0,remaining) / 4);
+/* =========================================================
+   CALCULS NUTRITIONNELS
+========================================================= */
+
+function calculateFood(food, grams) {
+
+  const ratio = Number(grams) / 100;
 
   return {
-    bmr:Math.round(bmr),
-    maintenance,
-    target,
-    protein,
-    fat,
-    carbs
+
+    kcal: food.kcal * ratio,
+
+    protein: food.protein * ratio,
+
+    carbs: food.carbs * ratio,
+
+    fat: food.fat * ratio
+
   };
 
 }
 
 
-/* ================= NAVIGATION ================= */
+function calculateDailyTotals() {
 
-function showPage(page){
+  const totals = {
 
-  document
-    .querySelectorAll(".page")
-    .forEach(el => el.classList.remove("active"));
+    kcal: 0,
 
-  const target = $("page-"+page);
+    protein: 0,
 
-  if(target){
-    target.classList.add("active");
-  }
+    carbs: 0,
 
-  document
-    .querySelectorAll(".nav-item")
-    .forEach(btn => {
+    fat: 0
 
-      btn.classList.toggle(
-        "active",
-        btn.dataset.page === page
-      );
+  };
 
-    });
 
-  window.scrollTo({
-    top:0,
-    behavior:"smooth"
+  state.journal.forEach(item => {
+
+    totals.kcal += Number(item.kcal) || 0;
+
+    totals.protein += Number(item.protein) || 0;
+
+    totals.carbs += Number(item.carbs) || 0;
+
+    totals.fat += Number(item.fat) || 0;
+
   });
 
-}
 
+  return {
 
-document.addEventListener("click", e => {
+    kcal: round(totals.kcal),
 
-  const pageButton =
-    e.target.closest("[data-page]");
+    protein: round(totals.protein, 1),
 
-  if(!pageButton) return;
+    carbs: round(totals.carbs, 1),
 
-  showPage(pageButton.dataset.page);
+    fat: round(totals.fat, 1)
 
-});
-
-
-/* ================= PROFILE ================= */
-
-function readProfile(){
-
-  state.profile.firstName =
-    $("firstName").value.trim();
-
-  state.profile.age =
-    $("age").value;
-
-  state.profile.sex =
-    $("sex").value;
-
-  state.profile.height =
-    $("height").value;
-
-  state.profile.weight =
-    $("weight").value;
-
-  state.profile.activity =
-    $("activity").value;
-
-  state.profile.training =
-    $("training").value;
-
-  state.profile.goal =
-    $("goal").value;
-
-  state.profile.adjustment =
-    $("adjustment").value;
-
-  state.profile.budget =
-    $("budget").value;
+  };
 
 }
 
 
-function fillProfile(){
+/* =========================================================
+   CALORIES OBJECTIF
+========================================================= */
+
+function calculateBMR() {
 
   const p = state.profile;
 
-  $("firstName").value = p.firstName || "";
-  $("age").value = p.age || "";
-  $("sex").value = p.sex || "male";
-  $("height").value = p.height || "";
-  $("weight").value = p.weight || "";
-  $("activity").value = p.activity || "1.5";
-  $("training").value = p.training || "";
-  $("goal").value = p.goal || "cut";
-  $("adjustment").value = p.adjustment || "300";
-  $("budget").value = p.budget || "";
+  const weight = Number(p.weight) || 0;
 
-}
+  const height = Number(p.height) || 0;
+
+  const age = Number(p.age) || 0;
 
 
-$("saveProfile").addEventListener("click",()=>{
+  if (!weight || !height || !age) {
 
-  readProfile();
-  saveState();
-  updateAll();
+    return 0;
 
-  $("profileMessage").style.display="block";
-
-  setTimeout(()=>{
-    $("profileMessage").style.display="none";
-  },1800);
-
-});
+  }
 
 
-/* ================= HOME ================= */
+  if (p.sex === "female") {
 
-function updateHome(){
-
-  const nutrition = calculateNutrition();
-
-  const name =
-    state.profile.firstName ||
-    "👋";
-
-  $("homeName").textContent = name;
-
-  $("homeCalories").textContent =
-    nutrition.target || "0";
-
-  $("homeProtein").textContent =
-    nutrition.protein + "g";
-
-  $("homeCarbs").textContent =
-    nutrition.carbs + "g";
-
-  $("homeFat").textContent =
-    nutrition.fat + "g";
-
-  $("homeBudget").textContent =
-    state.profile.budget || "0";
-
-  $("consumedCalories").textContent =
-    totalConsumed().calories;
-
-  const remaining =
-    Math.max(
-      0,
-      nutrition.target - totalConsumed().calories
+    return round(
+      10 * weight +
+      6.25 * height -
+      5 * age -
+      161
     );
 
-  $("remainingCalories").textContent =
-    remaining;
-
-  let progress = 0;
-
-  if(nutrition.target){
-
-    progress =
-      Math.min(
-        100,
-        (totalConsumed().calories /
-        nutrition.target) * 100
-      );
-
   }
 
-  $("calorieProgress").style.width =
-    progress + "%";
 
-  let goal = "Maintien";
-
-  if(state.profile.goal === "cut"){
-    goal = "Perte de gras";
-  }
-
-  if(state.profile.goal === "bulk"){
-    goal = "Prise de muscle";
-  }
-
-  $("goalBadge").textContent = goal;
-
-  $("streakNumber").textContent =
-    state.streak +
-    (state.streak === 1 ? " jour" : " jours");
-
-  renderHomeMeals();
-
-}
-
-
-/* ================= JOURNAL ================= */
-
-function totalConsumed(){
-
-  return state.consumed.reduce(
-    (total,item)=>{
-
-      total.calories += Number(item.calories)||0;
-      total.protein += Number(item.protein)||0;
-      total.carbs += Number(item.carbs)||0;
-      total.fat += Number(item.fat)||0;
-
-      return total;
-
-    },
-    {
-      calories:0,
-      protein:0,
-      carbs:0,
-      fat:0
-    }
+  return round(
+    10 * weight +
+    6.25 * height -
+    5 * age +
+    5
   );
 
 }
 
 
-function renderJournal(){
+function calculateTDEE() {
 
-  const totals = totalConsumed();
-  const nutrition = calculateNutrition();
+  const bmr = calculateBMR();
 
-  $("journalCalories").textContent =
-    Math.round(totals.calories);
+  const activity = Number(state.profile.activity) || 1.2;
 
-  $("journalTarget").textContent =
-    nutrition.target || 0;
+  return round(bmr * activity);
 
-  $("journalProtein").textContent =
-    Math.round(totals.protein);
+}
 
-  const container = $("journalMeals");
 
-  if(!state.consumed.length){
+function calculateTargetCalories() {
 
-    container.innerHTML = `
-      <div class="card empty">
-        Aucun aliment enregistré aujourd'hui.<br>
-        Ajoute ton premier aliment 👇
-      </div>
-    `;
+  const tdee = calculateTDEE();
 
-    return;
+  const adjustment =
+    Number(state.profile.adjustment) || 0;
+
+
+  if (state.profile.goal === "bulk") {
+
+    return Math.round(tdee + adjustment);
 
   }
 
-  container.innerHTML =
-    state.consumed.map((item,index)=>`
 
-      <div class="meal-card">
+  if (state.profile.goal === "maintain") {
 
-        <div class="meal-image">
-          ${item.emoji || "🍽️"}
-        </div>
+    return Math.round(tdee);
 
-        <div class="meal-card-content">
+  }
 
-          <div class="meal-type">
-            ${item.meal || "ALIMENT"}
-          </div>
 
-          <h3>${escapeHTML(item.name)}</h3>
-
-          <div class="meal-meta">
-            ${item.calories} kcal ·
-            ${item.protein}g protéines
-          </div>
-
-        </div>
-
-        <button
-          class="meal-add"
-          style="background:#ffe0db"
-          onclick="removeConsumed(${index})">
-          ×
-        </button>
-
-      </div>
-
-    `).join("");
+  return Math.max(
+    1200,
+    Math.round(tdee - adjustment)
+  );
 
 }
 
 
-function removeConsumed(index){
+function calculateProteinTarget() {
 
-  state.consumed.splice(index,1);
+  const weight =
+    Number(state.profile.weight) || 0;
 
-  saveState();
-  updateAll();
+
+  if (!weight) return 0;
+
+
+  if (state.profile.goal === "bulk") {
+
+    return round(weight * 2, 1);
+
+  }
+
+
+  return round(weight * 1.8, 1);
 
 }
 
 
-$("clearDay").addEventListener("click",()=>{
+/* =========================================================
+   NAVIGATION
+========================================================= */
 
-  if(!state.consumed.length) return;
+function setupNavigation() {
 
-  state.consumed = [];
+  document
+    .querySelectorAll("[data-page]")
+    .forEach(button => {
+
+      button.addEventListener("click", () => {
+
+        const pageId =
+          button.dataset.page;
+
+        openPage(pageId);
+
+      });
+
+    });
+
+
+  $("profileButton")
+    ?.addEventListener("click", () => {
+
+      openPage("profilePage");
+
+    });
+
+}
+
+
+function openPage(pageId) {
+
+  document
+    .querySelectorAll(".page")
+    .forEach(page => {
+
+      page.classList.remove("active");
+
+    });
+
+
+  const target = $(pageId);
+
+  if (target) {
+
+    target.classList.add("active");
+
+  }
+
+
+  document
+    .querySelectorAll(".nav-button")
+    .forEach(button => {
+
+      button.classList.toggle(
+        "active",
+        button.dataset.page === pageId
+      );
+
+    });
+
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+
+}
+
+
+/* =========================================================
+   PROFIL
+========================================================= */
+
+function setupProfile() {
+
+  loadProfileInputs();
+
+
+  $("saveProfileButton")
+    ?.addEventListener("click", saveProfile);
+
+}
+
+
+function loadProfileInputs() {
+
+  const p = state.profile;
+
+
+  if ($("profileName"))
+    $("profileName").value = p.name || "";
+
+
+  if ($("profileAge"))
+    $("profileAge").value = p.age || "";
+
+
+  if ($("profileSex"))
+    $("profileSex").value = p.sex || "male";
+
+
+  if ($("profileHeight"))
+    $("profileHeight").value = p.height || "";
+
+
+  if ($("profileWeight"))
+    $("profileWeight").value = p.weight || "";
+
+
+  if ($("profileActivity"))
+    $("profileActivity").value = p.activity || 1.5;
+
+
+  if ($("profileTraining"))
+    $("profileTraining").value = p.training || 0;
+
+
+  if ($("profileGoal"))
+    $("profileGoal").value = p.goal || "cut";
+
+
+  if ($("profileAdjustment"))
+    $("profileAdjustment").value =
+      p.adjustment || 300;
+
+
+  if ($("profileBudget"))
+    $("profileBudget").value =
+      p.budget || 50;
+
+}
+
+
+function saveProfile() {
+
+  state.profile.name =
+    $("profileName").value.trim();
+
+
+  state.profile.age =
+    Number($("profileAge").value) || 0;
+
+
+  state.profile.sex =
+    $("profileSex").value;
+
+
+  state.profile.height =
+    Number($("profileHeight").value) || 0;
+
+
+  state.profile.weight =
+    Number($("profileWeight").value) || 0;
+
+
+  state.profile.activity =
+    Number($("profileActivity").value) || 1.2;
+
+
+  state.profile.training =
+    Number($("profileTraining").value) || 0;
+
+
+  state.profile.goal =
+    $("profileGoal").value;
+
+
+  state.profile.adjustment =
+    Number($("profileAdjustment").value) || 0;
+
+
+  state.profile.budget =
+    Number($("profileBudget").value) || 0;
+
 
   saveState();
-  updateAll();
 
-});
+  updateEverything();
+
+  showToast("Profil enregistré ✅");
+
+}
 
 
-/* ================= FOOD SEARCH ================= */
+/* =========================================================
+   JOURNAL / ALIMENTS
+========================================================= */
 
-function openFoodModal(){
+function setupFoodModal() {
+
+  $("addFoodButton")
+    ?.addEventListener("click", openFoodModal);
+
+
+  $("closeFoodModal")
+    ?.addEventListener("click", closeFoodModal);
+
+
+  $("foodModal")
+    ?.addEventListener("click", event => {
+
+      if (event.target.id === "foodModal") {
+
+        closeFoodModal();
+
+      }
+
+    });
+
+
+  $("foodSearch")
+    ?.addEventListener("input", event => {
+
+      renderFoodResults(event.target.value);
+
+    });
+
+}
+
+
+function openFoodModal() {
 
   $("foodModal").classList.add("open");
 
-  $("foodSearch").value="";
+  $("foodSearch").value = "";
 
   renderFoodResults("");
 
-  setTimeout(()=>{
+  setTimeout(() => {
+
     $("foodSearch").focus();
-  },100);
+
+  }, 100);
 
 }
 
 
-$("openFoodSearch").addEventListener(
-  "click",
-  openFoodModal
-);
-
-
-$("closeFoodModal").addEventListener(
-  "click",
-  ()=>{
-    $("foodModal").classList.remove("open");
-  }
-);
-
-
-$("foodModal").addEventListener("click",e=>{
-
-  if(e.target === $("foodModal")){
-    $("foodModal").classList.remove("open");
-  }
-
-});
-
-
-$("foodSearch").addEventListener(
-  "input",
-  e=>{
-    renderFoodResults(
-      e.target.value
-    );
-  }
-);
-
-
-function renderFoodResults(search){
-
-  const query =
-    search.trim().toLowerCase();
-
-  const results =
-    DATA.foods.filter(food=>
-      food.name
-        .toLowerCase()
-        .includes(query)
-    );
-
-  $("foodResults").innerHTML =
-    results.map(food=>`
-
-      <div class="food-result">
-
-        <div>
-
-          <b>
-            ${food.emoji}
-            ${escapeHTML(food.name)}
-          </b>
-
-          <small>
-            ${food.cal} kcal ·
-            ${food.protein}g protéines / 100g
-          </small>
-
-        </div>
-
-        <button onclick="addFood(${food.id})">
-          +
-        </button>
-
-      </div>
-
-    `).join("");
-
-}
-
-
-function addFood(id){
-
-  const food =
-    DATA.foods.find(f=>f.id===id);
-
-  if(!food) return;
-
-  /*
-    Pour la V1, une portion = 100 g.
-    Le moteur de portions sera développé ensuite.
-  */
-
-  state.consumed.push({
-
-    name:food.name,
-
-    emoji:food.emoji,
-
-    calories:food.cal,
-
-    protein:food.protein,
-
-    carbs:food.carbs,
-
-    fat:food.fat,
-
-    meal:"ALIMENT"
-
-  });
-
-  saveState();
-  updateAll();
+function closeFoodModal() {
 
   $("foodModal").classList.remove("open");
 
 }
 
 
-/* ================= MEALS ================= */
+function renderFoodResults(search = "") {
 
-function mealCard(meal){
+  const container = $("foodResults");
 
-  return `
+  if (!container) return;
 
-    <div class="meal-card">
 
-      <div class="meal-image">
-        ${meal.emoji}
+  const term =
+    search.trim().toLowerCase();
+
+
+  const results = FOODS.filter(food => {
+
+    return food.name
+      .toLowerCase()
+      .includes(term);
+
+  });
+
+
+  container.innerHTML = "";
+
+
+  if (!results.length) {
+
+    container.innerHTML = `
+      <div class="card">
+        <span class="empty-text">
+          Aucun aliment trouvé.
+        </span>
       </div>
+    `;
 
-      <div class="meal-card-content">
+    return;
 
-        <div class="meal-type">
-          ${meal.type}
+  }
+
+
+  results.forEach(food => {
+
+    const row =
+      document.createElement("div");
+
+    row.className = "food-result";
+
+
+    row.innerHTML = `
+
+      <div>
+
+        <div class="food-name">
+          ${food.emoji} ${food.name}
         </div>
 
-        <h3>${escapeHTML(meal.name)}</h3>
-
-        <div class="meal-meta">
-          ${meal.calories} kcal ·
-          ${meal.protein}g protéines
-        </div>
-
-        <div class="meal-price">
-          ≈ ${Number(meal.price).toFixed(2)} €
+        <div class="food-info">
+          ${food.kcal} kcal •
+          ${food.protein} g protéines /
+          100 g
         </div>
 
       </div>
 
       <button
-        class="meal-add"
-        onclick='addGeneratedMeal(${JSON.stringify(meal)})'>
-        +
+        class="secondary-button"
+        data-food-id="${food.id}"
+      >
+        Ajouter
       </button>
 
-    </div>
-
-  `;
-
-}
+    `;
 
 
-function renderHomeMeals(){
+    row
+      .querySelector("button")
+      .addEventListener("click", () => {
 
-  $("homeMeals").innerHTML =
-    DATA.meals
-      .slice(0,3)
-      .map(mealCard)
-      .join("");
+        askFoodGrams(food);
 
-}
+      });
 
 
-function renderGeneratedMeals(){
+    container.appendChild(row);
 
-  $("generatedMeals").innerHTML =
-    DATA.meals
-      .map(mealCard)
-      .join("");
+  });
 
 }
 
 
-$("generatePlan").addEventListener(
-  "click",
-  generatePlan
-);
+function askFoodGrams(food) {
+
+  const grams = prompt(
+    `Quelle quantité de ${food.name} ?\n\nEntre le grammage exact.`
+  );
 
 
-function generatePlan(){
+  if (grams === null) return;
 
-  const nutrition =
-    calculateNutrition();
 
-  if(!nutrition.target){
-
-    alert(
-      "Configure ton profil avant de générer ton plan."
+  const numericGrams =
+    Number(
+      String(grams)
+        .replace(",", ".")
+        .replace(/[^\d.]/g, "")
     );
 
-    showPage("profile");
+
+  if (
+    !numericGrams ||
+    numericGrams <= 0
+  ) {
+
+    showToast("Grammage invalide ❌");
 
     return;
 
   }
 
-  const count =
-    DATA.meals.length;
 
-  const factor =
-    nutrition.target / 1920;
-
-  const generated =
-    DATA.meals.map(meal=>({
-
-      ...meal,
-
-      calories:
-        Math.round(meal.calories * factor),
-
-      protein:
-        Math.round(meal.protein * factor),
-
-      carbs:
-        Math.round(meal.carbs * factor),
-
-      fat:
-        Math.round(meal.fat * factor)
-
-    }));
-
-  $("generatedMeals").innerHTML =
-    generated.map(mealCard).join("");
+  addFoodToJournal(
+    food,
+    numericGrams
+  );
 
 }
 
 
-function addGeneratedMeal(meal){
+function addFoodToJournal(food, grams) {
 
-  state.consumed.push({
+  const nutrition =
+    calculateFood(food, grams);
 
-    name:meal.name,
-    emoji:meal.emoji,
-    calories:meal.calories,
-    protein:meal.protein,
-    carbs:meal.carbs || 0,
-    fat:meal.fat || 0,
-    meal:meal.type
+
+  state.journal.push({
+
+    id:
+      Date.now() +
+      Math.random(),
+
+    foodId: food.id,
+
+    name: food.name,
+
+    emoji: food.emoji,
+
+    grams,
+
+    kcal: nutrition.kcal,
+
+    protein: nutrition.protein,
+
+    carbs: nutrition.carbs,
+
+    fat: nutrition.fat,
+
+    date: todayKey()
 
   });
 
+
+  updateStreak();
+
   saveState();
-  updateAll();
+
+  closeFoodModal();
+
+  updateEverything();
+
+  showToast(
+    `${food.name} — ${grams} g ajouté ✅`
+  );
 
 }
 
 
-/* ================= SHOPPING ================= */
+/* =========================================================
+   AFFICHAGE JOURNAL
+========================================================= */
 
-function renderStores(){
+function renderJournal() {
 
-  const sorted =
-    [...DATA.stores]
-      .sort((a,b)=>a.price-b.price);
+  const container = $("journalList");
 
-  const best =
-    sorted[0];
-
-  $("stores").innerHTML =
-    `<div class="card">
-      <div class="best-store">
-        🏆 ${best.name} est le moins cher sur ce panier.
-      </div>
-
-      ${sorted.map(store=>`
-
-        <div class="store-row">
-
-          <div>
-
-            <div class="store-name">
-              ${store.emoji} ${store.name}
-            </div>
-
-            <div class="store-desc">
-              ${store.note}
-            </div>
-
-          </div>
-
-          <div class="store-price">
-            ${store.price.toFixed(2)} €
-          </div>
-
-        </div>
-
-      `).join("")}
-
-      <div class="empty">
-        Prix de démonstration — à remplacer par des données réelles.
-      </div>
-    </div>`;
-
-}
+  if (!container) return;
 
 
-function renderShopping(){
+  container.innerHTML = "";
 
-  $("shoppingList").innerHTML =
-    DATA.shopping.map((item,index)=>`
 
-      <div class="shopping-item">
+  if (!state.journal.length) {
 
-        <div class="shopping-left">
+    container.innerHTML = `
 
-          <button
-            class="check ${state.shoppingChecked.includes(index) ? "checked":""}"
-            onclick="toggleShopping(${index})">
+      <div class="card">
 
-            ${state.shoppingChecked.includes(index) ? "✓":""}
-
-          </button>
-
-          <div>
-
-            <div class="item-name">
-              ${item.emoji} ${item.name}
-            </div>
-
-            <div class="item-qty">
-              ${item.quantity}
-            </div>
-
-          </div>
-
-        </div>
+        <span class="empty-text">
+          Aucun aliment enregistré aujourd'hui.
+        </span>
 
       </div>
 
-    `).join("");
+    `;
 
-}
-
-
-function toggleShopping(index){
-
-  if(state.shoppingChecked.includes(index)){
-
-    state.shoppingChecked =
-      state.shoppingChecked.filter(
-        i=>i!==index
-      );
-
-  }else{
-
-    state.shoppingChecked.push(index);
+    return;
 
   }
 
+
+  state.journal.forEach(item => {
+
+    const row =
+      document.createElement("div");
+
+    row.className = "meal";
+
+
+    row.innerHTML = `
+
+      <div class="meal-icon">
+        ${item.emoji}
+      </div>
+
+      <div class="meal-content">
+
+        <div class="meal-type">
+          ALIMENT
+        </div>
+
+        <div class="meal-name">
+          ${item.name}
+        </div>
+
+        <div class="meal-meta">
+          ${formatNumber(item.grams)} g •
+          ${formatNumber(item.kcal)} kcal •
+          ${round(item.protein, 1)} g protéines
+        </div>
+
+      </div>
+
+      <button
+        class="delete-button"
+        data-id="${item.id}"
+      >
+        ✕
+      </button>
+
+    `;
+
+
+    row
+      .querySelector(".delete-button")
+      .addEventListener("click", () => {
+
+        deleteJournalItem(item.id);
+
+      });
+
+
+    container.appendChild(row);
+
+  });
+
+}
+
+
+function deleteJournalItem(id) {
+
+  state.journal =
+    state.journal.filter(
+      item => item.id != id
+    );
+
+
   saveState();
+
+  updateEverything();
+
+  showToast("Aliment supprimé");
+
+}
+
+
+function clearJournal() {
+
+  if (!state.journal.length) return;
+
+
+  const confirmed =
+    confirm(
+      "Supprimer tous les aliments du jour ?"
+    );
+
+
+  if (!confirmed) return;
+
+
+  state.journal = [];
+
+  saveState();
+
+  updateEverything();
+
+  showToast("Journal vidé");
+
+}
+
+
+/* =========================================================
+   ACCUEIL
+========================================================= */
+
+function renderHome() {
+
+  const totals =
+    calculateDailyTotals();
+
+
+  const target =
+    calculateTargetCalories();
+
+
+  const remaining =
+    Math.max(
+      0,
+      target - totals.kcal
+    );
+
+
+  if ($("dailyTarget"))
+    $("dailyTarget").textContent =
+      formatNumber(target);
+
+
+  if ($("consumedCalories"))
+    $("consumedCalories").textContent =
+      formatNumber(totals.kcal);
+
+
+  if ($("remainingCalories"))
+    $("remainingCalories").textContent =
+      formatNumber(remaining);
+
+
+  const progress =
+    target > 0
+      ? Math.min(
+          100,
+          (totals.kcal / target) * 100
+        )
+      : 0;
+
+
+  if ($("calorieProgress"))
+    $("calorieProgress").style.width =
+      `${progress}%`;
+
+
+  if ($("goalPill")) {
+
+    $("goalPill").textContent =
+      state.profile.goal === "cut"
+        ? "Déficit"
+        : state.profile.goal === "bulk"
+        ? "Surplus"
+        : "Maintien";
+
+  }
+
+
+  if ($("homeProtein"))
+    $("homeProtein").textContent =
+      `${totals.protein} g`;
+
+
+  if ($("homeCarbs"))
+    $("homeCarbs").textContent =
+      `${totals.carbs} g`;
+
+
+  if ($("homeFat"))
+    $("homeFat").textContent =
+      `${totals.fat} g`;
+
+
+  if ($("streakNumber"))
+    $("streakNumber").textContent =
+      state.streak.count;
+
+
+  renderHomeMeals();
+
+}
+
+
+function renderHomeMeals() {
+
+  const container = $("homeMeals");
+
+  if (!container) return;
+
+
+  container.innerHTML = "";
+
+
+  const recent =
+    state.journal.slice(-4);
+
+
+  if (!recent.length) {
+
+    container.innerHTML = `
+
+      <div class="card">
+
+        <span class="empty-text">
+          Ajoute ton premier aliment pour commencer.
+        </span>
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  recent.forEach(item => {
+
+    const row =
+      document.createElement("div");
+
+    row.className = "meal";
+
+
+    row.innerHTML = `
+
+      <div class="meal-icon">
+        ${item.emoji}
+      </div>
+
+      <div class="meal-content">
+
+        <div class="meal-name">
+          ${item.name}
+        </div>
+
+        <div class="meal-meta">
+          ${item.grams} g •
+          ${formatNumber(item.kcal)} kcal
+        </div>
+
+      </div>
+
+    `;
+
+
+    container.appendChild(row);
+
+  });
+
+}
+
+
+/* =========================================================
+   JOURNAL STATS
+========================================================= */
+
+function renderJournalStats() {
+
+  const totals =
+    calculateDailyTotals();
+
+
+  if ($("journalCalories"))
+    $("journalCalories").textContent =
+      formatNumber(totals.kcal);
+
+
+  if ($("journalProtein"))
+    $("journalProtein").textContent =
+      `${totals.protein} g`;
+
+
+  if ($("journalCarbs"))
+    $("journalCarbs").textContent =
+      `${totals.carbs} g`;
+
+
+  if ($("journalFat"))
+    $("journalFat").textContent =
+      `${totals.fat} g`;
+
+}
+
+
+/* =========================================================
+   RECETTES
+========================================================= */
+
+function setupRecipeButtons() {
+
+  $("smartMealButton")
+    ?.addEventListener(
+      "click",
+      suggestSmartMeal
+    );
+
+}
+
+
+function renderRecipes() {
+
+  const container = $("recipeList");
+
+  if (!container) return;
+
+
+  container.innerHTML = "";
+
+
+  RECIPES.forEach(recipe => {
+
+    const row =
+      document.createElement("div");
+
+    row.className = "meal";
+
+
+    row.innerHTML = `
+
+      <div class="meal-icon">
+        ${recipe.emoji}
+      </div>
+
+      <div class="meal-content">
+
+        <div class="meal-name">
+          ${recipe.name}
+        </div>
+
+        <div class="meal-meta">
+          ${recipe.kcal} kcal •
+          ${recipe.protein} g protéines
+        </div>
+
+      </div>
+
+      <button
+        class="add-meal-button"
+        data-recipe="${recipe.id}"
+      >
+        +
+      </button>
+
+    `;
+
+
+    row
+      .querySelector("button")
+      .addEventListener("click", () => {
+
+        addRecipeToJournal(recipe);
+
+      });
+
+
+    container.appendChild(row);
+
+  });
+
+}
+
+
+function addRecipeToJournal(recipe) {
+
+  const multiplier =
+    prompt(
+      `Portion de "${recipe.name}" ?\n\n1 = portion normale\n0.5 = demi-portion\n1.5 = une portion et demie`
+    );
+
+
+  if (multiplier === null) return;
+
+
+  const factor =
+    Number(
+      String(multiplier)
+        .replace(",", ".")
+    );
+
+
+  if (!factor || factor <= 0) {
+
+    showToast("Portion invalide ❌");
+
+    return;
+
+  }
+
+
+  recipe.ingredients.forEach(ingredient => {
+
+    const food =
+      FOODS.find(
+        f => f.id === ingredient.food
+      );
+
+
+    if (!food) return;
+
+
+    const grams =
+      ingredient.grams * factor;
+
+
+    const nutrition =
+      calculateFood(food, grams);
+
+
+    state.journal.push({
+
+      id:
+        Date.now() +
+        Math.random(),
+
+      foodId: food.id,
+
+      name: food.name,
+
+      emoji: food.emoji,
+
+      grams,
+
+      kcal: nutrition.kcal,
+
+      protein: nutrition.protein,
+
+      carbs: nutrition.carbs,
+
+      fat: nutrition.fat,
+
+      date: todayKey(),
+
+      recipe: recipe.name
+
+    });
+
+  });
+
+
+  updateStreak();
+
+  saveState();
+
+  updateEverything();
+
+  showToast(
+    `${recipe.name} ajouté 🍽️`
+  );
+
+}
+
+
+function suggestSmartMeal() {
+
+  const target =
+    calculateTargetCalories();
+
+
+  const totals =
+    calculateDailyTotals();
+
+
+  const remaining =
+    target - totals.kcal;
+
+
+  let best = RECIPES[0];
+
+  let bestDifference =
+    Infinity;
+
+
+  RECIPES.forEach(recipe => {
+
+    const difference =
+      Math.abs(
+        remaining - recipe.kcal
+      );
+
+
+    if (
+      difference < bestDifference
+    ) {
+
+      best = recipe;
+
+      bestDifference = difference;
+
+    }
+
+  });
+
+
+  const yes =
+    confirm(
+      `Je te propose : ${best.name}\n\n` +
+      `${best.kcal} kcal • ` +
+      `${best.protein} g protéines\n\n` +
+      `Ajouter cette recette ?`
+    );
+
+
+  if (yes) {
+
+    addRecipeToJournal(best);
+
+  }
+
+}
+
+
+/* =========================================================
+   PLANNING 7 JOURS
+========================================================= */
+
+function setupPlanner() {
+
+  renderDays();
+
+  generatePlannerIfNeeded();
+
+  renderSelectedDay();
+
+
+  $("regenerateWeekButton")
+    ?.addEventListener(
+      "click",
+      () => {
+
+        state.planner = {};
+
+        generatePlannerIfNeeded();
+
+        saveState();
+
+        renderSelectedDay();
+
+        showToast(
+          "Planning régénéré 📅"
+        );
+
+      }
+    );
+
+}
+
+
+function generatePlannerIfNeeded() {
+
+  DAYS.forEach((day, index) => {
+
+    if (
+      !state.planner[index]
+    ) {
+
+      const first =
+        RECIPES[
+          index % RECIPES.length
+        ];
+
+      const second =
+        RECIPES[
+          (index + 2) %
+          RECIPES.length
+        ];
+
+
+      state.planner[index] = [
+
+        {
+          meal: "Déjeuner",
+          recipe: first.name,
+          kcal: first.kcal
+        },
+
+        {
+          meal: "Dîner",
+          recipe: second.name,
+          kcal: second.kcal
+        }
+
+      ];
+
+    }
+
+  });
+
+}
+
+
+function renderDays() {
+
+  const container =
+    $("daysContainer");
+
+  if (!container) return;
+
+
+  container.innerHTML = "";
+
+
+  DAYS.forEach((day, index) => {
+
+    const button =
+      document.createElement("button");
+
+    button.className =
+      "day-button";
+
+
+    if (index === selectedDay) {
+
+      button.classList.add("active");
+
+    }
+
+
+    button.textContent = day;
+
+
+    button.addEventListener(
+      "click",
+      () => {
+
+        selectedDay = index;
+
+        renderDays();
+
+        renderSelectedDay();
+
+      }
+    );
+
+
+    container.appendChild(button);
+
+  });
+
+}
+
+
+function renderSelectedDay() {
+
+  const title =
+    $("selectedDayTitle");
+
+  const container =
+    $("dayMeals");
+
+
+  if (!title || !container) return;
+
+
+  title.textContent =
+    DAYS[selectedDay];
+
+
+  container.innerHTML = "";
+
+
+  const meals =
+    state.planner[selectedDay] || [];
+
+
+  meals.forEach(item => {
+
+    const row =
+      document.createElement("div");
+
+    row.className =
+      "planner-meal";
+
+
+    row.innerHTML = `
+
+      <div>
+
+        <strong>
+          ${item.meal}
+        </strong>
+
+        <small>
+          ${item.recipe}
+        </small>
+
+      </div>
+
+      <strong>
+        ${item.kcal} kcal
+      </strong>
+
+    `;
+
+
+    container.appendChild(row);
+
+  });
+
+}
+
+
+/* =========================================================
+   LISTE DE COURSES
+========================================================= */
+
+function setupShopping() {
+
+  $("checkAllButton")
+    ?.addEventListener(
+      "click",
+      checkAllShopping
+    );
+
+
   renderShopping();
 
 }
 
 
-$("checkAll").addEventListener("click",()=>{
+function renderShopping() {
 
-  state.shoppingChecked =
-    DATA.shopping.map((_,i)=>i);
+  const container =
+    $("shoppingList");
+
+  if (!container) return;
+
+
+  container.innerHTML = "";
+
+
+  let total = 0;
+
+
+  SHOPPING_ITEMS.forEach(item => {
+
+    total += Number(item.price);
+
+
+    const checked =
+      Boolean(
+        state.shopping[item.id]
+      );
+
+
+    const row =
+      document.createElement("div");
+
+    row.className =
+      "shopping-row";
+
+
+    row.innerHTML = `
+
+      <div class="shopping-left">
+
+        <button
+          class="check-button ${
+            checked ? "checked" : ""
+          }"
+          data-id="${item.id}"
+        >
+          ${checked ? "✓" : ""}
+        </button>
+
+        <span>
+          ${item.name}
+          <small>
+            (${item.quantity})
+          </small>
+        </span>
+
+      </div>
+
+      <strong>
+        ${item.price.toFixed(2)} €
+      </strong>
+
+    `;
+
+
+    row
+      .querySelector("button")
+      .addEventListener(
+        "click",
+        () => {
+
+          state.shopping[item.id] =
+            !state.shopping[item.id];
+
+          saveState();
+
+          renderShopping();
+
+        }
+      );
+
+
+    container.appendChild(row);
+
+  });
+
+
+  if ($("weeklyBudget"))
+    $("weeklyBudget").textContent =
+      Number(
+        state.profile.budget
+      ).toFixed(0);
+
+
+  if ($("estimatedBasket"))
+    $("estimatedBasket").textContent =
+      total.toFixed(2);
+
+}
+
+
+function checkAllShopping() {
+
+  const allChecked =
+    SHOPPING_ITEMS.every(
+      item =>
+        state.shopping[item.id]
+    );
+
+
+  SHOPPING_ITEMS.forEach(item => {
+
+    state.shopping[item.id] =
+      !allChecked;
+
+  });
+
 
   saveState();
+
   renderShopping();
 
-});
+}
 
 
-/* ================= PANTRY ================= */
+/* =========================================================
+   SUIVI DU POIDS
+========================================================= */
 
-function renderPantry(){
+function setupWeightTracking() {
+
+  $("addWeightButton")
+    ?.addEventListener(
+      "click",
+      addWeight
+    );
+
+
+  renderWeightChart();
+
+}
+
+
+function addWeight() {
+
+  const input =
+    $("newWeight");
+
+
+  const weight =
+    Number(
+      String(input.value)
+        .replace(",", ".")
+    );
+
+
+  if (!weight || weight < 30 || weight > 300) {
+
+    showToast("Poids invalide ❌");
+
+    return;
+
+  }
+
+
+  state.weights.push({
+
+    date: todayKey(),
+
+    weight
+
+  });
+
+
+  state.profile.weight =
+    weight;
+
+
+  input.value = "";
+
+
+  saveState();
+
+  loadProfileInputs();
+
+  updateEverything();
+
+  showToast(
+    `${weight} kg enregistré ⚖️`
+  );
+
+}
+
+
+function renderWeightChart() {
+
+  const container =
+    $("weightChart");
+
+  if (!container) return;
+
+
+  container.innerHTML = "";
+
+
+  if (!state.weights.length) {
+
+    container.innerHTML = `
+      <span class="empty-text">
+        Ajoute ton premier poids.
+      </span>
+    `;
+
+    return;
+
+  }
+
+
+  const recent =
+    state.weights.slice(-10);
+
+
+  const values =
+    recent.map(
+      item => item.weight
+    );
+
+
+  const min =
+    Math.min(...values);
+
+
+  const max =
+    Math.max(...values);
+
+
+  recent.forEach(item => {
+
+    const bar =
+      document.createElement("div");
+
+    bar.className =
+      "weight-bar";
+
+
+    let height = 25;
+
+
+    if (max !== min) {
+
+      height =
+        25 +
+        (
+          (item.weight - min) /
+          (max - min)
+        ) * 65;
+
+    }
+
+
+    bar.style.height =
+      `${height}%`;
+
+
+    bar.innerHTML = `
+      <span>
+        ${item.weight}
+      </span>
+    `;
+
+
+    container.appendChild(bar);
+
+  });
+
+}
+
+
+/* =========================================================
+   GARDE-MANGER
+========================================================= */
+
+function setupPantry() {
+
+  $("addPantryButton")
+    ?.addEventListener(
+      "click",
+      addPantryItem
+    );
+
+
+  $("pantryInput")
+    ?.addEventListener(
+      "keydown",
+      event => {
+
+        if (event.key === "Enter") {
+
+          addPantryItem();
+
+        }
+
+      }
+    );
+
+
+  renderPantry();
+
+}
+
+
+function addPantryItem() {
+
+  const input =
+    $("pantryInput");
+
+
+  const value =
+    input.value.trim();
+
+
+  if (!value) return;
+
+
+  state.pantry.push({
+
+    id:
+      Date.now() +
+      Math.random(),
+
+    name: value
+
+  });
+
+
+  input.value = "";
+
+
+  saveState();
+
+  renderPantry();
+
+  showToast(
+    `${value} ajouté 🥫`
+  );
+
+}
+
+
+function renderPantry() {
 
   const container =
     $("pantryList");
 
-  if(!state.pantry.length){
+  if (!container) return;
 
-    container.innerHTML =
-      `<div class="empty">
+
+  container.innerHTML = "";
+
+
+  if (!state.pantry.length) {
+
+    container.innerHTML = `
+      <span class="empty-text">
         Ton garde-manger est vide.
-      </div>`;
+      </span>
+    `;
 
     return;
 
   }
 
-  container.innerHTML =
-    state.pantry.map((item,index)=>`
 
-      <div class="pantry-item">
+  state.pantry.forEach(item => {
 
-        <div>
+    const row =
+      document.createElement("div");
 
-          <div class="item-name">
-            🧊 ${escapeHTML(item)}
-          </div>
+    row.className =
+      "shopping-row";
 
-          <div class="item-qty">
-            Disponible
-          </div>
 
-        </div>
+    row.innerHTML = `
 
-        <button
-          class="delete-button"
-          onclick="removePantry(${index})">
-          ×
-        </button>
+      <div class="shopping-left">
+
+        <span>
+          🥫 ${item.name}
+        </span>
 
       </div>
 
-    `).join("");
+      <button
+        class="delete-button"
+        data-id="${item.id}"
+      >
+        ✕
+      </button>
 
-}
-
-
-$("addPantry").addEventListener("click",()=>{
-
-  const value =
-    $("pantryInput").value.trim();
-
-  if(!value) return;
-
-  state.pantry.push(value);
-
-  $("pantryInput").value="";
-
-  saveState();
-  renderPantry();
-
-});
+    `;
 
 
-function removePantry(index){
+    row
+      .querySelector("button")
+      .addEventListener(
+        "click",
+        () => {
 
-  state.pantry.splice(index,1);
-
-  saveState();
-  renderPantry();
-
-}
-
-
-/* ================= PROGRESS ================= */
-
-function renderProgress(){
-
-  const nutrition =
-    calculateNutrition();
-
-  $("progressWeight").textContent =
-    state.profile.weight || 0;
-
-  $("progressTarget").textContent =
-    nutrition.target || 0;
-
-  $("progressProtein").textContent =
-    nutrition.protein || 0;
-
-  let goal = "—";
-
-  if(state.profile.goal==="cut"){
-    goal="Perte de gras";
-  }
-
-  if(state.profile.goal==="maintain"){
-    goal="Maintien";
-  }
-
-  if(state.profile.goal==="bulk"){
-    goal="Muscle";
-  }
-
-  $("progressGoal").textContent=goal;
-
-  if(!state.weights.length){
-
-    $("weightHistory").innerHTML =
-      `<div class="empty">
-        Aucun poids enregistré.
-      </div>`;
-
-    return;
-
-  }
-
-  $("weightHistory").innerHTML =
-    [...state.weights]
-      .reverse()
-      .map(entry=>`
-
-        <div class="shopping-item">
-
-          <div>
-
-            <div class="item-name">
-              ${entry.weight} kg
-            </div>
-
-            <div class="item-qty">
-              ${entry.date}
-            </div>
-
-          </div>
-
-        </div>
-
-      `)
-      .join("");
-
-}
+          state.pantry =
+            state.pantry.filter(
+              pantryItem =>
+                pantryItem.id != item.id
+            );
 
 
-$("addWeight").addEventListener("click",()=>{
+          saveState();
 
-  const value =
-    Number($("weightInput").value);
+          renderPantry();
 
-  if(!value || value<20 || value>300){
+        }
+      );
 
-    alert("Entre un poids valide.");
 
-    return;
-
-  }
-
-  state.weights.push({
-
-    weight:value,
-    date:new Date().toLocaleDateString("fr-FR")
+    container.appendChild(row);
 
   });
 
-  state.profile.weight=value;
-
-  $("weightInput").value="";
-
-  saveState();
-  fillProfile();
-  updateAll();
-
-});
+}
 
 
-/* ================= COACH ================= */
+/* =========================================================
+   COACH
+========================================================= */
 
-function coachAnswer(text){
+function setupCoach() {
 
-  const lower =
-    text.toLowerCase();
+  $("sendCoachButton")
+    ?.addEventListener(
+      "click",
+      sendCoachMessage
+    );
 
-  const nutrition =
-    calculateNutrition();
 
-  if(lower.includes("protéine")){
+  $("coachInput")
+    ?.addEventListener(
+      "keydown",
+      event => {
 
-    return `
-      Avec ton objectif actuel, vise environ
-      <b>${nutrition.protein} g</b> de protéines par jour.
-      Poulet, œufs, skyr, thon et lentilles sont de bonnes bases.
-    `;
+        if (event.key === "Enter") {
 
-  }
+          sendCoachMessage();
 
-  if(lower.includes("économ") || lower.includes("budget")){
+        }
 
-    return `
-      Pour réduire ton budget, privilégie les aliments
-      économiques au kilo et riches en protéines.
-      Le plus intéressant est surtout d'optimiser
-      <b>le panier entier</b>, pas seulement un produit.
-    `;
+      }
+    );
 
-  }
 
-  if(lower.includes("soir")){
+  document
+    .querySelectorAll(".quick-button")
+    .forEach(button => {
 
-    return `
-      Je partirais sur des <b>pâtes au thon</b> avec
-      des légumes. C'est simple, rassasiant et riche
-      en protéines.
-    `;
+      button.addEventListener(
+        "click",
+        () => {
 
-  }
+          $("coachInput").value =
+            button.textContent.trim();
 
-  if(lower.includes("calorie")){
+          sendCoachMessage();
 
-    const totals =
-      totalConsumed();
+        }
+      );
 
-    return `
-      Tu as consommé environ
-      <b>${Math.round(totals.calories)} kcal</b>.
-      Il te reste environ
-      <b>${Math.max(0,nutrition.target-totals.calories)} kcal</b>
-      sur ton objectif actuel.
-    `;
-
-  }
-
-  return `
-    Je peux t'aider avec tes calories, tes macros,
-    tes repas, ton budget ou tes courses.
-    Demande-moi quelque chose de précis 😎
-  `;
+    });
 
 }
 
 
-function sendChat(){
+function sendCoachMessage() {
 
   const input =
-    $("chatInput");
+    $("coachInput");
 
-  const text =
+
+  const message =
     input.value.trim();
 
-  if(!text) return;
 
-  const chat =
-    $("chatMessages");
+  if (!message) return;
 
-  chat.innerHTML += `
-    <div class="chat user">
-      ${escapeHTML(text)}
-    </div>
-  `;
 
-  const answer =
-    coachAnswer(text);
+  addCoachMessage(
+    message,
+    true
+  );
 
-  setTimeout(()=>{
 
-    chat.innerHTML += `
-      <div class="chat bot">
-        🤖 ${answer}
-      </div>
-    `;
+  input.value = "";
 
-    chat.scrollTop =
-      chat.scrollHeight;
 
-  },180);
+  setTimeout(() => {
 
-  input.value="";
+    addCoachMessage(
+      generateCoachResponse(message),
+      false
+    );
+
+  }, 350);
 
 }
 
 
-$("sendChat").addEventListener(
-  "click",
-  sendChat
-);
+function addCoachMessage(
+  message,
+  user
+) {
+
+  const container =
+    $("coachMessages");
 
 
-$("chatInput").addEventListener(
-  "keydown",
-  e=>{
-    if(e.key==="Enter"){
-      sendChat();
-    }
+  const div =
+    document.createElement("div");
+
+
+  div.className =
+    `coach-message ${
+      user ? "user" : ""
+    }`;
+
+
+  div.textContent =
+    message;
+
+
+  container.appendChild(div);
+
+
+  container.scrollTop =
+    container.scrollHeight;
+
+}
+
+
+function generateCoachResponse(message) {
+
+  const lower =
+    message.toLowerCase();
+
+
+  const totals =
+    calculateDailyTotals();
+
+
+  const target =
+    calculateTargetCalories();
+
+
+  const proteinTarget =
+    calculateProteinTarget();
+
+
+  const remaining =
+    Math.max(
+      0,
+      target - totals.kcal
+    );
+
+
+  const proteinRemaining =
+    Math.max(
+      0,
+      proteinTarget - totals.protein
+    );
+
+
+  if (
+    lower.includes("protéine") ||
+    lower.includes("protein")
+  ) {
+
+    return (
+      `Il te reste environ ` +
+      `${round(proteinRemaining, 1)} g ` +
+      `de protéines aujourd'hui. 💪`
+    );
+
   }
-);
 
 
-document.querySelectorAll("[data-question]")
-.forEach(button=>{
+  if (
+    lower.includes("calorie") ||
+    lower.includes("kcal")
+  ) {
 
-  button.addEventListener("click",()=>{
+    return (
+      `Il te reste environ ` +
+      `${formatNumber(remaining)} kcal ` +
+      `sur ton objectif de ` +
+      `${formatNumber(target)} kcal. 🔥`
+    );
 
-    $("chatInput").value =
-      button.dataset.question;
-
-    sendChat();
-
-  });
-
-});
+  }
 
 
-/* ================= UTIL ================= */
+  if (
+    lower.includes("soir") ||
+    lower.includes("manger")
+  ) {
 
-function escapeHTML(value){
+    const recipe =
+      RECIPES
+        .slice()
+        .sort(
+          (a, b) =>
+            Math.abs(
+              remaining - a.kcal
+            ) -
+            Math.abs(
+              remaining - b.kcal
+            )
+        )[0];
 
-  return String(value)
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
+
+    return (
+      `Je partirais sur ${recipe.name} : ` +
+      `${recipe.kcal} kcal et ` +
+      `${recipe.protein} g de protéines. 🍽️`
+    );
+
+  }
+
+
+  if (
+    lower.includes("économ") ||
+    lower.includes("budget")
+  ) {
+
+    return (
+      "Pour réduire le budget : base tes repas " +
+      "sur riz, pâtes, œufs, thon, poulet, " +
+      "légumineuses et légumes surgelés. 🛒"
+    );
+
+  }
+
+
+  return (
+    `Aujourd'hui : ` +
+    `${formatNumber(totals.kcal)} kcal, ` +
+    `${totals.protein} g de protéines. ` +
+    `Objectif : ${formatNumber(target)} kcal. 💪`
+  );
 
 }
 
 
-/* ================= UPDATE ================= */
+/* =========================================================
+   SÉRIE
+========================================================= */
 
-function updateAll(){
+function updateStreak() {
 
-  updateHome();
+  const today =
+    todayKey();
+
+
+  if (
+    state.streak.lastDate === today
+  ) {
+
+    return;
+
+  }
+
+
+  if (!state.streak.lastDate) {
+
+    state.streak.count = 1;
+
+  } else {
+
+    const previous =
+      new Date(
+        state.streak.lastDate
+      );
+
+
+    const current =
+      new Date(today);
+
+
+    const difference =
+      Math.round(
+        (
+          current - previous
+        ) /
+        (1000 * 60 * 60 * 24)
+      );
+
+
+    if (difference === 1) {
+
+      state.streak.count += 1;
+
+    } else if (difference > 1) {
+
+      state.streak.count = 1;
+
+    }
+
+  }
+
+
+  state.streak.lastDate =
+    today;
+
+}
+
+
+/* =========================================================
+   DARK MODE
+========================================================= */
+
+function setupDarkMode() {
+
+  applyDarkMode();
+
+
+  $("darkModeButton")
+    ?.addEventListener(
+      "click",
+      () => {
+
+        state.darkMode =
+          !state.darkMode;
+
+
+        saveState();
+
+        applyDarkMode();
+
+      }
+    );
+
+}
+
+
+function applyDarkMode() {
+
+  document.body.classList.toggle(
+    "dark",
+    Boolean(state.darkMode)
+  );
+
+}
+
+
+/* =========================================================
+   MISE À JOUR GLOBALE
+========================================================= */
+
+function updateEverything() {
+
+  const bmr =
+    calculateBMR();
+
+
+  const tdee =
+    calculateTDEE();
+
+
+  const target =
+    calculateTargetCalories();
+
+
+  const protein =
+    calculateProteinTarget();
+
+
+  if ($("currentWeight"))
+    $("currentWeight").textContent =
+      state.profile.weight || 0;
+
+
+  if ($("maintenanceCalories"))
+    $("maintenanceCalories").textContent =
+      formatNumber(tdee);
+
+
+  if ($("progressCalories"))
+    $("progressCalories").textContent =
+      formatNumber(target);
+
+
+  if ($("progressProtein"))
+    $("progressProtein").textContent =
+      `${protein} g`;
+
+
+  if ($("profileBmr"))
+    $("profileBmr").textContent =
+      formatNumber(bmr);
+
+
+  if ($("profileTdee"))
+    $("profileTdee").textContent =
+      formatNumber(tdee);
+
+
+  if ($("profileTarget"))
+    $("profileTarget").textContent =
+      formatNumber(target);
+
+
+  renderHome();
+
+  renderJournalStats();
+
   renderJournal();
-  renderGeneratedMeals();
+
+  renderRecipes();
+
   renderShopping();
+
+  renderWeightChart();
+
   renderPantry();
-  renderProgress();
 
-  const n =
-    calculateNutrition();
-
-  $("maintenance").textContent =
-    n.maintenance || 0;
-
-  $("targetCalories").textContent =
-    n.target || 0;
-
-  $("targetProtein").textContent =
-    n.protein || 0;
-
-  $("targetCarbs").textContent =
-    n.carbs || 0;
-
-  $("targetFat").textContent =
-    n.fat || 0;
+  renderSelectedDay();
 
 }
 
 
-/* ================= INIT ================= */
+/* =========================================================
+   SERVICE WORKER
+========================================================= */
 
-fillProfile();
-updateAll();
+function registerServiceWorker() {
 
-if("serviceWorker" in navigator){
+  if (
+    "serviceWorker" in navigator
+  ) {
 
-  window.addEventListener("load",()=>{
+    window.addEventListener(
+      "load",
+      () => {
 
-    navigator.serviceWorker
-      .register("sw.js")
-      .catch(()=>{});
+        navigator.serviceWorker
+          .register("sw.js")
+          .catch(error => {
 
-  });
+            console.log(
+              "Service Worker non disponible :",
+              error
+            );
+
+          });
+
+      }
+    );
+
+  }
 
 }
