@@ -1,474 +1,2665 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#11140f">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="BudgetCook">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#11140f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="BudgetCook">
+<title>BudgetCook</title>
 
-  <title>BudgetCook</title>
+<style>
+:root{
+  --bg:#f3f5ef;
+  --card:#fff;
+  --dark:#11140f;
+  --dark2:#252922;
+  --text:#11140f;
+  --muted:#7c8279;
+  --line:#e1e5dc;
+  --green:#c7ef58;
+  --green2:#9dcc35;
+  --soft:#edf7d5;
+  --red:#ffe0db;
+  --orange:#fff0d3;
+  --shadow:0 8px 30px rgba(17,20,15,.06);
+}
 
-  <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="style.css">
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+
+html,body{
+  margin:0;
+  padding:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;
+}
+
+body.dark{
+  --bg:#0d0f0c;
+  --card:#181b16;
+  --dark:#f2f4ed;
+  --dark2:#252a22;
+  --text:#f2f4ed;
+  --muted:#969d91;
+  --line:#30352d;
+  --soft:#27351a;
+  --red:#40251f;
+  --orange:#3d311d;
+  --shadow:none;
+}
+
+button,input,select{font:inherit}
+button{cursor:pointer}
+
+#app{
+  width:100%;
+  max-width:500px;
+  min-height:100vh;
+  margin:auto;
+  padding:14px 15px 105px;
+}
+
+.topbar{
+  height:48px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.logo{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  font-size:21px;
+  font-weight:950;
+  letter-spacing:-.8px;
+}
+
+.logo span{font-size:22px}
+
+.avatar{
+  width:40px;
+  height:40px;
+  border:0;
+  border-radius:50%;
+  background:var(--dark);
+  color:var(--bg);
+  font-weight:950;
+}
+
+.page{display:none;animation:appear .2s ease}
+.page.active{display:block}
+
+@keyframes appear{
+  from{opacity:0;transform:translateY(6px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+.eyebrow{
+  margin-top:22px;
+  color:var(--muted);
+  font-size:9px;
+  font-weight:950;
+  letter-spacing:1.4px;
+}
+
+h1{
+  margin:5px 0 18px;
+  font-size:35px;
+  line-height:1;
+  letter-spacing:-2px;
+}
+
+h2{
+  margin:0;
+  font-size:18px;
+  letter-spacing:-.5px;
+}
+
+.section-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin:24px 2px 10px;
+}
+
+.section-head button{
+  border:0;
+  background:none;
+  color:var(--muted);
+  font-size:10px;
+  font-weight:900;
+}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:22px;
+  padding:16px;
+  box-shadow:var(--shadow);
+}
+
+.hero{
+  padding:20px;
+  border-radius:26px;
+  background:var(--dark);
+  color:var(--bg);
+}
+
+.hero-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+}
+
+.hero small{color:#aab0a5}
+
+.hero-number{
+  margin-top:3px;
+  font-size:43px;
+  line-height:1;
+  font-weight:950;
+  letter-spacing:-2px;
+}
+
+.hero-number span{
+  font-size:12px;
+  color:#aab0a5;
+  letter-spacing:0;
+}
+
+.pill{
+  padding:7px 9px;
+  border-radius:99px;
+  background:var(--green);
+  color:#11140f;
+  font-size:8px;
+  font-weight:950;
+}
+
+.progress{
+  height:9px;
+  margin-top:20px;
+  background:#363a33;
+  border-radius:99px;
+  overflow:hidden;
+}
+
+.progress div{
+  height:100%;
+  width:0;
+  background:var(--green);
+  transition:.4s;
+}
+
+.hero-bottom{
+  display:flex;
+  justify-content:space-between;
+  margin-top:8px;
+  color:#aab0a5;
+  font-size:9px;
+}
+
+.hero-bottom b{color:var(--bg)}
+
+.macros{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  margin-top:8px;
+}
+
+.macro{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:13px 10px;
+}
+
+.macro-icon{font-size:18px}
+.macro strong{
+  display:block;
+  margin-top:4px;
+  font-size:18px;
+}
+.macro small{
+  color:var(--muted);
+  font-size:8px;
+}
+
+.meal{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:11px;
+  margin-bottom:8px;
+}
+
+.meal-img{
+  width:60px;
+  height:60px;
+  flex-shrink:0;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(135deg,#e5f1c9,#f4d6a4);
+  border-radius:17px;
+  font-size:27px;
+}
+
+.meal-body{min-width:0;flex:1}
+
+.meal-type{
+  color:var(--muted);
+  font-size:8px;
+  font-weight:950;
+  letter-spacing:.8px;
+}
+
+.meal h3{
+  margin:3px 0;
+  font-size:13px;
+}
+
+.meal-meta{
+  color:var(--muted);
+  font-size:9px;
+}
+
+.meal-price{
+  margin-top:3px;
+  font-size:9px;
+  font-weight:900;
+}
+
+.add{
+  width:32px;
+  height:32px;
+  border:0;
+  border-radius:10px;
+  background:var(--green);
+  font-weight:950;
+}
+
+.delete{
+  width:30px;
+  height:30px;
+  border:0;
+  border-radius:10px;
+  background:var(--red);
+  font-weight:950;
+}
+
+.primary{
+  width:100%;
+  border:0;
+  border-radius:15px;
+  padding:14px;
+  background:var(--dark);
+  color:var(--bg);
+  font-size:12px;
+  font-weight:950;
+}
+
+.secondary{
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:11px 13px;
+  background:var(--card);
+  color:var(--text);
+  font-size:10px;
+  font-weight:900;
+}
+
+.grid2{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+
+.stat-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+
+.stat{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:15px;
+}
+
+.stat small{
+  color:var(--muted);
+  font-size:9px;
+}
+
+.stat strong{
+  display:block;
+  margin-top:5px;
+  font-size:21px;
+}
+
+.input{
+  width:100%;
+  border:1px solid var(--line);
+  background:var(--card);
+  color:var(--text);
+  border-radius:14px;
+  padding:13px;
+  outline:none;
+  font-size:14px;
+}
+
+.input:focus{border-color:var(--green2)}
+
+label{
+  display:block;
+  margin:13px 0 6px;
+  font-size:9px;
+  font-weight:950;
+}
+
+.input-row{
+  display:flex;
+  gap:7px;
+}
+
+.input-row .input{flex:1}
+
+.quick{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:8px;
+}
+
+.quick button{
+  border:1px solid var(--line);
+  background:var(--card);
+  color:var(--text);
+  border-radius:15px;
+  padding:12px 7px;
+  font-size:9px;
+  font-weight:900;
+}
+
+.shopping-total{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.shopping-total small{
+  display:block;
+  color:var(--muted);
+  font-size:9px;
+}
+
+.shopping-total strong{
+  display:block;
+  font-size:30px;
+  margin-top:3px;
+}
+
+.save{
+  background:var(--soft);
+  color:#526728;
+  border-radius:12px;
+  padding:8px;
+  font-size:8px;
+  font-weight:950;
+}
+
+.store{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:12px 0;
+  border-bottom:1px solid var(--line);
+}
+
+.store:last-child{border:0}
+
+.store-name{
+  font-size:11px;
+  font-weight:950;
+}
+
+.store-note{
+  color:var(--muted);
+  font-size:8px;
+  margin-top:2px;
+}
+
+.store-price{
+  font-size:13px;
+  font-weight:950;
+}
+
+.list-item{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:12px 0;
+  border-bottom:1px solid var(--line);
+}
+
+.list-item:last-child{border:0}
+
+.list-left{
+  display:flex;
+  align-items:center;
+  gap:9px;
+}
+
+.check{
+  width:23px;
+  height:23px;
+  border:2px solid #ccd1c7;
+  background:transparent;
+  border-radius:7px;
+  display:grid;
+  place-items:center;
+  font-size:12px;
+}
+
+.check.done{
+  background:var(--dark);
+  color:var(--bg);
+  border-color:var(--dark);
+}
+
+.item-name{
+  font-size:11px;
+  font-weight:900;
+}
+
+.item-sub{
+  margin-top:2px;
+  color:var(--muted);
+  font-size:8px;
+}
+
+.recipe{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:22px;
+  margin-bottom:9px;
+  overflow:hidden;
+}
+
+.recipe-top{
+  display:flex;
+  gap:12px;
+  padding:15px;
+}
+
+.recipe-icon{
+  width:55px;
+  height:55px;
+  display:grid;
+  place-items:center;
+  border-radius:16px;
+  background:var(--soft);
+  font-size:26px;
+}
+
+.recipe h3{
+  margin:0;
+  font-size:14px;
+}
+
+.recipe p{
+  margin:4px 0;
+  color:var(--muted);
+  font-size:9px;
+}
+
+.recipe-detail{
+  border-top:1px solid var(--line);
+  padding:12px 15px;
+  display:none;
+}
+
+.recipe.open .recipe-detail{display:block}
+
+.ingredient{
+  display:flex;
+  justify-content:space-between;
+  padding:7px 0;
+  border-bottom:1px solid var(--line);
+  font-size:9px;
+}
+
+.ingredient:last-child{border:0}
+
+.portion{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  margin-top:8px;
+}
+
+.portion button{
+  width:29px;
+  height:29px;
+  border:1px solid var(--line);
+  border-radius:9px;
+  background:var(--card);
+  color:var(--text);
+}
+
+.portion strong{font-size:12px}
+
+.coach{
+  background:var(--dark);
+  color:var(--bg);
+  border-radius:24px;
+  padding:16px;
+}
+
+.coach-head{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  padding-bottom:12px;
+  border-bottom:1px solid #383c35;
+}
+
+.ai{
+  width:40px;
+  height:40px;
+  display:grid;
+  place-items:center;
+  border-radius:13px;
+  background:#2b3028;
+}
+
+.coach-head b{display:block;font-size:12px}
+.coach-head small{color:#9fa69b;font-size:8px}
+
+.messages{
+  max-height:350px;
+  overflow:auto;
+  padding:4px 0;
+}
+
+.message{
+  padding:10px 12px;
+  border-radius:14px;
+  margin-top:9px;
+  font-size:10px;
+  line-height:1.45;
+}
+
+.message.bot{background:#292e27;color:#dfe3db}
+.message.user{background:var(--green);color:#11140f;margin-left:25px}
+
+.chat-input{
+  display:flex;
+  gap:7px;
+  margin-top:12px;
+}
+
+.chat-input input{
+  flex:1;
+  min-width:0;
+  border:0;
+  border-radius:13px;
+  padding:11px;
+  background:#292e27;
+  color:#fff;
+  outline:none;
+}
+
+.chat-input button{
+  width:43px;
+  border:0;
+  border-radius:13px;
+  background:var(--green);
+}
+
+.progress-chart{
+  height:180px;
+  display:flex;
+  align-items:flex-end;
+  gap:7px;
+  padding:20px 5px 5px;
+}
+
+.bar{
+  flex:1;
+  min-height:4px;
+  background:var(--green2);
+  border-radius:7px 7px 2px 2px;
+  position:relative;
+}
+
+.bar span{
+  position:absolute;
+  bottom:-17px;
+  width:100%;
+  text-align:center;
+  font-size:7px;
+  color:var(--muted);
+}
+
+.empty{
+  padding:22px 5px;
+  text-align:center;
+  color:var(--muted);
+  font-size:10px;
+}
+
+.bottom{
+  position:fixed;
+  z-index:100;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:100%;
+  max-width:500px;
+  display:flex;
+  padding:7px 3px calc(7px + env(safe-area-inset-bottom));
+  background:rgba(255,255,255,.94);
+  backdrop-filter:blur(18px);
+  border-top:1px solid var(--line);
+}
+
+.dark .bottom{background:rgba(24,27,22,.94)}
+
+.nav{
+  flex:1;
+  border:0;
+  background:none;
+  color:#8a9086;
+}
+
+.nav span{
+  display:block;
+  font-size:19px;
+  line-height:22px;
+}
+
+.nav small{
+  display:block;
+  font-size:7px;
+  font-weight:900;
+}
+
+.nav.active{color:var(--text)}
+
+.modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:500;
+  background:rgba(0,0,0,.5);
+  align-items:flex-end;
+  justify-content:center;
+  padding:15px;
+}
+
+.modal.open{display:flex}
+
+.modal-box{
+  width:100%;
+  max-width:500px;
+  max-height:85vh;
+  overflow:auto;
+  padding:17px;
+  background:var(--card);
+  color:var(--text);
+  border-radius:25px 25px 10px 10px;
+}
+
+.modal-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:12px;
+}
+
+.modal-head h2{font-size:18px}
+
+.modal-head button{
+  width:32px;
+  height:32px;
+  border:0;
+  border-radius:10px;
+  background:var(--bg);
+  color:var(--text);
+  font-size:20px;
+}
+
+.food{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:12px 0;
+  border-bottom:1px solid var(--line);
+}
+
+.food b{font-size:11px}
+.food small{
+  display:block;
+  color:var(--muted);
+  font-size:8px;
+  margin-top:2px;
+}
+
+.food button{
+  width:31px;
+  height:31px;
+  border:0;
+  border-radius:10px;
+  background:var(--green);
+  font-weight:950;
+}
+
+.toast{
+  position:fixed;
+  z-index:1000;
+  left:50%;
+  bottom:100px;
+  transform:translateX(-50%) translateY(20px);
+  background:var(--dark);
+  color:var(--bg);
+  padding:11px 15px;
+  border-radius:14px;
+  font-size:10px;
+  font-weight:900;
+  opacity:0;
+  pointer-events:none;
+  transition:.25s;
+}
+
+.toast.show{
+  opacity:1;
+  transform:translateX(-50%) translateY(0);
+}
+</style>
 </head>
 
 <body>
 
 <div id="app">
 
-  <header class="topbar">
-    <div class="brand">
-      <span class="brand-mark">🍝</span>
-      <span>BudgetCook</span>
+<header class="topbar">
+  <div class="logo">
+    <span>🍝</span> BudgetCook
+  </div>
+  <button class="avatar" id="avatar">B</button>
+</header>
+
+
+<!-- ACCUEIL -->
+<section id="home" class="page active">
+
+  <div class="eyebrow">TABLEAU DE BORD</div>
+  <h1>Bonjour <span id="hello">👋</span></h1>
+
+  <div class="hero">
+
+    <div class="hero-top">
+      <div>
+        <small>Objectif calories</small>
+        <div class="hero-number">
+          <span id="target">0</span>
+          <span>kcal</span>
+        </div>
+      </div>
+
+      <div class="pill" id="goalPill">Profil</div>
     </div>
-    <button class="profile-button" data-page="profile">
-      <span id="avatarLetter">B</span>
-    </button>
-  </header>
 
-  <main>
-
-    <!-- HOME -->
-    <section id="page-home" class="page active">
-
-      <div class="eyebrow">TABLEAU DE BORD</div>
-      <h1 class="page-title">
-        Bonjour <span id="homeName">👋</span>
-      </h1>
-
-      <div class="hero-card">
-        <div class="hero-row">
-          <div>
-            <div class="muted-light">Objectif du jour</div>
-            <div class="hero-number">
-              <span id="homeCalories">0</span>
-              <small>kcal</small>
-            </div>
-          </div>
-          <span id="goalBadge" class="pill green">Configure ton profil</span>
-        </div>
-
-        <div class="progress-track">
-          <div id="calorieProgress" class="progress-bar"></div>
-        </div>
-
-        <div class="hero-bottom">
-          <span><b id="consumedCalories">0</b> consommées</span>
-          <span><b id="remainingCalories">0</b> restantes</span>
-        </div>
-      </div>
-
-      <div class="macro-grid">
-        <div class="macro-card">
-          <span class="macro-icon">🥩</span>
-          <b id="homeProtein">0g</b>
-          <small>Protéines</small>
-        </div>
-        <div class="macro-card">
-          <span class="macro-icon">🍚</span>
-          <b id="homeCarbs">0g</b>
-          <small>Glucides</small>
-        </div>
-        <div class="macro-card">
-          <span class="macro-icon">🥑</span>
-          <b id="homeFat">0g</b>
-          <small>Lipides</small>
-        </div>
-      </div>
-
-      <div class="section-heading">
-        <h2>Aujourd'hui</h2>
-        <button data-page="journal">Voir tout</button>
-      </div>
-
-      <div id="homeMeals"></div>
-
-      <div class="section-heading">
-        <h2>💰 Ton budget</h2>
-      </div>
-
-      <div class="budget-card">
-        <div>
-          <small>Budget hebdomadaire</small>
-          <strong><span id="homeBudget">0</span> €</strong>
-        </div>
-        <div class="budget-side">
-          <small>Panier estimé</small>
-          <b>49,20 €</b>
-        </div>
-      </div>
-
-      <div class="saving-card">
-        <div class="saving-icon">💸</div>
-        <div>
-          <b>Optimisation disponible</b>
-          <p>BudgetCook peut chercher une combinaison moins chère pour ton panier.</p>
-        </div>
-      </div>
-
-      <div class="section-heading">
-        <h2>🔥 Série</h2>
-      </div>
-
-      <div class="streak-card">
-        <span>🔥</span>
-        <div>
-          <b id="streakNumber">0 jour</b>
-          <small>Continue comme ça !</small>
-        </div>
-      </div>
-
-    </section>
-
-
-    <!-- JOURNAL -->
-    <section id="page-journal" class="page">
-
-      <div class="eyebrow">NUTRITION</div>
-      <h1 class="page-title">Journal 🍽️</h1>
-
-      <div class="summary-card">
-        <div>
-          <small>Calories</small>
-          <strong><span id="journalCalories">0</span></strong>
-          <span>/ <span id="journalTarget">0</span></span>
-        </div>
-        <div>
-          <small>Protéines</small>
-          <strong><span id="journalProtein">0</span>g</strong>
-        </div>
-      </div>
-
-      <div class="section-heading">
-        <h2>Mes repas</h2>
-        <button id="clearDay">Réinitialiser</button>
-      </div>
-
-      <div id="journalMeals"></div>
-
-      <button id="openFoodSearch" class="primary-button full-button">
-        + Ajouter un aliment
-      </button>
-
-    </section>
-
-
-    <!-- MEALS -->
-    <section id="page-meals" class="page">
-
-      <div class="eyebrow">PLANIFICATEUR</div>
-      <h1 class="page-title">Mes repas 🍳</h1>
-
-      <div class="feature-card">
-        <div class="feature-icon">🧠</div>
-        <div>
-          <h3>Générateur BudgetCook</h3>
-          <p>Construis une journée autour de tes calories, protéines et budget.</p>
-        </div>
-      </div>
-
-      <button id="generatePlan" class="primary-button full-button">
-        ✨ Générer ma journée
-      </button>
-
-      <div class="section-heading">
-        <h2>Plan du jour</h2>
-      </div>
-
-      <div id="generatedMeals"></div>
-
-    </section>
-
-
-    <!-- SHOPPING -->
-    <section id="page-shopping" class="page">
-
-      <div class="eyebrow">BUDGET</div>
-      <h1 class="page-title">Courses 🛒</h1>
-
-      <div class="shopping-total">
-        <div>
-          <small>Panier estimé</small>
-          <strong>49,20 €</strong>
-        </div>
-        <div class="saving-pill">−8,20 € possible</div>
-      </div>
-
-      <div class="section-heading">
-        <h2>Comparer</h2>
-      </div>
-
-      <div id="stores"></div>
-
-      <div class="section-heading">
-        <h2>Liste de courses</h2>
-        <button id="checkAll">Tout cocher</button>
-      </div>
-
-      <div class="card" id="shoppingList"></div>
-
-    </section>
-
-
-    <!-- PANTRY -->
-    <section id="page-pantry" class="page">
-
-      <div class="eyebrow">MAISON</div>
-      <h1 class="page-title">Mon garde-manger 🧊</h1>
-
-      <div class="card">
-        <div class="input-row">
-          <input id="pantryInput" class="input" placeholder="Ex : riz, œufs, poulet...">
-          <button id="addPantry" class="square-button">+</button>
-        </div>
-      </div>
-
-      <div class="section-heading">
-        <h2>Disponible chez moi</h2>
-      </div>
-
-      <div class="card" id="pantryList"></div>
-
-    </section>
-
-
-    <!-- PROGRESS -->
-    <section id="page-progress" class="page">
-
-      <div class="eyebrow">ÉVOLUTION</div>
-      <h1 class="page-title">Progrès 📊</h1>
-
-      <div class="stat-grid">
-        <div class="stat-card">
-          <small>Poids</small>
-          <strong><span id="progressWeight">0</span> kg</strong>
-        </div>
-        <div class="stat-card">
-          <small>Calories</small>
-          <strong><span id="progressTarget">0</span></strong>
-        </div>
-        <div class="stat-card">
-          <small>Protéines</small>
-          <strong><span id="progressProtein">0</span>g</strong>
-        </div>
-        <div class="stat-card">
-          <small>Objectif</small>
-          <strong id="progressGoal">—</strong>
-        </div>
-      </div>
-
-      <div class="section-heading">
-        <h2>Ajouter un poids</h2>
-      </div>
-
-      <div class="card">
-        <div class="input-row">
-          <input id="weightInput" class="input" type="number" step="0.1" placeholder="80.0">
-          <button id="addWeight" class="primary-button">Ajouter</button>
-        </div>
-      </div>
-
-      <div class="section-heading">
-        <h2>Historique</h2>
-      </div>
-
-      <div class="card" id="weightHistory"></div>
-
-    </section>
-
-
-    <!-- COACH -->
-    <section id="page-coach" class="page">
-
-      <div class="eyebrow">BUDGETCOOK AI</div>
-      <h1 class="page-title">Ton coach 🤖</h1>
-
-      <div class="coach-card">
-        <div class="coach-header">
-          <div class="ai-avatar">🤖</div>
-          <div>
-            <b>BudgetCook Coach</b>
-            <small>Assistant nutrition</small>
-          </div>
-        </div>
-
-        <div id="chatMessages">
-          <div class="chat bot">
-            Salut 👋 Je peux t'aider à choisir un repas, gérer ton budget ou comprendre tes objectifs.
-          </div>
-        </div>
-
-        <div class="chat-input">
-          <input id="chatInput" placeholder="Ex : que manger ce soir ?">
-          <button id="sendChat">➤</button>
-        </div>
-      </div>
-
-      <div class="quick-grid">
-        <button data-question="Donne-moi un repas riche en protéines">🥩 Protéines</button>
-        <button data-question="Comment économiser sur mes courses ?">💰 Économiser</button>
-        <button data-question="Que manger ce soir ?">🍽️ Ce soir</button>
-        <button data-question="Combien de calories me reste-t-il ?">🔥 Calories</button>
-      </div>
-
-    </section>
-
-
-    <!-- PROFILE -->
-    <section id="page-profile" class="page">
-
-      <div class="eyebrow">PERSONNALISATION</div>
-      <h1 class="page-title">Mon profil 👤</h1>
-
-      <div class="card">
-
-        <label>Prénom</label>
-        <input id="firstName" class="input" placeholder="Ton prénom">
-
-        <label>Âge</label>
-        <input id="age" class="input" type="number" placeholder="20">
-
-        <label>Sexe</label>
-        <select id="sex" class="input">
-          <option value="male">Homme</option>
-          <option value="female">Femme</option>
-        </select>
-
-        <label>Taille</label>
-        <input id="height" class="input" type="number" placeholder="180">
-
-        <label>Poids</label>
-        <input id="weight" class="input" type="number" step="0.1" placeholder="80">
-
-        <label>Activité</label>
-        <select id="activity" class="input">
-          <option value="1.2">Sédentaire</option>
-          <option value="1.35">Légèrement actif</option>
-          <option value="1.5" selected>Modérément actif</option>
-          <option value="1.65">Actif</option>
-          <option value="1.75">Très actif</option>
-        </select>
-
-        <label>Entraînements / semaine</label>
-        <input id="training" class="input" type="number" min="0" max="14" placeholder="5">
-
-        <label>Objectif</label>
-        <select id="goal" class="input">
-          <option value="cut">🔥 Perdre du gras</option>
-          <option value="maintain">⚖️ Maintenir</option>
-          <option value="bulk">💪 Prendre du muscle</option>
-        </select>
-
-        <label>Ajustement</label>
-        <select id="adjustment" class="input">
-          <option value="200">200 kcal</option>
-          <option value="300" selected>300 kcal</option>
-          <option value="400">400 kcal</option>
-          <option value="500">500 kcal</option>
-        </select>
-
-        <label>Budget courses / semaine</label>
-        <input id="budget" class="input" type="number" placeholder="50">
-
-        <button id="saveProfile" class="primary-button full-button">
-          Enregistrer mon profil
-        </button>
-
-        <div id="profileMessage" class="success-message">
-          Profil enregistré ✅
-        </div>
-
-      </div>
-
-      <div class="section-heading">
-        <h2>Ton calcul</h2>
-      </div>
-
-      <div class="card calculation-card">
-        <div>
-          <small>Entretien</small>
-          <strong><span id="maintenance">0</span> kcal</strong>
-        </div>
-
-        <div>
-          <small>Objectif</small>
-          <strong><span id="targetCalories">0</span> kcal</strong>
-        </div>
-
-        <div>
-          <small>Protéines</small>
-          <strong><span id="targetProtein">0</span> g</strong>
-        </div>
-
-        <div>
-          <small>Glucides</small>
-          <strong><span id="targetCarbs">0</span> g</strong>
-        </div>
-
-        <div>
-          <small>Lipides</small>
-          <strong><span id="targetFat">0</span> g</strong>
-        </div>
-      </div>
-
-    </section>
-
-  </main>
-
-
-  <!-- FOOD MODAL -->
-  <div id="foodModal" class="modal">
-    <div class="modal-box">
-
-      <div class="modal-header">
-        <h2>Ajouter un aliment</h2>
-        <button id="closeFoodModal">×</button>
-      </div>
-
-      <input id="foodSearch" class="input" placeholder="Rechercher un aliment...">
-
-      <div id="foodResults"></div>
-
+    <div class="progress">
+      <div id="calorieBar"></div>
     </div>
+
+    <div class="hero-bottom">
+      <span><b id="eaten">0</b> consommées</span>
+      <span><b id="left">0</b> restantes</span>
+    </div>
+
   </div>
 
 
-  <!-- NAVIGATION -->
-  <nav class="bottom-nav">
+  <div class="macros">
 
-    <button class="nav-item active" data-page="home">
-      <span>⌂</span>
-      <small>Accueil</small>
+    <div class="macro">
+      <div class="macro-icon">🥩</div>
+      <strong id="protein">0g</strong>
+      <small>Protéines</small>
+    </div>
+
+    <div class="macro">
+      <div class="macro-icon">🍚</div>
+      <strong id="carbs">0g</strong>
+      <small>Glucides</small>
+    </div>
+
+    <div class="macro">
+      <div class="macro-icon">🥑</div>
+      <strong id="fat">0g</strong>
+      <small>Lipides</small>
+    </div>
+
+  </div>
+
+
+  <div class="section-head">
+    <h2>Repas du jour</h2>
+    <button onclick="go('journal')">Journal</button>
+  </div>
+
+  <div id="homeMeals"></div>
+
+
+  <div class="section-head">
+    <h2>💰 Budget</h2>
+  </div>
+
+  <div class="card shopping-total">
+
+    <div>
+      <small>Budget / semaine</small>
+      <strong><span id="budget">0</span> €</strong>
+    </div>
+
+    <div class="save">
+      Panier optimisé<br>
+      <b>≈ 49,20 €</b>
+    </div>
+
+  </div>
+
+
+  <div class="section-head">
+    <h2>🔥 Série</h2>
+  </div>
+
+  <div class="card">
+    <b id="streak">0 jour</b>
+    <div style="color:var(--muted);font-size:9px;margin-top:3px">
+      Continue ton objectif quotidien.
+    </div>
+  </div>
+
+</section>
+
+
+<!-- JOURNAL -->
+<section id="journal" class="page">
+
+  <div class="eyebrow">NUTRITION</div>
+  <h1>Journal 🍽️</h1>
+
+  <div class="stat-grid">
+
+    <div class="stat">
+      <small>Calories</small>
+      <strong><span id="journalCal">0</span></strong>
+    </div>
+
+    <div class="stat">
+      <small>Protéines</small>
+      <strong><span id="journalPro">0</span>g</strong>
+    </div>
+
+    <div class="stat">
+      <small>Glucides</small>
+      <strong><span id="journalCarb">0</span>g</strong>
+    </div>
+
+    <div class="stat">
+      <small>Lipides</small>
+      <strong><span id="journalFat">0</span>g</strong>
+    </div>
+
+  </div>
+
+  <div class="section-head">
+    <h2>Aliments</h2>
+    <button onclick="clearJournal()">Réinitialiser</button>
+  </div>
+
+  <div id="journalList"></div>
+
+  <button class="primary" onclick="openFood()">
+    + Ajouter un aliment
+  </button>
+
+</section>
+
+
+<!-- REPAS -->
+<section id="meals" class="page">
+
+  <div class="eyebrow">RECETTES</div>
+  <h1>Mes repas 🍳</h1>
+
+  <div class="card" style="margin-bottom:10px">
+
+    <b>✨ Générateur intelligent</b>
+
+    <p style="font-size:9px;color:var(--muted);line-height:1.5">
+      Les recettes sont adaptées à ton objectif calorique.
+      Tu peux modifier leur portion avant de les ajouter.
+    </p>
+
+    <button class="primary" onclick="generateDay()">
+      Générer ma journée
     </button>
 
-    <button class="nav-item" data-page="journal">
-      <span>🍽️</span>
-      <small>Journal</small>
+  </div>
+
+  <div id="recipes"></div>
+
+</section>
+
+
+<!-- COURSES -->
+<section id="shopping" class="page">
+
+  <div class="eyebrow">BUDGET</div>
+  <h1>Courses 🛒</h1>
+
+  <div class="card shopping-total">
+
+    <div>
+      <small>Panier estimé</small>
+      <strong>49,20 €</strong>
+    </div>
+
+    <div class="save">
+      Jusqu'à<br>
+      <b>8,20 €</b> d'économie
+    </div>
+
+  </div>
+
+
+  <div class="section-head">
+    <h2>Comparateur</h2>
+  </div>
+
+  <div class="card" id="stores"></div>
+
+
+  <div class="section-head">
+    <h2>Ma liste</h2>
+    <button onclick="checkAll()">Tout cocher</button>
+  </div>
+
+  <div class="card" id="shoppingList"></div>
+
+</section>
+
+
+<!-- PROGRÈS -->
+<section id="progress" class="page">
+
+  <div class="eyebrow">ÉVOLUTION</div>
+  <h1>Progrès 📈</h1>
+
+  <div class="stat-grid">
+
+    <div class="stat">
+      <small>Poids actuel</small>
+      <strong><span id="currentWeight">0</span> kg</strong>
+    </div>
+
+    <div class="stat">
+      <small>Calories cible</small>
+      <strong id="progressTarget">0</strong>
+    </div>
+
+    <div class="stat">
+      <small>Protéines</small>
+      <strong><span id="progressProtein">0</span>g</strong>
+    </div>
+
+    <div class="stat">
+      <small>Objectif</small>
+      <strong id="progressGoal">—</strong>
+    </div>
+
+  </div>
+
+
+  <div class="section-head">
+    <h2>Évolution du poids</h2>
+  </div>
+
+  <div class="card">
+
+    <div class="progress-chart" id="weightChart"></div>
+
+  </div>
+
+
+  <div class="section-head">
+    <h2>Ajouter une mesure</h2>
+  </div>
+
+  <div class="card">
+
+    <div class="input-row">
+
+      <input
+        id="newWeight"
+        class="input"
+        type="number"
+        step=".1"
+        placeholder="80.0">
+
+      <button
+        class="secondary"
+        onclick="addWeight()">
+        Ajouter
+      </button>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- GARDE MANGER -->
+<section id="pantry" class="page">
+
+  <div class="eyebrow">MAISON</div>
+  <h1>Garde-manger 🧊</h1>
+
+  <div class="card">
+
+    <div class="input-row">
+
+      <input
+        id="pantryInput"
+        class="input"
+        placeholder="Ex : riz, œufs...">
+
+      <button
+        class="add"
+        onclick="addPantry()">
+        +
+      </button>
+
+    </div>
+
+  </div>
+
+  <div class="section-head">
+    <h2>Disponible</h2>
+  </div>
+
+  <div class="card" id="pantryList"></div>
+
+</section>
+
+
+<!-- COACH -->
+<section id="coach" class="page">
+
+  <div class="eyebrow">BUDGETCOOK</div>
+  <h1>Coach 🤖</h1>
+
+  <div class="coach">
+
+    <div class="coach-head">
+
+      <div class="ai">🤖</div>
+
+      <div>
+        <b>BudgetCook Coach</b>
+        <small>Analyse locale de ton profil</small>
+      </div>
+
+    </div>
+
+    <div class="messages" id="messages">
+
+      <div class="message bot">
+        Salut 👋 Je connais ton objectif, tes calories
+        et ce que tu as mangé. Pose-moi une question.
+      </div>
+
+    </div>
+
+    <div class="chat-input">
+
+      <input
+        id="chatInput"
+        placeholder="Ex : que manger ce soir ?">
+
+      <button onclick="sendChat()">➤</button>
+
+    </div>
+
+  </div>
+
+
+  <div class="quick">
+
+    <button onclick="ask('Que manger ce soir ?')">
+      🍝 Repas
     </button>
 
-    <button class="nav-item" data-page="meals">
-      <span>✨</span>
-      <small>Repas</small>
+    <button onclick="ask('Comment économiser ?')">
+      💰 Budget
     </button>
 
-    <button class="nav-item" data-page="shopping">
-      <span>🛒</span>
-      <small>Courses</small>
+    <button onclick="ask('Combien de protéines ?')">
+      🥩 Protéines
     </button>
 
-    <button class="nav-item" data-page="profile">
-      <span>👤</span>
-      <small>Profil</small>
+    <button onclick="ask('Combien de calories me reste-t-il ?')">
+      🔥 Calories
     </button>
 
-  </nav>
+  </div>
+
+</section>
+
+
+<!-- PROFIL -->
+<section id="profile" class="page">
+
+  <div class="eyebrow">PERSONNALISATION</div>
+  <h1>Mon profil 👤</h1>
+
+  <div class="card">
+
+    <label>Prénom</label>
+    <input id="firstName" class="input">
+
+    <label>Âge</label>
+    <input id="age" class="input" type="number">
+
+    <label>Sexe</label>
+    <select id="sex" class="input">
+      <option value="male">Homme</option>
+      <option value="female">Femme</option>
+    </select>
+
+    <label>Taille (cm)</label>
+    <input id="height" class="input" type="number">
+
+    <label>Poids (kg)</label>
+    <input id="weight" class="input" type="number" step=".1">
+
+    <label>Activité</label>
+    <select id="activity" class="input">
+      <option value="1.2">Sédentaire</option>
+      <option value="1.35">Légèrement actif</option>
+      <option value="1.5">Modérément actif</option>
+      <option value="1.65">Actif</option>
+      <option value="1.75">Très actif</option>
+    </select>
+
+    <label>Entraînements / semaine</label>
+    <input id="training" class="input" type="number">
+
+    <label>Objectif</label>
+    <select id="goal" class="input">
+      <option value="cut">🔥 Perdre du gras</option>
+      <option value="maintain">⚖️ Maintenir</option>
+      <option value="bulk">💪 Prendre du muscle</option>
+    </select>
+
+    <label>Déficit / surplus</label>
+    <select id="adjustment" class="input">
+      <option value="200">200 kcal</option>
+      <option value="300">300 kcal</option>
+      <option value="400">400 kcal</option>
+      <option value="500">500 kcal</option>
+    </select>
+
+    <label>Budget courses / semaine</label>
+    <input id="budgetInput" class="input" type="number">
+
+    <button class="primary" style="margin-top:15px" onclick="saveProfile()">
+      Enregistrer mon profil
+    </button>
+
+  </div>
+
+
+  <div class="section-head">
+    <h2>Calcul nutritionnel</h2>
+  </div>
+
+  <div class="card stat-grid">
+
+    <div class="stat">
+      <small>Métabolisme de base</small>
+      <strong id="bmr">0</strong>
+    </div>
+
+    <div class="stat">
+      <small>Entretien</small>
+      <strong id="maintenance">0</strong>
+    </div>
+
+    <div class="stat">
+      <small>Calories cible</small>
+      <strong id="profileTarget">0</strong>
+    </div>
+
+    <div class="stat">
+      <small>Protéines</small>
+      <strong><span id="profileProtein">0</span>g</strong>
+    </div>
+
+    <div class="stat">
+      <small>Glucides</small>
+      <strong><span id="profileCarbs">0</span>g</strong>
+    </div>
+
+    <div class="stat">
+      <small>Lipides</small>
+      <strong><span id="profileFat">0</span>g</strong>
+    </div>
+
+  </div>
+
+
+  <div class="section-head">
+    <h2>Apparence</h2>
+  </div>
+
+  <button class="secondary" style="width:100%" onclick="toggleDark()">
+    🌙 Activer / désactiver le mode sombre
+  </button>
+
+</section>
+
+
+<!-- FOOD MODAL -->
+<div class="modal" id="foodModal">
+
+  <div class="modal-box">
+
+    <div class="modal-head">
+      <h2>Ajouter un aliment</h2>
+      <button onclick="closeFood()">×</button>
+    </div>
+
+    <input
+      id="foodSearch"
+      class="input"
+      placeholder="Rechercher...">
+
+    <div id="foodResults"></div>
+
+  </div>
 
 </div>
 
-<script src="data.js"></script>
-<script src="app.js"></script>
+
+<div class="toast" id="toast"></div>
+
+
+<!-- NAVIGATION -->
+<nav class="bottom">
+
+  <button class="nav active" data-page="home">
+    <span>⌂</span>
+    <small>Accueil</small>
+  </button>
+
+  <button class="nav" data-page="journal">
+    <span>🍽️</span>
+    <small>Journal</small>
+  </button>
+
+  <button class="nav" data-page="meals">
+    <span>✨</span>
+    <small>Repas</small>
+  </button>
+
+  <button class="nav" data-page="shopping">
+    <span>🛒</span>
+    <small>Courses</small>
+  </button>
+
+  <button class="nav" data-page="profile">
+    <span>👤</span>
+    <small>Profil</small>
+  </button>
+
+</nav>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   BUDGETCOOK V2
+   ========================================================= */
+
+const FOODS = [
+
+ {id:1,n:"Poulet",e:"🍗",c:165,p:31,g:0,l:3.6,price:.95},
+ {id:2,n:"Riz",e:"🍚",c:360,p:7,g:79,l:.7,price:.16},
+ {id:3,n:"Œufs",e:"🥚",c:143,p:13,g:1,l:10,price:.24},
+ {id:4,n:"Skyr",e:"🥛",c:63,p:10,g:4,l:.2,price:.42},
+ {id:5,n:"Banane",e:"🍌",c:89,p:1.1,g:23,l:.3,price:.22},
+ {id:6,n:"Flocons d'avoine",e:"🥣",c:370,p:13,g:60,l:7,price:.15},
+ {id:7,n:"Pâtes",e:"🍝",c:350,p:12,g:70,l:2,price:.16},
+ {id:8,n:"Thon",e:"🐟",c:116,p:26,g:0,l:1,price:1.05},
+ {id:9,n:"Pomme",e:"🍎",c:52,p:.3,g:14,l:.2,price:.25},
+ {id:10,n:"Pain complet",e:"🍞",c:247,p:13,g:41,l:4,price:.12},
+ {id:11,n:"Lentilles",e:"🫘",c:116,p:9,g:20,l:.4,price:.18},
+ {id:12,n:"Pommes de terre",e:"🥔",c:77,p:2,g:17,l:.1,price:.12},
+ {id:13,n:"Brocoli",e:"🥦",c:34,p:2.8,g:7,l:.4,price:.25},
+ {id:14,n:"Carottes",e:"🥕",c:41,p:.9,g:10,l:.2,price:.12},
+ {id:15,n:"Fromage blanc",e:"🥣",c:70,p:8,g:4,l:2,price:.35},
+ {id:16,n:"Beurre de cacahuète",e:"🥜",c:588,p:25,g:20,l:50,price:.30}
+
+];
+
+
+const RECIPES = [
+
+ {
+  id:1,
+  name:"Porridge banane & skyr",
+  type:"PETIT-DÉJEUNER",
+  emoji:"🥣",
+  base:1,
+  calories:470,
+  protein:31,
+  carbs:66,
+  fat:8,
+  price:1.35,
+  ingredients:[
+   ["Flocons d'avoine","60 g"],
+   ["Skyr","200 g"],
+   ["Banane","1"],
+   ["Beurre de cacahuète","10 g"]
+  ]
+ },
+
+ {
+  id:2,
+  name:"Poulet, riz & brocoli",
+  type:"DÉJEUNER",
+  emoji:"🍗",
+  base:1,
+  calories:650,
+  protein:55,
+  carbs:78,
+  fat:9,
+  price:2.70,
+  ingredients:[
+   ["Poulet","180 g"],
+   ["Riz","100 g"],
+   ["Brocoli","150 g"]
+  ]
+ },
+
+ {
+  id:3,
+  name:"Skyr & banane",
+  type:"COLLATION",
+  emoji:"🥛",
+  base:1,
+  calories:210,
+  protein:18,
+  carbs:31,
+  fat:1,
+  price:.85,
+  ingredients:[
+   ["Skyr","200 g"],
+   ["Banane","1"]
+  ]
+ },
+
+ {
+  id:4,
+  name:"Pâtes au thon",
+  type:"DÎNER",
+  emoji:"🍝",
+  base:1,
+  calories:590,
+  protein:47,
+  carbs:72,
+  fat:10,
+  price:2.20,
+  ingredients:[
+   ["Pâtes","100 g"],
+   ["Thon","120 g"],
+   ["Carottes","100 g"]
+  ]
+ }
+
+];
+
+
+const STORES = [
+ ["🟡","Lidl",49.20,"Meilleur prix"],
+ ["🔵","ALDI",50.70,"Très proche"],
+ ["🔴","E.Leclerc",52.40,"Prix moyen"],
+ ["🟢","Intermarché",54.10,"Prix moyen"],
+ ["🔵","Carrefour",57.40,"Plus cher"]
+];
+
+
+const SHOPPING = [
+ ["🍗","Poulet","1,5 kg"],
+ ["🥚","Œufs","24"],
+ ["🥛","Skyr","2 kg"],
+ ["🍚","Riz","2 kg"],
+ ["🍌","Bananes","1,5 kg"],
+ ["🥦","Brocoli","1 kg"],
+ ["🍝","Pâtes","1 kg"],
+ ["🐟","Thon","4 boîtes"],
+ ["🍎","Pommes","1 kg"],
+ ["🥕","Carottes","1 kg"]
+];
+
+
+const DEFAULT = {
+ profile:{
+  firstName:"",
+  age:"",
+  sex:"male",
+  height:"",
+  weight:"",
+  activity:"1.5",
+  training:"0",
+  goal:"cut",
+  adjustment:"300",
+  budget:"50"
+ },
+ consumed:[],
+ weights:[],
+ pantry:[],
+ checked:[],
+ streak:0,
+ dark:false
+};
+
+
+let state = load();
+
+
+function load(){
+
+ try{
+
+  const s=localStorage.getItem("budgetcook_v2");
+
+  if(s){
+
+   const parsed=JSON.parse(s);
+
+   return {
+    ...DEFAULT,
+    ...parsed,
+    profile:{
+     ...DEFAULT.profile,
+     ...(parsed.profile||{})
+    }
+   };
+
+  }
+
+ }catch(e){}
+
+ return JSON.parse(JSON.stringify(DEFAULT));
+
+}
+
+
+function save(){
+ localStorage.setItem("budgetcook_v2",JSON.stringify(state));
+}
+
+
+function $(id){
+ return document.getElementById(id);
+}
+
+
+function escape(v){
+
+ return String(v)
+  .replaceAll("&","&amp;")
+  .replaceAll("<","&lt;")
+  .replaceAll(">","&gt;")
+  .replaceAll('"',"&quot;")
+  .replaceAll("'","&#039;");
+
+}
+
+
+function toast(text){
+
+ const t=$("toast");
+
+ t.textContent=text;
+ t.classList.add("show");
+
+ clearTimeout(window.toastTimer);
+
+ window.toastTimer=setTimeout(()=>{
+  t.classList.remove("show");
+ },1800);
+
+}
+
+
+/* NAVIGATION */
+
+function go(page){
+
+ document.querySelectorAll(".page")
+  .forEach(p=>p.classList.remove("active"));
+
+ $(page).classList.add("active");
+
+ document.querySelectorAll(".nav")
+  .forEach(n=>{
+   n.classList.toggle(
+    "active",
+    n.dataset.page===page
+   );
+  });
+
+ window.scrollTo({top:0,behavior:"smooth"});
+
+}
+
+
+document.querySelectorAll(".nav")
+.forEach(n=>{
+ n.addEventListener("click",()=>{
+  go(n.dataset.page);
+ });
+});
+
+
+$("avatar").onclick=()=>go("profile");
+
+
+/* NUTRITION */
+
+function nutrition(){
+
+ const p=state.profile;
+
+ const age=Number(p.age);
+ const h=Number(p.height);
+ const w=Number(p.weight);
+ const activity=Number(p.activity)||1.5;
+ const adjustment=Number(p.adjustment)||300;
+
+ if(!age||!h||!w){
+
+  return {
+   bmr:0,
+   maintenance:0,
+   target:0,
+   protein:0,
+   carbs:0,
+   fat:0
+  };
+
+ }
+
+ let bmr;
+
+ if(p.sex==="female"){
+
+  bmr=
+   10*w+
+   6.25*h-
+   5*age-
+   161;
+
+ }else{
+
+  bmr=
+   10*w+
+   6.25*h-
+   5*age+
+   5;
+
+ }
+
+ const maintenance=Math.round(bmr*activity);
+
+ let target=maintenance;
+
+ if(p.goal==="cut")
+  target=maintenance-adjustment;
+
+ if(p.goal==="bulk")
+  target=maintenance+adjustment;
+
+ target=Math.max(
+  p.sex==="female"?1200:1500,
+  target
+ );
+
+ target=Math.round(target);
+
+ /*
+  Protéines autour de 2 g/kg.
+  Les glucides sont calculés APRES protéines
+  et lipides, afin d'éviter les incohérences.
+ */
+
+ let protein=Math.round(w*2);
+
+ let fat=Math.round(w*.8);
+
+ protein=Math.min(
+  protein,
+  Math.floor(target*.35/4)
+ );
+
+ fat=Math.min(
+  fat,
+  Math.floor(target*.35/9)
+ );
+
+ let caloriesLeft=
+  target-
+  protein*4-
+  fat*9;
+
+ let carbs=
+  Math.max(
+   0,
+   Math.round(caloriesLeft/4)
+  );
+
+ return {
+  bmr:Math.round(bmr),
+  maintenance,
+  target,
+  protein,
+  carbs,
+  fat
+ };
+
+}
+
+
+/* PROFILE */
+
+function loadProfile(){
+
+ const p=state.profile;
+
+ $("firstName").value=p.firstName||"";
+ $("age").value=p.age||"";
+ $("sex").value=p.sex||"male";
+ $("height").value=p.height||"";
+ $("weight").value=p.weight||"";
+ $("activity").value=p.activity||"1.5";
+ $("training").value=p.training||"";
+ $("goal").value=p.goal||"cut";
+ $("adjustment").value=p.adjustment||"300";
+ $("budgetInput").value=p.budget||"50";
+
+}
+
+
+function saveProfile(){
+
+ state.profile.firstName=$("firstName").value.trim();
+ state.profile.age=$("age").value;
+ state.profile.sex=$("sex").value;
+ state.profile.height=$("height").value;
+ state.profile.weight=$("weight").value;
+ state.profile.activity=$("activity").value;
+ state.profile.training=$("training").value;
+ state.profile.goal=$("goal").value;
+ state.profile.adjustment=$("adjustment").value;
+ state.profile.budget=$("budgetInput").value;
+
+ save();
+ update();
+
+ toast("Profil enregistré ✅");
+
+}
+
+
+function goalName(){
+
+ if(state.profile.goal==="cut")
+  return "Perte de gras";
+
+ if(state.profile.goal==="bulk")
+  return "Prise de muscle";
+
+ return "Maintien";
+
+}
+
+
+/* CONSUMPTION */
+
+function totals(){
+
+ return state.consumed.reduce(
+  (a,x)=>{
+
+   a.c+=Number(x.c)||0;
+   a.p+=Number(x.p)||0;
+   a.g+=Number(x.g)||0;
+   a.l+=Number(x.l)||0;
+
+   return a;
+
+  },
+  {c:0,p:0,g:0,l:0}
+ );
+
+}
+
+
+function updateHome(){
+
+ const n=nutrition();
+ const t=totals();
+
+ $("hello").textContent=
+  state.profile.firstName||
+  "👋";
+
+ $("target").textContent=n.target||0;
+ $("protein").textContent=Math.round(n.protein)+"g";
+ $("carbs").textContent=Math.round(n.carbs)+"g";
+ $("fat").textContent=Math.round(n.fat)+"g";
+
+ $("eaten").textContent=Math.round(t.c);
+ $("left").textContent=Math.max(0,Math.round(n.target-t.c));
+
+ $("budget").textContent=
+  state.profile.budget||0;
+
+ $("goalPill").textContent=
+  n.target?goalName():"Configure ton profil";
+
+ $("streak").textContent=
+  state.streak+
+  (state.streak===1?" jour":" jours");
+
+ const percentage=n.target
+  ?Math.min(100,t.c/n.target*100)
+  :0;
+
+ $("calorieBar").style.width=
+  percentage+"%";
+
+ renderHomeMeals();
+
+}
+
+
+function renderHomeMeals(){
+
+ $("homeMeals").innerHTML=
+  RECIPES.slice(0,3)
+   .map(r=>mealHTML(r))
+   .join("");
+
+}
+
+
+function mealHTML(r,portion=1){
+
+ const c=Math.round(r.calories*portion);
+ const p=Math.round(r.protein*portion);
+
+ return `
+
+ <div class="meal">
+
+  <div class="meal-img">${r.emoji}</div>
+
+  <div class="meal-body">
+
+   <div class="meal-type">${r.type}</div>
+
+   <h3>${escape(r.name)}</h3>
+
+   <div class="meal-meta">
+    ${c} kcal · ${p}g protéines
+   </div>
+
+   <div class="meal-price">
+    ≈ ${(r.price*portion).toFixed(2)} €
+   </div>
+
+  </div>
+
+  <button class="add"
+   onclick="addRecipe(${r.id},${portion})">
+   +
+  </button>
+
+ </div>
+
+ `;
+
+}
+
+
+/* JOURNAL */
+
+function renderJournal(){
+
+ const t=totals();
+
+ $("journalCal").textContent=Math.round(t.c);
+ $("journalPro").textContent=Math.round(t.p);
+ $("journalCarb").textContent=Math.round(t.g);
+ $("journalFat").textContent=Math.round(t.l);
+
+ if(!state.consumed.length){
+
+  $("journalList").innerHTML=
+   `<div class="card empty">
+    Rien pour l'instant. Ajoute ton premier aliment 👇
+   </div>`;
+
+  return;
+
+ }
+
+ $("journalList").innerHTML=
+  state.consumed.map((x,i)=>`
+
+   <div class="meal">
+
+    <div class="meal-img">${x.e||"🍽️"}</div>
+
+    <div class="meal-body">
+
+     <div class="meal-type">${x.meal||"ALIMENT"}</div>
+
+     <h3>${escape(x.name)}</h3>
+
+     <div class="meal-meta">
+      ${Math.round(x.c)} kcal ·
+      ${Math.round(x.p)}g P ·
+      ${Math.round(x.g)}g G ·
+      ${Math.round(x.l)}g L
+     </div>
+
+    </div>
+
+    <button class="delete"
+     onclick="removeFood(${i})">
+     ×
+    </button>
+
+   </div>
+
+  `).join("");
+
+}
+
+
+function addFoodData(food,portion=.1){
+
+ /*
+  food values = 100 g.
+  portion=.1 => 10 g.
+  Pour une utilisation normale, le modal
+  propose 100 g.
+ */
+
+ state.consumed.push({
+
+  name:food.n,
+  e:food.e,
+  c:food.c*portion,
+  p:food.p*portion,
+  g:food.g*portion,
+  l:food.l*portion,
+  meal:"ALIMENT"
+
+ });
+
+ save();
+ update();
+
+ toast(food.n+" ajouté ✅");
+
+}
+
+
+function removeFood(i){
+
+ state.consumed.splice(i,1);
+
+ save();
+ update();
+
+}
+
+
+function clearJournal(){
+
+ if(!state.consumed.length)return;
+
+ state.consumed=[];
+
+ save();
+ update();
+
+ toast("Journal réinitialisé");
+
+}
+
+
+/* FOOD MODAL */
+
+function openFood(){
+
+ $("foodModal").classList.add("open");
+
+ $("foodSearch").value="";
+
+ renderFood("");
+
+ setTimeout(()=>{
+  $("foodSearch").focus();
+ },100);
+
+}
+
+
+function closeFood(){
+ $("foodModal").classList.remove("open");
+}
+
+
+$("foodSearch").addEventListener(
+ "input",
+ e=>renderFood(e.target.value)
+);
+
+
+function renderFood(query){
+
+ const q=query.toLowerCase().trim();
+
+ const arr=FOODS.filter(f=>
+  f.n.toLowerCase().includes(q)
+ );
+
+ $("foodResults").innerHTML=
+  arr.map(f=>`
+
+   <div class="food">
+
+    <div>
+
+     <b>${f.e} ${escape(f.n)}</b>
+
+     <small>
+      ${f.c} kcal ·
+      ${f.p}g protéines / 100g
+     </small>
+
+    </div>
+
+    <button
+     onclick="addFoodData(FOODS.find(x=>x.id===${f.id}),1)">
+     +
+    </button>
+
+   </div>
+
+  `).join("");
+
+}
+
+
+/* RECIPES */
+
+function renderRecipes(){
+
+ $("recipes").innerHTML=
+  RECIPES.map((r,index)=>`
+
+   <div class="recipe" id="recipe-${r.id}">
+
+    <div class="recipe-top">
+
+     <div class="recipe-icon">${r.emoji}</div>
+
+     <div style="flex:1">
+
+      <h3>${escape(r.name)}</h3>
+
+      <p>
+       ${r.calories} kcal ·
+       ${r.protein}g protéines ·
+       ${r.price.toFixed(2)} €
+      </p>
+
+      <div class="portion">
+
+       <button onclick="changePortion(${r.id},-0.25)">
+        −
+       </button>
+
+       <strong id="portion-${r.id}">1×</strong>
+
+       <button onclick="changePortion(${r.id},.25)">
+        +
+       </button>
+
+       <button
+        class="secondary"
+        style="padding:7px 9px"
+        onclick="addRecipe(${r.id},getPortion(${r.id}))">
+        Ajouter
+       </button>
+
+      </div>
+
+     </div>
+
+     <button
+      class="secondary"
+      style="height:31px;padding:5px 9px"
+      onclick="toggleRecipe(${r.id})">
+      ⋯
+     </button>
+
+    </div>
+
+    <div class="recipe-detail">
+
+     <b style="font-size:10px">Ingrédients</b>
+
+     ${r.ingredients.map(i=>`
+
+      <div class="ingredient">
+       <span>${escape(i[0])}</span>
+       <b>${i[1]}</b>
+      </div>
+
+     `).join("")}
+
+    </div>
+
+   </div>
+
+  `).join("");
+
+}
+
+
+const portions={};
+
+
+function getPortion(id){
+ return portions[id]||1;
+}
+
+
+function changePortion(id,delta){
+
+ let value=
+  Math.round(
+   (getPortion(id)+delta)*4
+  )/4;
+
+ value=Math.max(.25,Math.min(4,value));
+
+ portions[id]=value;
+
+ $("portion-"+id).textContent=
+  value+"×";
+
+}
+
+
+function toggleRecipe(id){
+
+ $("recipe-"+id)
+  .classList.toggle("open");
+
+}
+
+
+function addRecipe(id,portion=1){
+
+ const r=RECIPES.find(x=>x.id===id);
+
+ if(!r)return;
+
+ state.consumed.push({
+
+  name:r.name,
+  e:r.emoji,
+  c:r.calories*portion,
+  p:r.protein*portion,
+  g:r.carbs*portion,
+  l:r.fat*portion,
+  meal:r.type
+
+ });
+
+ save();
+ update();
+
+ toast(r.name+" ajouté au journal 🍽️");
+
+}
+
+
+function generateDay(){
+
+ const n=nutrition();
+
+ if(!n.target){
+
+  toast("Configure d'abord ton profil");
+
+  go("profile");
+
+  return;
+
+ }
+
+ /*
+  On adapte les portions de la journée
+  autour de la cible calorique.
+ */
+
+ const base=
+  RECIPES.reduce(
+   (sum,r)=>sum+r.calories,
+   0
+  );
+
+ const factor=
+  n.target/base;
+
+ RECIPES.forEach(r=>{
+  portions[r.id]=
+   Math.round(
+    Math.max(.5,Math.min(2,factor))*4
+   )/4;
+ });
+
+ renderRecipes();
+
+ toast("Journée adaptée à ton objectif ✨");
+
+}
+
+
+/* SHOPPING */
+
+function renderStores(){
+
+ $("stores").innerHTML=
+  STORES.map((s,i)=>`
+
+   <div class="store">
+
+    <div>
+
+     <div class="store-name">
+      ${s[0]} ${s[1]}
+     </div>
+
+     <div class="store-note">
+      ${s[3]}
+     </div>
+
+    </div>
+
+    <div class="store-price">
+     ${s[2].toFixed(2)} €
+    </div>
+
+   </div>
+
+  `).join("")
+
+  +
+  `<div class="empty">
+    Prix indicatifs de démonstration.
+   </div>`;
+
+}
+
+
+function renderShopping(){
+
+ $("shoppingList").innerHTML=
+  SHOPPING.map((x,i)=>{
+
+   const checked=
+    state.checked.includes(i);
+
+   return `
+
+    <div class="list-item">
+
+     <div class="list-left">
+
+      <button
+       class="check ${checked?"done":""}"
+       onclick="toggleCheck(${i})">
+
+       ${checked?"✓":""}
+
+      </button>
+
+      <div>
+
+       <div class="item-name">
+        ${x[0]} ${x[1]}
+       </div>
+
+       <div class="item-sub">
+        ${x[2]}
+       </div>
+
+      </div>
+
+     </div>
+
+    </div>
+
+   `;
+
+  }).join("");
+
+}
+
+
+function toggleCheck(i){
+
+ if(state.checked.includes(i)){
+
+  state.checked=
+   state.checked.filter(x=>x!==i);
+
+ }else{
+
+  state.checked.push(i);
+
+ }
+
+ save();
+ renderShopping();
+
+}
+
+
+function checkAll(){
+
+ state.checked=
+  SHOPPING.map((_,i)=>i);
+
+ save();
+ renderShopping();
+
+ toast("Courses cochées 🛒");
+
+}
+
+
+/* PANTRY */
+
+function renderPantry(){
+
+ if(!state.pantry.length){
+
+  $("pantryList").innerHTML=
+   `<div class="empty">
+    Ton garde-manger est vide.
+   </div>`;
+
+  return;
+
+ }
+
+ $("pantryList").innerHTML=
+  state.pantry.map((x,i)=>`
+
+   <div class="list-item">
+
+    <div class="item-name">
+     🧊 ${escape(x)}
+    </div>
+
+    <button
+     class="delete"
+     onclick="removePantry(${i})">
+     ×
+    </button>
+
+   </div>
+
+  `).join("");
+
+}
+
+
+function addPantry(){
+
+ const value=
+  $("pantryInput").value.trim();
+
+ if(!value)return;
+
+ state.pantry.push(value);
+
+ $("pantryInput").value="";
+
+ save();
+ renderPantry();
+
+ toast(value+" ajouté 🧊");
+
+}
+
+
+function removePantry(i){
+
+ state.pantry.splice(i,1);
+
+ save();
+ renderPantry();
+
+}
+
+
+/* PROGRESS */
+
+function renderProgress(){
+
+ const n=nutrition();
+
+ $("currentWeight").textContent=
+  state.profile.weight||0;
+
+ $("progressTarget").textContent=
+  n.target||0;
+
+ $("progressProtein").textContent=
+  n.protein||0;
+
+ $("progressGoal").textContent=
+  n.target?goalName():"—";
+
+
+ const arr=state.weights;
+
+ if(!arr.length){
+
+  $("weightChart").innerHTML=
+   `<div class="empty" style="width:100%">
+    Ajoute ton premier poids pour commencer le suivi.
+   </div>`;
+
+  return;
+
+ }
+
+ const values=
+  arr.map(x=>Number(x.weight));
+
+ const min=Math.min(...values);
+ const max=Math.max(...values);
+
+ $("weightChart").innerHTML=
+  arr.slice(-14).map(x=>{
+
+   let percent=50;
+
+   if(max!==min){
+
+    percent=
+     15+
+     ((x.weight-min)/(max-min))*75;
+
+   }
+
+   return `
+
+    <div
+     class="bar"
+     style="height:${percent}%">
+
+     <span>${x.weight}</span>
+
+    </div>
+
+   `;
+
+  }).join("");
+
+}
+
+
+function addWeight(){
+
+ const v=Number($("newWeight").value);
+
+ if(!v||v<30||v>300){
+
+  toast("Poids invalide");
+
+  return;
+
+ }
+
+ state.profile.weight=v;
+
+ state.weights.push({
+  weight:v,
+  date:new Date().toLocaleDateString("fr-FR")
+ });
+
+ $("newWeight").value="";
+
+ save();
+ update();
+
+ toast("Poids enregistré 📈");
+
+}
+
+
+/* COACH */
+
+function answer(text){
+
+ const q=text.toLowerCase();
+
+ const n=nutrition();
+ const t=totals();
+
+ if(q.includes("protéine")){
+
+  return `
+   Ton objectif est d'environ
+   <b>${n.protein} g</b> de protéines par jour.
+   Tu en as actuellement consommé
+   <b>${Math.round(t.p)} g</b>.
+  `;
+
+ }
+
+ if(q.includes("calorie")){
+
+  return `
+   Objectif : <b>${n.target} kcal</b>.<br>
+   Consommé : <b>${Math.round(t.c)} kcal</b>.<br>
+   Il te reste environ
+   <b>${Math.max(0,Math.round(n.target-t.c))} kcal</b>.
+  `;
+
+ }
+
+ if(q.includes("budget")||q.includes("économ")){
+
+  return `
+   Ton budget hebdomadaire est de
+   <b>${state.profile.budget||0} €</b>.
+   Pour économiser, construis tes repas autour
+   d'aliments peu chers et riches en protéines :
+   œufs, poulet, lentilles, skyr, thon et féculents.
+  `;
+
+ }
+
+ if(q.includes("soir")){
+
+  const remaining=
+   Math.max(0,n.target-t.c);
+
+  return `
+   Il te reste environ
+   <b>${Math.round(remaining)} kcal</b>.
+   Je choisirais une portion de
+   <b>pâtes au thon</b>, ajustée selon ce qu'il te reste.
+  `;
+
+ }
+
+ if(q.includes("manger")||q.includes("repas")){
+
+  return `
+   Pour ton objectif, mes choix faciles seraient :
+   <b>poulet/riz</b>, <b>pâtes au thon</b>
+   ou <b>skyr + banane</b>.
+   Le meilleur choix dépend surtout de tes calories restantes.
+  `;
+
+ }
+
+ return `
+  Je peux analyser tes calories, protéines,
+  repas et budget. Essaie par exemple :
+  « combien de calories me reste-t-il ? »
+ `;
+
+}
+
+
+function ask(text){
+
+ $("chatInput").value=text;
+
+ sendChat();
+
+}
+
+
+function sendChat(){
+
+ const input=$("chatInput");
+ const text=input.value.trim();
+
+ if(!text)return;
+
+ const messages=$("messages");
+
+ messages.innerHTML+=`
+  <div class="message user">
+   ${escape(text)}
+  </div>
+ `;
+
+ input.value="";
+
+ setTimeout(()=>{
+
+  messages.innerHTML+=`
+   <div class="message bot">
+    🤖 ${answer(text)}
+   </div>
+  `;
+
+  messages.scrollTop=messages.scrollHeight;
+
+ },150);
+
+}
+
+
+/* DARK MODE */
+
+function toggleDark(){
+
+ state.dark=!state.dark;
+
+ document.body.classList.toggle(
+  "dark",
+  state.dark
+ );
+
+ save();
+
+}
+
+
+/* GLOBAL UPDATE */
+
+function update(){
+
+ updateHome();
+ renderJournal();
+ renderRecipes();
+ renderStores();
+ renderShopping();
+ renderPantry();
+ renderProgress();
+
+ const n=nutrition();
+
+ $("bmr").textContent=n.bmr||0;
+ $("maintenance").textContent=n.maintenance||0;
+ $("profileTarget").textContent=n.target||0;
+ $("profileProtein").textContent=n.protein||0;
+ $("profileCarbs").textContent=n.carbs||0;
+ $("profileFat").textContent=n.fat||0;
+
+}
+
+
+/* INIT */
+
+loadProfile();
+
+document.body.classList.toggle(
+ "dark",
+ state.dark
+);
+
+update();
+
+</script>
 
 </body>
 </html>
