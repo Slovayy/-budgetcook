@@ -1,126 +1,503 @@
-window.BUDGETCOOK_DATA = {
+const FOODS = [
+  {
+    id: "chicken",
+    name: "Poulet",
+    emoji: "🍗",
+    unit: "100 g",
+    kcal: 165,
+    protein: 31,
+    carbs: 0,
+    fat: 3.6
+  },
 
-  foods: [
+  {
+    id: "rice",
+    name: "Riz blanc cuit",
+    emoji: "🍚",
+    unit: "100 g",
+    kcal: 130,
+    protein: 2.7,
+    carbs: 28,
+    fat: 0.3
+  },
 
-    {id:1,name:"Poulet",emoji:"🍗",cal:165,protein:31,carbs:0,fat:3.6,price:.95},
-    {id:2,name:"Riz",emoji:"🍚",cal:360,protein:7,carbs:79,fat:.7,price:.16},
-    {id:3,name:"Œufs",emoji:"🥚",cal:143,protein:13,carbs:1,fat:10,price:.24},
-    {id:4,name:"Skyr",emoji:"🥛",cal:63,protein:10,carbs:4,fat:.2,price:.42},
-    {id:5,name:"Banane",emoji:"🍌",cal:89,protein:1.1,carbs:23,fat:.3,price:.22},
-    {id:6,name:"Flocons d'avoine",emoji:"🥣",cal:370,protein:13,carbs:60,fat:7,price:.15},
-    {id:7,name:"Pâtes",emoji:"🍝",cal:350,protein:12,carbs:70,fat:2,price:.16},
-    {id:8,name:"Thon au naturel",emoji:"🐟",cal:116,protein:26,carbs:0,fat:1,price:1.05},
-    {id:9,name:"Pomme",emoji:"🍎",cal:52,protein:.3,carbs:14,fat:.2,price:.25},
-    {id:10,name:"Pain complet",emoji:"🍞",cal:247,protein:13,carbs:41,fat:4,price:.12},
-    {id:11,name:"Lentilles",emoji:"🫘",cal:116,protein:9,carbs:20,fat:.4,price:.18},
-    {id:12,name:"Pommes de terre",emoji:"🥔",cal:77,protein:2,carbs:17,fat:.1,price:.12},
-    {id:13,name:"Brocoli",emoji:"🥦",cal:34,protein:2.8,carbs:7,fat:.4,price:.25},
-    {id:14,name:"Carottes",emoji:"🥕",cal:41,protein:.9,carbs:10,fat:.2,price:.12},
-    {id:15,name:"Fromage blanc",emoji:"🥣",cal:70,protein:8,carbs:4,fat:2,price:.35},
-    {id:16,name:"Beurre de cacahuète",emoji:"🥜",cal:588,protein:25,carbs:20,fat:50,price:.30}
+  {
+    id: "pasta",
+    name: "Pâtes cuites",
+    emoji: "🍝",
+    unit: "100 g",
+    kcal: 158,
+    protein: 5.8,
+    carbs: 30.9,
+    fat: 0.9
+  },
 
-  ],
+  {
+    id: "tuna",
+    name: "Thon au naturel",
+    emoji: "🐟",
+    unit: "100 g",
+    kcal: 116,
+    protein: 26,
+    carbs: 0,
+    fat: 1
+  },
 
-  meals: [
+  {
+    id: "egg",
+    name: "Œuf",
+    emoji: "🥚",
+    unit: "100 g",
+    kcal: 143,
+    protein: 12.6,
+    carbs: 0.7,
+    fat: 9.5
+  },
 
-    {
-      type:"PETIT-DÉJEUNER",
-      name:"Porridge banane & skyr",
-      emoji:"🥣",
-      calories:470,
-      protein:31,
-      carbs:66,
-      fat:8,
-      price:1.35
-    },
+  {
+    id: "beef",
+    name: "Bœuf haché 5%",
+    emoji: "🥩",
+    unit: "100 g",
+    kcal: 137,
+    protein: 21,
+    carbs: 0,
+    fat: 5
+  },
 
-    {
-      type:"DÉJEUNER",
-      name:"Poulet, riz & brocoli",
-      emoji:"🍗",
-      calories:650,
-      protein:55,
-      carbs:78,
-      fat:9,
-      price:2.70
-    },
+  {
+    id: "salmon",
+    name: "Saumon",
+    emoji: "🐟",
+    unit: "100 g",
+    kcal: 208,
+    protein: 20,
+    carbs: 0,
+    fat: 13
+  },
 
-    {
-      type:"COLLATION",
-      name:"Skyr & banane",
-      emoji:"🥛",
-      calories:210,
-      protein:18,
-      carbs:31,
-      fat:1,
-      price:.85
-    },
+  {
+    id: "potato",
+    name: "Pomme de terre",
+    emoji: "🥔",
+    unit: "100 g",
+    kcal: 77,
+    protein: 2,
+    carbs: 17,
+    fat: 0.1
+  },
 
-    {
-      type:"DÎNER",
-      name:"Pâtes au thon",
-      emoji:"🍝",
-      calories:590,
-      protein:47,
-      carbs:72,
-      fat:10,
-      price:2.20
-    }
+  {
+    id: "oats",
+    name: "Flocons d’avoine",
+    emoji: "🥣",
+    unit: "100 g",
+    kcal: 389,
+    protein: 16.9,
+    carbs: 66.3,
+    fat: 6.9
+  },
 
-  ],
+  {
+    id: "banana",
+    name: "Banane",
+    emoji: "🍌",
+    unit: "100 g",
+    kcal: 89,
+    protein: 1.1,
+    carbs: 22.8,
+    fat: 0.3
+  },
 
-  stores:[
+  {
+    id: "apple",
+    name: "Pomme",
+    emoji: "🍎",
+    unit: "100 g",
+    kcal: 52,
+    protein: 0.3,
+    carbs: 13.8,
+    fat: 0.2
+  },
 
-    {
-      name:"Lidl",
-      emoji:"🟡",
-      price:49.20,
-      note:"Meilleur rapport prix"
-    },
+  {
+    id: "avocado",
+    name: "Avocat",
+    emoji: "🥑",
+    unit: "100 g",
+    kcal: 160,
+    protein: 2,
+    carbs: 8.5,
+    fat: 14.7
+  },
 
-    {
-      name:"ALDI",
-      emoji:"🔵",
-      price:50.70,
-      note:"Très proche"
-    },
+  {
+    id: "bread",
+    name: "Pain",
+    emoji: "🍞",
+    unit: "100 g",
+    kcal: 265,
+    protein: 9,
+    carbs: 49,
+    fat: 3.2
+  },
 
-    {
-      name:"E.Leclerc",
-      emoji:"🔴",
-      price:52.40,
-      note:"Prix moyen"
-    },
+  {
+    id: "milk",
+    name: "Lait demi-écrémé",
+    emoji: "🥛",
+    unit: "100 ml",
+    kcal: 46,
+    protein: 3.2,
+    carbs: 4.8,
+    fat: 1.6
+  },
 
-    {
-      name:"Intermarché",
-      emoji:"🟢",
-      price:54.10,
-      note:"Prix moyen"
-    },
+  {
+    id: "yogurt",
+    name: "Yaourt nature",
+    emoji: "🥛",
+    unit: "100 g",
+    kcal: 61,
+    protein: 3.5,
+    carbs: 4.7,
+    fat: 3.3
+  },
 
-    {
-      name:"Carrefour",
-      emoji:"🔵",
-      price:57.40,
-      note:"Plus cher sur ce panier"
-    }
+  {
+    id: "greek_yogurt",
+    name: "Skyr",
+    emoji: "🥣",
+    unit: "100 g",
+    kcal: 63,
+    protein: 10.6,
+    carbs: 3.9,
+    fat: 0.2
+  },
 
-  ],
+  {
+    id: "cheese",
+    name: "Emmental",
+    emoji: "🧀",
+    unit: "100 g",
+    kcal: 380,
+    protein: 28,
+    carbs: 0.5,
+    fat: 29
+  },
 
-  shopping:[
+  {
+    id: "olive_oil",
+    name: "Huile d’olive",
+    emoji: "🫒",
+    unit: "100 g",
+    kcal: 884,
+    protein: 0,
+    carbs: 0,
+    fat: 100
+  },
 
-    {name:"Poulet",quantity:"1,5 kg",emoji:"🍗"},
-    {name:"Œufs",quantity:"24",emoji:"🥚"},
-    {name:"Skyr",quantity:"2 kg",emoji:"🥛"},
-    {name:"Riz",quantity:"2 kg",emoji:"🍚"},
-    {name:"Bananes",quantity:"1,5 kg",emoji:"🍌"},
-    {name:"Brocoli",quantity:"1 kg",emoji:"🥦"},
-    {name:"Pâtes",quantity:"1 kg",emoji:"🍝"},
-    {name:"Thon",quantity:"4 boîtes",emoji:"🐟"},
-    {name:"Pommes",quantity:"1 kg",emoji:"🍎"},
-    {name:"Carottes",quantity:"1 kg",emoji:"🥕"}
+  {
+    id: "tomato",
+    name: "Tomate",
+    emoji: "🍅",
+    unit: "100 g",
+    kcal: 18,
+    protein: 0.9,
+    carbs: 3.9,
+    fat: 0.2
+  },
 
-  ]
+  {
+    id: "broccoli",
+    name: "Brocoli",
+    emoji: "🥦",
+    unit: "100 g",
+    kcal: 34,
+    protein: 2.8,
+    carbs: 7,
+    fat: 0.4
+  },
 
-};
+  {
+    id: "carrot",
+    name: "Carotte",
+    emoji: "🥕",
+    unit: "100 g",
+    kcal: 41,
+    protein: 0.9,
+    carbs: 9.6,
+    fat: 0.2
+  },
+
+  {
+    id: "lentils",
+    name: "Lentilles cuites",
+    emoji: "🫘",
+    unit: "100 g",
+    kcal: 116,
+    protein: 9,
+    carbs: 20,
+    fat: 0.4
+  },
+
+  {
+    id: "beans",
+    name: "Haricots rouges cuits",
+    emoji: "🫘",
+    unit: "100 g",
+    kcal: 127,
+    protein: 8.7,
+    carbs: 22.8,
+    fat: 0.5
+  },
+
+  {
+    id: "chickpeas",
+    name: "Pois chiches cuits",
+    emoji: "🫘",
+    unit: "100 g",
+    kcal: 164,
+    protein: 8.9,
+    carbs: 27.4,
+    fat: 2.6
+  }
+];
+
+
+const RECIPES = [
+  {
+    id: "chicken-rice",
+    name: "Poulet & riz",
+    emoji: "🍗",
+    kcal: 620,
+    protein: 52,
+    carbs: 72,
+    fat: 12,
+
+    ingredients: [
+      {
+        food: "chicken",
+        grams: 180
+      },
+      {
+        food: "rice",
+        grams: 250
+      },
+      {
+        food: "olive_oil",
+        grams: 8
+      },
+      {
+        food: "broccoli",
+        grams: 150
+      }
+    ]
+  },
+
+  {
+    id: "tuna-pasta",
+    name: "Pâtes au thon",
+    emoji: "🍝",
+    kcal: 590,
+    protein: 45,
+    carbs: 78,
+    fat: 10,
+
+    ingredients: [
+      {
+        food: "pasta",
+        grams: 250
+      },
+      {
+        food: "tuna",
+        grams: 120
+      },
+      {
+        food: "tomato",
+        grams: 150
+      },
+      {
+        food: "olive_oil",
+        grams: 8
+      }
+    ]
+  },
+
+  {
+    id: "beef-potatoes",
+    name: "Bœuf & pommes de terre",
+    emoji: "🥩",
+    kcal: 610,
+    protein: 48,
+    carbs: 58,
+    fat: 20,
+
+    ingredients: [
+      {
+        food: "beef",
+        grams: 180
+      },
+      {
+        food: "potato",
+        grams: 300
+      },
+      {
+        food: "broccoli",
+        grams: 150
+      }
+    ]
+  },
+
+  {
+    id: "oat-bowl",
+    name: "Bowl avoine & banane",
+    emoji: "🥣",
+    kcal: 480,
+    protein: 28,
+    carbs: 65,
+    fat: 12,
+
+    ingredients: [
+      {
+        food: "oats",
+        grams: 60
+      },
+      {
+        food: "milk",
+        grams: 200
+      },
+      {
+        food: "banana",
+        grams: 120
+      },
+      {
+        food: "greek_yogurt",
+        grams: 150
+      }
+    ]
+  },
+
+  {
+    id: "salmon-rice",
+    name: "Saumon & riz",
+    emoji: "🐟",
+    kcal: 650,
+    protein: 43,
+    carbs: 65,
+    fat: 22,
+
+    ingredients: [
+      {
+        food: "salmon",
+        grams: 160
+      },
+      {
+        food: "rice",
+        grams: 250
+      },
+      {
+        food: "broccoli",
+        grams: 150
+      }
+    ]
+  }
+];
+
+
+const SHOPPING_ITEMS = [
+  {
+    id: "chicken",
+    name: "Poulet",
+    quantity: "1 kg",
+    price: 8
+  },
+
+  {
+    id: "rice",
+    name: "Riz",
+    quantity: "1 kg",
+    price: 2
+  },
+
+  {
+    id: "pasta",
+    name: "Pâtes",
+    quantity: "1 kg",
+    price: 2
+  },
+
+  {
+    id: "tuna",
+    name: "Thon",
+    quantity: "4 boîtes",
+    price: 5
+  },
+
+  {
+    id: "egg",
+    name: "Œufs",
+    quantity: "12",
+    price: 3
+  },
+
+  {
+    id: "potato",
+    name: "Pommes de terre",
+    quantity: "2 kg",
+    price: 3
+  },
+
+  {
+    id: "oats",
+    name: "Flocons d’avoine",
+    quantity: "500 g",
+    price: 2
+  },
+
+  {
+    id: "banana",
+    name: "Bananes",
+    quantity: "1 kg",
+    price: 2
+  },
+
+  {
+    id: "broccoli",
+    name: "Brocoli",
+    quantity: "500 g",
+    price: 2
+  },
+
+  {
+    id: "tomato",
+    name: "Tomates",
+    quantity: "1 kg",
+    price: 3
+  },
+
+  {
+    id: "milk",
+    name: "Lait",
+    quantity: "1 L",
+    price: 1.5
+  },
+
+  {
+    id: "greek_yogurt",
+    name: "Skyr",
+    quantity: "4 pots",
+    price: 3.5
+  }
+];
+
+
+const DAYS = [
+  "Lundi",
+  "Mardi",
+  "Mercredi",
+  "Jeudi",
+  "Vendredi",
+  "Samedi",
+  "Dimanche"
+];
