@@ -61,6 +61,8 @@ document.addEventListener("DOMContentLoaded", () => {
   setupDarkMode();
 
   updateEverything();
+  updateStreakDisplay();
+
   registerServiceWorker();
 
 });
@@ -108,9 +110,17 @@ function loadState() {
         ? parsed.pantry
         : [],
 
-      shopping: parsed.shopping || {},
+      shopping:
+        parsed.shopping &&
+        typeof parsed.shopping === "object"
+          ? parsed.shopping
+          : {},
 
-      planner: parsed.planner || {}
+      planner:
+        parsed.planner &&
+        typeof parsed.planner === "object"
+          ? parsed.planner
+          : {}
 
     };
 
@@ -127,10 +137,18 @@ function loadState() {
 
 function saveState() {
 
-  localStorage.setItem(
-    STORAGE_KEY,
-    JSON.stringify(state)
-  );
+  try {
+
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify(state)
+    );
+
+  } catch (error) {
+
+    console.error("Erreur sauvegarde :", error);
+
+  }
 
 }
 
@@ -148,7 +166,9 @@ function round(number, decimals = 0) {
 
   const factor = Math.pow(10, decimals);
 
-  return Math.round(number * factor) / factor;
+  return Math.round(
+    (Number(number) || 0) * factor
+  ) / factor;
 
 }
 
@@ -187,7 +207,9 @@ function showToast(message) {
   clearTimeout(window.toastTimer);
 
   window.toastTimer = setTimeout(() => {
+
     toast.classList.remove("show");
+
   }, 2200);
 
 }
@@ -199,13 +221,23 @@ function showToast(message) {
 
 function calculateFood(food, grams) {
 
-  const ratio = Number(grams) / 100;
+  const ratio =
+    Number(grams) / 100;
 
   return {
-    kcal: food.kcal * ratio,
-    protein: food.protein * ratio,
-    carbs: food.carbs * ratio,
-    fat: food.fat * ratio
+
+    kcal:
+      Number(food.kcal || 0) * ratio,
+
+    protein:
+      Number(food.protein || 0) * ratio,
+
+    carbs:
+      Number(food.carbs || 0) * ratio,
+
+    fat:
+      Number(food.fat || 0) * ratio
+
   };
 
 }
@@ -224,23 +256,40 @@ function calculateDailyTotals() {
 
   state.journal.forEach(item => {
 
-    /*
-      On ne compte que les aliments du jour.
-    */
-    if (item.date && item.date !== today) return;
+    if (
+      item.date &&
+      item.date !== today
+    ) {
+      return;
+    }
 
-    totals.kcal += Number(item.kcal) || 0;
-    totals.protein += Number(item.protein) || 0;
-    totals.carbs += Number(item.carbs) || 0;
-    totals.fat += Number(item.fat) || 0;
+    totals.kcal +=
+      Number(item.kcal) || 0;
+
+    totals.protein +=
+      Number(item.protein) || 0;
+
+    totals.carbs +=
+      Number(item.carbs) || 0;
+
+    totals.fat +=
+      Number(item.fat) || 0;
 
   });
 
   return {
+
     kcal: round(totals.kcal),
-    protein: round(totals.protein, 1),
-    carbs: round(totals.carbs, 1),
-    fat: round(totals.fat, 1)
+
+    protein:
+      round(totals.protein, 1),
+
+    carbs:
+      round(totals.carbs, 1),
+
+    fat:
+      round(totals.fat, 1)
+
   };
 
 }
@@ -254,11 +303,22 @@ function calculateBMR() {
 
   const p = state.profile;
 
-  const weight = Number(p.weight) || 0;
-  const height = Number(p.height) || 0;
-  const age = Number(p.age) || 0;
+  const weight =
+    Number(p.weight) || 0;
 
-  if (!weight || !height || !age) return 0;
+  const height =
+    Number(p.height) || 0;
+
+  const age =
+    Number(p.age) || 0;
+
+  if (
+    !weight ||
+    !height ||
+    !age
+  ) {
+    return 0;
+  }
 
   if (p.sex === "female") {
 
@@ -283,58 +343,59 @@ function calculateBMR() {
 
 function calculateTDEE() {
 
-  const bmr = calculateBMR();
+  const bmr =
+    calculateBMR();
 
   const activity =
     Number(state.profile.activity) || 1.2;
 
-  return round(bmr * activity);
+  return round(
+    bmr * activity
+  );
 
 }
 
 
 function calculateTargetCalories() {
 
-  const tdee = calculateTDEE();
+  const tdee =
+    calculateTDEE();
 
   const adjustment =
     Number(state.profile.adjustment) || 0;
 
   if (!tdee) return 0;
 
-  if (state.profile.goal === "bulk") {
-    return Math.round(tdee + adjustment);
+  if (
+    state.profile.goal === "bulk"
+  ) {
+
+    return Math.round(
+      tdee + adjustment
+    );
+
   }
 
-  if (state.profile.goal === "maintain") {
+  if (
+    state.profile.goal === "maintain"
+  ) {
+
     return Math.round(tdee);
+
   }
 
   return Math.max(
     1200,
-    Math.round(tdee - adjustment)
+    Math.round(
+      tdee - adjustment
+    )
   );
 
 }
 
 
 /* =========================================================
-   OBJECTIFS MACROS
-=========================================================
-
-   IMPORTANT :
-
-   On ne fait PAS :
-   protéines + lipides puis "glucides = reste".
-
-   On utilise une vraie répartition :
-
-   Protéines : 30 %
-   Glucides  : 45 %
-   Lipides   : 25 %
-
-   Les trois objectifs sont donc calculés
-   indépendamment à partir de l'objectif calorique.
+   MACROS
 ========================================================= */
 
 function calculateMacroTargets() {
@@ -352,31 +413,33 @@ function calculateMacroTargets() {
 
   }
 
-  const proteinCalories =
-    calories * 0.30;
+  /*
+    Répartition :
 
-  const carbCalories =
-    calories * 0.45;
-
-  const fatCalories =
-    calories * 0.25;
+    Protéines : 30 %
+    Glucides  : 45 %
+    Lipides   : 25 %
+  */
 
   return {
 
-    protein: round(
-      proteinCalories / 4,
-      1
-    ),
+    protein:
+      round(
+        calories * 0.30 / 4,
+        1
+      ),
 
-    carbs: round(
-      carbCalories / 4,
-      1
-    ),
+    carbs:
+      round(
+        calories * 0.45 / 4,
+        1
+      ),
 
-    fat: round(
-      fatCalories / 9,
-      1
-    )
+    fat:
+      round(
+        calories * 0.25 / 9,
+        1
+      )
 
   };
 
@@ -408,25 +471,36 @@ function setupNavigation() {
     .querySelectorAll("[data-page]")
     .forEach(button => {
 
-      button.addEventListener("click", () => {
+      button.addEventListener(
+        "click",
+        () => {
 
-        openPage(button.dataset.page);
+          openPage(
+            button.dataset.page
+          );
 
-      });
+        }
+      );
 
     });
 
 
   $("profileButton")
-    ?.addEventListener("click", () => {
+    ?.addEventListener(
+      "click",
+      () => {
 
-      openPage("profilePage");
+        openPage("profilePage");
 
-    });
+      }
+    );
 
 
   $("clearJournalButton")
-    ?.addEventListener("click", clearJournal);
+    ?.addEventListener(
+      "click",
+      clearJournal
+    );
 
 }
 
@@ -437,15 +511,22 @@ function openPage(pageId) {
     .querySelectorAll(".page")
     .forEach(page => {
 
-      page.classList.remove("active");
+      page.classList.remove(
+        "active"
+      );
 
     });
 
 
-  const target = $(pageId);
+  const target =
+    $(pageId);
 
   if (target) {
-    target.classList.add("active");
+
+    target.classList.add(
+      "active"
+    );
+
   }
 
 
@@ -488,31 +569,40 @@ function setupProfile() {
 
 function loadProfileInputs() {
 
-  const p = state.profile;
+  const p =
+    state.profile;
 
   if ($("profileName"))
-    $("profileName").value = p.name || "";
+    $("profileName").value =
+      p.name || "";
 
   if ($("profileAge"))
-    $("profileAge").value = p.age || "";
+    $("profileAge").value =
+      p.age || "";
 
   if ($("profileSex"))
-    $("profileSex").value = p.sex || "male";
+    $("profileSex").value =
+      p.sex || "male";
 
   if ($("profileHeight"))
-    $("profileHeight").value = p.height || "";
+    $("profileHeight").value =
+      p.height || "";
 
   if ($("profileWeight"))
-    $("profileWeight").value = p.weight || "";
+    $("profileWeight").value =
+      p.weight || "";
 
   if ($("profileActivity"))
-    $("profileActivity").value = p.activity || 1.5;
+    $("profileActivity").value =
+      p.activity || 1.5;
 
   if ($("profileTraining"))
-    $("profileTraining").value = p.training || 0;
+    $("profileTraining").value =
+      p.training || 0;
 
   if ($("profileGoal"))
-    $("profileGoal").value = p.goal || "cut";
+    $("profileGoal").value =
+      p.goal || "cut";
 
   if ($("profileAdjustment"))
     $("profileAdjustment").value =
@@ -531,36 +621,53 @@ function saveProfile() {
     $("profileName")?.value.trim() || "";
 
   state.profile.age =
-    Number($("profileAge")?.value) || 0;
+    Number(
+      $("profileAge")?.value
+    ) || 0;
 
   state.profile.sex =
     $("profileSex")?.value || "male";
 
   state.profile.height =
-    Number($("profileHeight")?.value) || 0;
+    Number(
+      $("profileHeight")?.value
+    ) || 0;
 
   state.profile.weight =
-    Number($("profileWeight")?.value) || 0;
+    Number(
+      $("profileWeight")?.value
+    ) || 0;
 
   state.profile.activity =
-    Number($("profileActivity")?.value) || 1.2;
+    Number(
+      $("profileActivity")?.value
+    ) || 1.2;
 
   state.profile.training =
-    Number($("profileTraining")?.value) || 0;
+    Number(
+      $("profileTraining")?.value
+    ) || 0;
 
   state.profile.goal =
     $("profileGoal")?.value || "cut";
 
   state.profile.adjustment =
-    Number($("profileAdjustment")?.value) || 0;
+    Number(
+      $("profileAdjustment")?.value
+    ) || 0;
 
   state.profile.budget =
-    Number($("profileBudget")?.value) || 0;
+    Number(
+      $("profileBudget")?.value
+    ) || 0;
 
   saveState();
+
   updateEverything();
 
-  showToast("Profil enregistré ✅");
+  showToast(
+    "Profil enregistré ✅"
+  );
 
 }
 
@@ -590,8 +697,13 @@ function setupFoodModal() {
       "click",
       event => {
 
-        if (event.target.id === "foodModal") {
+        if (
+          event.target.id ===
+          "foodModal"
+        ) {
+
           closeFoodModal();
+
         }
 
       }
@@ -615,16 +727,22 @@ function setupFoodModal() {
 
 function openFoodModal() {
 
-  $("foodModal")?.classList.add("open");
+  $("foodModal")
+    ?.classList.add("open");
 
   if ($("foodSearch")) {
+
     $("foodSearch").value = "";
+
   }
 
   renderFoodResults("");
 
   setTimeout(() => {
-    $("foodSearch")?.focus();
+
+    $("foodSearch")
+      ?.focus();
+
   }, 100);
 
 }
@@ -632,19 +750,40 @@ function openFoodModal() {
 
 function closeFoodModal() {
 
-  $("foodModal")?.classList.remove("open");
+  $("foodModal")
+    ?.classList.remove("open");
 
 }
 
 
 function renderFoodResults(search = "") {
 
-  const container = $("foodResults");
+  const container =
+    $("foodResults");
 
   if (!container) return;
 
+  if (
+    typeof FOODS === "undefined" ||
+    !Array.isArray(FOODS)
+  ) {
+
+    container.innerHTML = `
+      <div class="card">
+        <span class="empty-text">
+          Aucun aliment disponible.
+        </span>
+      </div>
+    `;
+
+    return;
+
+  }
+
+
   const term =
     search.trim().toLowerCase();
+
 
   const results =
     FOODS.filter(food =>
@@ -653,7 +792,9 @@ function renderFoodResults(search = "") {
         .includes(term)
     );
 
+
   container.innerHTML = "";
+
 
   if (!results.length) {
 
@@ -675,11 +816,14 @@ function renderFoodResults(search = "") {
     const row =
       document.createElement("div");
 
-    row.className = "food-result";
+    row.className =
+      "food-result";
+
 
     row.innerHTML = `
 
       <div>
+
         <div class="food-name">
           ${food.emoji} ${food.name}
         </div>
@@ -689,6 +833,7 @@ function renderFoodResults(search = "") {
           ${food.protein} g protéines /
           100 g
         </div>
+
       </div>
 
       <button
@@ -700,12 +845,14 @@ function renderFoodResults(search = "") {
 
     `;
 
+
     row
       .querySelector("button")
       .addEventListener(
         "click",
         () => askFoodGrams(food)
       );
+
 
     container.appendChild(row);
 
@@ -723,6 +870,7 @@ function askFoodGrams(food) {
 
   if (grams === null) return;
 
+
   const numericGrams =
     Number(
       String(grams)
@@ -730,15 +878,20 @@ function askFoodGrams(food) {
         .replace(/[^\d.]/g, "")
     );
 
+
   if (
     !numericGrams ||
     numericGrams <= 0
   ) {
 
-    showToast("Grammage invalide ❌");
+    showToast(
+      "Grammage invalide ❌"
+    );
+
     return;
 
   }
+
 
   addFoodToJournal(
     food,
@@ -748,7 +901,10 @@ function askFoodGrams(food) {
 }
 
 
-function addFoodToJournal(food, grams) {
+function addFoodToJournal(
+  food,
+  grams
+) {
 
   const nutrition =
     calculateFood(
@@ -756,30 +912,49 @@ function addFoodToJournal(food, grams) {
       grams
     );
 
+
   state.journal.push({
 
     id:
       Date.now() +
       Math.random(),
 
-    foodId: food.id,
-    name: food.name,
-    emoji: food.emoji,
-    grams,
+    foodId:
+      food.id,
 
-    kcal: nutrition.kcal,
-    protein: nutrition.protein,
-    carbs: nutrition.carbs,
-    fat: nutrition.fat,
+    name:
+      food.name,
 
-    date: todayKey()
+    emoji:
+      food.emoji,
+
+    grams:
+      Number(grams),
+
+    kcal:
+      nutrition.kcal,
+
+    protein:
+      nutrition.protein,
+
+    carbs:
+      nutrition.carbs,
+
+    fat:
+      nutrition.fat,
+
+    date:
+      todayKey()
 
   });
+
 
   updateStreak();
 
   saveState();
+
   closeFoodModal();
+
   updateEverything();
 
   showToast(
@@ -795,13 +970,16 @@ function addFoodToJournal(food, grams) {
 
 function renderJournal() {
 
-  const container = $("journalList");
+  const container =
+    $("journalList");
 
   if (!container) return;
 
   container.innerHTML = "";
 
-  const today = todayKey();
+  const today =
+    todayKey();
+
 
   const items =
     state.journal.filter(
@@ -809,6 +987,7 @@ function renderJournal() {
         !item.date ||
         item.date === today
     );
+
 
   if (!items.length) {
 
@@ -830,12 +1009,14 @@ function renderJournal() {
     const row =
       document.createElement("div");
 
-    row.className = "meal";
+    row.className =
+      "meal";
+
 
     row.innerHTML = `
 
       <div class="meal-icon">
-        ${item.emoji}
+        ${item.emoji || "🍽️"}
       </div>
 
       <div class="meal-content">
@@ -865,12 +1046,15 @@ function renderJournal() {
 
     `;
 
+
     row
       .querySelector(".delete-button")
       .addEventListener(
         "click",
-        () => deleteJournalItem(item.id)
+        () =>
+          deleteJournalItem(item.id)
       );
+
 
     container.appendChild(row);
 
@@ -883,20 +1067,26 @@ function deleteJournalItem(id) {
 
   state.journal =
     state.journal.filter(
-      item => item.id != id
+      item =>
+        item.id != id
     );
 
   saveState();
+
   updateEverything();
 
-  showToast("Aliment supprimé");
+  showToast(
+    "Aliment supprimé"
+  );
 
 }
 
 
 function clearJournal() {
 
-  const today = todayKey();
+  const today =
+    todayKey();
+
 
   const hasItems =
     state.journal.some(
@@ -905,13 +1095,18 @@ function clearJournal() {
         item.date === today
     );
 
+
   if (!hasItems) return;
+
 
   if (
     !confirm(
       "Supprimer tous les aliments du jour ?"
     )
-  ) return;
+  ) {
+    return;
+  }
+
 
   state.journal =
     state.journal.filter(
@@ -920,10 +1115,14 @@ function clearJournal() {
         item.date !== today
     );
 
+
   saveState();
+
   updateEverything();
 
-  showToast("Journal vidé");
+  showToast(
+    "Journal vidé"
+  );
 
 }
 
@@ -943,6 +1142,7 @@ function renderHome() {
   const macros =
     calculateMacroTargets();
 
+
   const remaining =
     Math.max(
       0,
@@ -954,9 +1154,11 @@ function renderHome() {
     $("dailyTarget").textContent =
       formatNumber(target);
 
+
   if ($("consumedCalories"))
     $("consumedCalories").textContent =
       formatNumber(totals.kcal);
+
 
   if ($("remainingCalories"))
     $("remainingCalories").textContent =
@@ -967,9 +1169,12 @@ function renderHome() {
     target > 0
       ? Math.min(
           100,
-          totals.kcal / target * 100
+          totals.kcal /
+          target *
+          100
         )
       : 0;
+
 
   if ($("calorieProgress"))
     $("calorieProgress").style.width =
@@ -992,9 +1197,11 @@ function renderHome() {
     $("homeProtein").textContent =
       `${totals.protein} / ${macros.protein} g`;
 
+
   if ($("homeCarbs"))
     $("homeCarbs").textContent =
       `${totals.carbs} / ${macros.carbs} g`;
+
 
   if ($("homeFat"))
     $("homeFat").textContent =
@@ -1014,21 +1221,18 @@ function renderHome() {
 
 function renderMacroDiagram() {
 
-  /*
-    Si le HTML du graphique n'existe pas encore,
-    cette fonction ne fait simplement rien.
-  */
-
   const container =
     $("macroDiagram");
 
   if (!container) return;
+
 
   const totals =
     calculateDailyTotals();
 
   const targets =
     calculateMacroTargets();
+
 
   const proteinPercent =
     targets.protein > 0
@@ -1040,6 +1244,7 @@ function renderMacroDiagram() {
         )
       : 0;
 
+
   const carbsPercent =
     targets.carbs > 0
       ? Math.min(
@@ -1049,6 +1254,7 @@ function renderMacroDiagram() {
           100
         )
       : 0;
+
 
   const fatPercent =
     targets.fat > 0
@@ -1087,6 +1293,7 @@ function renderMacroDiagram() {
 
           <div class="macro-line-top">
             <span>🥩 Protéines</span>
+
             <strong>
               ${round(totals.protein, 1)} /
               ${round(targets.protein, 1)} g
@@ -1094,10 +1301,12 @@ function renderMacroDiagram() {
           </div>
 
           <div class="macro-track">
+
             <div
               class="macro-fill protein"
               style="width:${proteinPercent}%"
             ></div>
+
           </div>
 
         </div>
@@ -1107,6 +1316,7 @@ function renderMacroDiagram() {
 
           <div class="macro-line-top">
             <span>🍚 Glucides</span>
+
             <strong>
               ${round(totals.carbs, 1)} /
               ${round(targets.carbs, 1)} g
@@ -1114,10 +1324,12 @@ function renderMacroDiagram() {
           </div>
 
           <div class="macro-track">
+
             <div
               class="macro-fill carbs"
               style="width:${carbsPercent}%"
             ></div>
+
           </div>
 
         </div>
@@ -1127,6 +1339,7 @@ function renderMacroDiagram() {
 
           <div class="macro-line-top">
             <span>🥑 Lipides</span>
+
             <strong>
               ${round(totals.fat, 1)} /
               ${round(targets.fat, 1)} g
@@ -1134,10 +1347,12 @@ function renderMacroDiagram() {
           </div>
 
           <div class="macro-track">
+
             <div
               class="macro-fill fat"
               style="width:${fatPercent}%"
             ></div>
+
           </div>
 
         </div>
@@ -1160,7 +1375,10 @@ function renderHomeMeals() {
 
   container.innerHTML = "";
 
-  const today = todayKey();
+
+  const today =
+    todayKey();
+
 
   const recent =
     state.journal
@@ -1170,6 +1388,7 @@ function renderHomeMeals() {
           item.date === today
       )
       .slice(-4);
+
 
   if (!recent.length) {
 
@@ -1191,12 +1410,14 @@ function renderHomeMeals() {
     const row =
       document.createElement("div");
 
-    row.className = "meal";
+    row.className =
+      "meal";
+
 
     row.innerHTML = `
 
       <div class="meal-icon">
-        ${item.emoji}
+        ${item.emoji || "🍽️"}
       </div>
 
       <div class="meal-content">
@@ -1206,13 +1427,14 @@ function renderHomeMeals() {
         </div>
 
         <div class="meal-meta">
-          ${item.grams} g •
+          ${formatNumber(item.grams)} g •
           ${formatNumber(item.kcal)} kcal
         </div>
 
       </div>
 
     `;
+
 
     container.appendChild(row);
 
@@ -1230,17 +1452,21 @@ function renderJournalStats() {
   const totals =
     calculateDailyTotals();
 
+
   if ($("journalCalories"))
     $("journalCalories").textContent =
       formatNumber(totals.kcal);
+
 
   if ($("journalProtein"))
     $("journalProtein").textContent =
       `${totals.protein} g`;
 
+
   if ($("journalCarbs"))
     $("journalCarbs").textContent =
       `${totals.carbs} g`;
+
 
   if ($("journalFat"))
     $("journalFat").textContent =
@@ -1271,7 +1497,9 @@ function renderRecipes() {
 
   if (!container) return;
 
+
   container.innerHTML = "";
+
 
   if (
     typeof RECIPES === "undefined" ||
@@ -1296,7 +1524,9 @@ function renderRecipes() {
     const row =
       document.createElement("div");
 
-    row.className = "meal";
+    row.className =
+      "meal";
+
 
     row.innerHTML = `
 
@@ -1328,12 +1558,15 @@ function renderRecipes() {
 
     `;
 
+
     row
       .querySelector("button")
       .addEventListener(
         "click",
-        () => addRecipeToJournal(recipe)
+        () =>
+          addRecipeToJournal(recipe)
       );
+
 
     container.appendChild(row);
 
@@ -1344,6 +1577,20 @@ function renderRecipes() {
 
 function addRecipeToJournal(recipe) {
 
+  if (
+    !recipe ||
+    !Array.isArray(recipe.ingredients)
+  ) {
+
+    showToast(
+      "Recette invalide ❌"
+    );
+
+    return;
+
+  }
+
+
   const multiplier =
     prompt(
       `Portion de "${recipe.name}" ?\n\n` +
@@ -1352,7 +1599,9 @@ function addRecipeToJournal(recipe) {
       `1,5 = une portion et demie`
     );
 
+
   if (multiplier === null) return;
+
 
   const factor =
     Number(
@@ -1360,15 +1609,22 @@ function addRecipeToJournal(recipe) {
         .replace(",", ".")
     );
 
+
   if (
-    !factor ||
+    !Number.isFinite(factor) ||
     factor <= 0
   ) {
 
-    showToast("Portion invalide ❌");
+    showToast(
+      "Portion invalide ❌"
+    );
+
     return;
 
   }
+
+
+  let added = false;
 
 
   recipe.ingredients.forEach(
@@ -1380,10 +1636,15 @@ function addRecipeToJournal(recipe) {
             f.id === ingredient.food
         );
 
+
       if (!food) return;
 
+
       const grams =
-        ingredient.grams * factor;
+        Number(
+          ingredient.grams
+        ) * factor;
+
 
       const nutrition =
         calculateFood(
@@ -1391,36 +1652,68 @@ function addRecipeToJournal(recipe) {
           grams
         );
 
+
       state.journal.push({
 
         id:
           Date.now() +
           Math.random(),
 
-        foodId: food.id,
-        name: food.name,
-        emoji: food.emoji,
+        foodId:
+          food.id,
+
+        name:
+          food.name,
+
+        emoji:
+          food.emoji,
+
         grams,
 
-        kcal: nutrition.kcal,
-        protein: nutrition.protein,
-        carbs: nutrition.carbs,
-        fat: nutrition.fat,
+        kcal:
+          nutrition.kcal,
 
-        date: todayKey(),
+        protein:
+          nutrition.protein,
 
-        recipe: recipe.name
+        carbs:
+          nutrition.carbs,
+
+        fat:
+          nutrition.fat,
+
+        date:
+          todayKey(),
+
+        recipe:
+          recipe.name
 
       });
+
+
+      added = true;
 
     }
   );
 
 
+  if (!added) {
+
+    showToast(
+      "Impossible d'ajouter la recette ❌"
+    );
+
+    return;
+
+  }
+
+
   updateStreak();
 
   saveState();
+
   updateEverything();
+
 
   showToast(
     `${recipe.name} ajouté 🍽️`
@@ -1435,19 +1728,10 @@ function addRecipeToJournal(recipe) {
 
 function suggestSmartMeal() {
 
-  const target =
-    calculateTargetCalories();
-
-  const totals =
-    calculateDailyTotals();
-
-  const remaining =
-    Math.max(
-      0,
-      target - totals.kcal
-    );
-
-  if (!RECIPES.length) {
+  if (
+    typeof RECIPES === "undefined" ||
+    !RECIPES.length
+  ) {
 
     showToast(
       "Aucune recette disponible ❌"
@@ -1458,49 +1742,69 @@ function suggestSmartMeal() {
   }
 
 
-  /*
-    On cherche une recette qui correspond
-    aux calories restantes ET aux protéines.
+  const target =
+    calculateTargetCalories();
 
-    On évite donc de choisir uniquement
-    selon les calories.
-  */
+  const totals =
+    calculateDailyTotals();
+
+
+  const remaining =
+    Math.max(
+      0,
+      target - totals.kcal
+    );
+
 
   const proteinTarget =
     calculateProteinTarget();
 
+
   const proteinRemaining =
     Math.max(
       0,
-      proteinTarget - totals.protein
+      proteinTarget -
+      totals.protein
     );
 
 
-  let best = RECIPES[0];
-  let bestScore = Infinity;
+  let best =
+    RECIPES[0];
+
+  let bestScore =
+    Infinity;
 
 
   RECIPES.forEach(recipe => {
 
     const calorieDifference =
       Math.abs(
-        remaining - recipe.kcal
+        remaining -
+        Number(recipe.kcal || 0)
       );
+
 
     const proteinDifference =
       Math.abs(
         proteinRemaining -
-        recipe.protein
+        Number(recipe.protein || 0)
       );
+
 
     const score =
       calorieDifference +
       proteinDifference * 8;
 
-    if (score < bestScore) {
 
-      bestScore = score;
-      best = recipe;
+    if (
+      score < bestScore
+    ) {
+
+      bestScore =
+        score;
+
+      best =
+        recipe;
 
     }
 
@@ -1517,9 +1821,7 @@ function suggestSmartMeal() {
     `Ajouter cette recette ?`;
 
 
-  if (
-    confirm(message)
-  ) {
+  if (confirm(message)) {
 
     addRecipeToJournal(best);
 
@@ -1537,6 +1839,8 @@ function setupPlanner() {
   renderDays();
 
   generatePlannerIfNeeded();
+
+  saveState();
 
   renderSelectedDay();
 
@@ -1568,19 +1872,28 @@ function generatePlannerIfNeeded() {
 
   if (
     typeof DAYS === "undefined" ||
-    !Array.isArray(DAYS)
-  ) return;
+    !Array.isArray(DAYS) ||
+    typeof RECIPES === "undefined" ||
+    !Array.isArray(RECIPES) ||
+    !RECIPES.length
+  ) {
+    return;
+  }
 
 
   DAYS.forEach(
     (day, index) => {
 
-      if (!state.planner[index]) {
+      if (
+        !state.planner[index]
+      ) {
 
         const first =
           RECIPES[
-            index % RECIPES.length
+            index %
+            RECIPES.length
           ];
+
 
         const second =
           RECIPES[
@@ -1620,6 +1933,15 @@ function renderDays() {
 
   if (!container) return;
 
+
+  if (
+    typeof DAYS === "undefined" ||
+    !Array.isArray(DAYS)
+  ) {
+    return;
+  }
+
+
   container.innerHTML = "";
 
 
@@ -1632,25 +1954,40 @@ function renderDays() {
       button.className =
         "day-button";
 
-      if (index === selectedDay) {
-        button.classList.add("active");
+
+      if (
+        index === selectedDay
+      ) {
+
+        button.classList.add(
+          "active"
+        );
+
       }
 
-      button.textContent = day;
+
+      button.textContent =
+        day;
+
 
       button.addEventListener(
         "click",
         () => {
 
-          selectedDay = index;
+          selectedDay =
+            index;
 
           renderDays();
+
           renderSelectedDay();
 
         }
       );
 
-      container.appendChild(button);
+
+      container.appendChild(
+        button
+      );
 
     }
   );
@@ -1666,15 +2003,45 @@ function renderSelectedDay() {
   const container =
     $("dayMeals");
 
-  if (!title || !container) return;
+  if (
+    !title ||
+    !container
+  ) {
+    return;
+  }
+
+
+  if (
+    typeof DAYS === "undefined" ||
+    !DAYS.length
+  ) {
+    return;
+  }
+
 
   title.textContent =
     DAYS[selectedDay];
 
+
   container.innerHTML = "";
 
+
   const meals =
-    state.planner[selectedDay] || [];
+    state.planner[selectedDay] ||
+    [];
+
+
+  if (!meals.length) {
+
+    container.innerHTML = `
+      <span class="empty-text">
+        Aucun repas planifié.
+      </span>
+    `;
+
+    return;
+
+  }
 
 
   meals.forEach(item => {
@@ -1684,6 +2051,7 @@ function renderSelectedDay() {
 
     row.className =
       "planner-meal";
+
 
     row.innerHTML = `
 
@@ -1705,6 +2073,7 @@ function renderSelectedDay() {
 
     `;
 
+
     container.appendChild(row);
 
   });
@@ -1724,6 +2093,7 @@ function setupShopping() {
       checkAllShopping
     );
 
+
   renderShopping();
 
 }
@@ -1736,7 +2106,17 @@ function renderShopping() {
 
   if (!container) return;
 
+
+  if (
+    typeof SHOPPING_ITEMS === "undefined" ||
+    !Array.isArray(SHOPPING_ITEMS)
+  ) {
+    return;
+  }
+
+
   container.innerHTML = "";
+
 
   let total = 0;
 
@@ -1745,6 +2125,7 @@ function renderShopping() {
 
     total +=
       Number(item.price) || 0;
+
 
     const checked =
       Boolean(
@@ -1765,7 +2146,9 @@ function renderShopping() {
 
         <button
           class="check-button ${
-            checked ? "checked" : ""
+            checked
+              ? "checked"
+              : ""
           }"
           data-id="${item.id}"
         >
@@ -1773,10 +2156,13 @@ function renderShopping() {
         </button>
 
         <span>
+
           ${item.name}
+
           <small>
             (${item.quantity})
           </small>
+
         </span>
 
       </div>
@@ -1826,10 +2212,19 @@ function renderShopping() {
 
 function checkAllShopping() {
 
+  if (
+    typeof SHOPPING_ITEMS === "undefined"
+  ) {
+    return;
+  }
+
+
   const allChecked =
     SHOPPING_ITEMS.every(
       item =>
-        state.shopping[item.id]
+        Boolean(
+          state.shopping[item.id]
+        )
     );
 
 
@@ -1844,6 +2239,7 @@ function checkAllShopping() {
 
 
   saveState();
+
   renderShopping();
 
 }
@@ -1861,6 +2257,7 @@ function setupWeightTracking() {
       addWeight
     );
 
+
   renderWeightChart();
 
 }
@@ -1871,11 +2268,15 @@ function addWeight() {
   const input =
     $("newWeight");
 
+  if (!input) return;
+
+
   const weight =
     Number(
       String(input.value)
         .replace(",", ".")
     );
+
 
   if (
     !weight ||
@@ -1893,20 +2294,28 @@ function addWeight() {
 
 
   state.weights.push({
-    date: todayKey(),
+
+    date:
+      todayKey(),
+
     weight
+
   });
 
 
   state.profile.weight =
     weight;
 
+
   input.value = "";
+
 
   saveState();
 
   loadProfileInputs();
+
   updateEverything();
+
 
   showToast(
     `${weight} kg enregistré ⚖️`
@@ -1921,6 +2330,7 @@ function renderWeightChart() {
     $("weightChart");
 
   if (!container) return;
+
 
   container.innerHTML = "";
 
@@ -1941,10 +2351,13 @@ function renderWeightChart() {
   const recent =
     state.weights.slice(-10);
 
+
   const values =
     recent.map(
-      item => item.weight
+      item =>
+        Number(item.weight)
     );
+
 
   const min =
     Math.min(...values);
@@ -1964,13 +2377,22 @@ function renderWeightChart() {
 
     let height = 25;
 
-    if (max !== min) {
+
+    if (
+      max !== min
+    ) {
 
       height =
         25 +
         (
-          (item.weight - min) /
-          (max - min)
+          (
+            Number(item.weight) -
+            min
+          ) /
+          (
+            max -
+            min
+          )
         ) * 65;
 
     }
@@ -1979,13 +2401,17 @@ function renderWeightChart() {
     bar.style.height =
       `${height}%`;
 
+
     bar.innerHTML = `
       <span>
         ${item.weight}
       </span>
     `;
 
-    container.appendChild(bar);
+
+    container.appendChild(
+      bar
+    );
 
   });
 
@@ -2010,8 +2436,12 @@ function setupPantry() {
       "keydown",
       event => {
 
-        if (event.key === "Enter") {
+        if (
+          event.key === "Enter"
+        ) {
+
           addPantryItem();
+
         }
 
       }
@@ -2028,8 +2458,12 @@ function addPantryItem() {
   const input =
     $("pantryInput");
 
+  if (!input) return;
+
+
   const value =
     input.value.trim();
+
 
   if (!value) return;
 
@@ -2040,15 +2474,19 @@ function addPantryItem() {
       Date.now() +
       Math.random(),
 
-    name: value
+    name:
+      value
 
   });
 
 
   input.value = "";
 
+
   saveState();
+
   renderPantry();
+
 
   showToast(
     `${value} ajouté 🥫`
@@ -2063,6 +2501,7 @@ function renderPantry() {
     $("pantryList");
 
   if (!container) return;
+
 
   container.innerHTML = "";
 
@@ -2121,7 +2560,9 @@ function renderPantry() {
                 pantryItem.id != item.id
             );
 
+
           saveState();
+
           renderPantry();
 
         }
@@ -2153,8 +2594,12 @@ function setupCoach() {
       "keydown",
       event => {
 
-        if (event.key === "Enter") {
+        if (
+          event.key === "Enter"
+        ) {
+
           sendCoachMessage();
+
         }
 
       }
@@ -2169,10 +2614,14 @@ function setupCoach() {
         "click",
         () => {
 
-          $("coachInput").value =
-            button.textContent.trim();
+          if ($("coachInput")) {
 
-          sendCoachMessage();
+            $("coachInput").value =
+              button.textContent.trim();
+
+            sendCoachMessage();
+
+          }
 
         }
       );
@@ -2187,8 +2636,12 @@ function sendCoachMessage() {
   const input =
     $("coachInput");
 
+  if (!input) return;
+
+
   const message =
     input.value.trim();
+
 
   if (!message) return;
 
@@ -2198,13 +2651,16 @@ function sendCoachMessage() {
     true
   );
 
+
   input.value = "";
 
 
   setTimeout(() => {
 
     addCoachMessage(
-      generateCoachResponse(message),
+      generateCoachResponse(
+        message
+      ),
       false
     );
 
@@ -2227,15 +2683,21 @@ function addCoachMessage(
   const div =
     document.createElement("div");
 
+
   div.className =
     `coach-message ${
       user ? "user" : ""
     }`;
 
+
   div.textContent =
     message;
 
-  container.appendChild(div);
+
+  container.appendChild(
+    div
+  );
+
 
   container.scrollTop =
     container.scrollHeight;
@@ -2248,6 +2710,7 @@ function generateCoachResponse(message) {
   const lower =
     message.toLowerCase();
 
+
   const totals =
     calculateDailyTotals();
 
@@ -2257,11 +2720,14 @@ function generateCoachResponse(message) {
   const macros =
     calculateMacroTargets();
 
+
   const remaining =
     Math.max(
       0,
-      target - totals.kcal
+      target -
+      totals.kcal
     );
+
 
   const proteinRemaining =
     Math.max(
@@ -2270,12 +2736,14 @@ function generateCoachResponse(message) {
       totals.protein
     );
 
+
   const carbsRemaining =
     Math.max(
       0,
       macros.carbs -
       totals.carbs
     );
+
 
   const fatRemaining =
     Math.max(
@@ -2292,8 +2760,10 @@ function generateCoachResponse(message) {
 
     return (
       `Il te reste environ ` +
-      `${round(proteinRemaining, 1)} g ` +
-      `de protéines aujourd'hui. 💪`
+      `${round(
+        proteinRemaining,
+        1
+      )} g de protéines aujourd'hui. 💪`
     );
 
   }
@@ -2306,8 +2776,10 @@ function generateCoachResponse(message) {
 
     return (
       `Il te reste environ ` +
-      `${round(carbsRemaining, 1)} g ` +
-      `de glucides aujourd'hui. 🍚`
+      `${round(
+        carbsRemaining,
+        1
+      )} g de glucides aujourd'hui. 🍚`
     );
 
   }
@@ -2320,8 +2792,10 @@ function generateCoachResponse(message) {
 
     return (
       `Il te reste environ ` +
-      `${round(fatRemaining, 1)} g ` +
-      `de lipides aujourd'hui. 🥑`
+      `${round(
+        fatRemaining,
+        1
+      )} g de lipides aujourd'hui. 🥑`
     );
 
   }
@@ -2334,9 +2808,12 @@ function generateCoachResponse(message) {
 
     return (
       `Il te reste environ ` +
-      `${formatNumber(remaining)} kcal ` +
-      `sur ton objectif de ` +
-      `${formatNumber(target)} kcal. 🔥`
+      `${formatNumber(
+        remaining
+      )} kcal sur ton objectif de ` +
+      `${formatNumber(
+        target
+      )} kcal. 🔥`
     );
 
   }
@@ -2347,16 +2824,30 @@ function generateCoachResponse(message) {
     lower.includes("manger")
   ) {
 
+    if (
+      typeof RECIPES === "undefined" ||
+      !RECIPES.length
+    ) {
+
+      return (
+        "Je n'ai pas encore de recettes disponibles."
+      );
+
+    }
+
+
     const recipe =
       RECIPES
         .slice()
         .sort(
           (a, b) =>
             Math.abs(
-              remaining - a.kcal
+              remaining -
+              a.kcal
             ) -
             Math.abs(
-              remaining - b.kcal
+              remaining -
+              b.kcal
             )
         )[0];
 
@@ -2391,7 +2882,8 @@ function generateCoachResponse(message) {
     `${totals.protein} g protéines, ` +
     `${totals.carbs} g glucides et ` +
     `${totals.fat} g lipides.\n\n` +
-    `Objectif : ${formatNumber(target)} kcal. 💪`
+    `Objectif : ` +
+    `${formatNumber(target)} kcal. 💪`
   );
 
 }
@@ -2408,13 +2900,20 @@ function updateStreak() {
 
 
   if (
-    state.streak.lastDate === today
+    state.streak.lastDate ===
+    today
   ) {
+
+    updateStreakDisplay();
+
     return;
+
   }
 
 
-  if (!state.streak.lastDate) {
+  if (
+    !state.streak.lastDate
+  ) {
 
     state.streak.count = 1;
 
@@ -2422,26 +2921,42 @@ function updateStreak() {
 
     const previous =
       new Date(
-        state.streak.lastDate
+        state.streak.lastDate +
+        "T00:00:00"
       );
 
+
     const current =
-      new Date(today);
+      new Date(
+        today +
+        "T00:00:00"
+      );
+
 
     const difference =
       Math.round(
         (
-          current - previous
+          current -
+          previous
         ) /
-        (1000 * 60 * 60 * 24)
+        (
+          1000 *
+          60 *
+          60 *
+          24
+        )
       );
 
 
-    if (difference === 1) {
+    if (
+      difference === 1
+    ) {
 
       state.streak.count += 1;
 
-    } else if (difference > 1) {
+    } else if (
+      difference > 1
+    ) {
 
       state.streak.count = 1;
 
@@ -2452,6 +2967,23 @@ function updateStreak() {
 
   state.streak.lastDate =
     today;
+
+
+  saveState();
+
+  updateStreakDisplay();
+
+}
+
+
+function updateStreakDisplay() {
+
+  if ($("streakNumber")) {
+
+    $("streakNumber").textContent =
+      state.streak.count || 0;
+
+  }
 
 }
 
@@ -2464,6 +2996,7 @@ function setupDarkMode() {
 
   applyDarkMode();
 
+
   $("darkModeButton")
     ?.addEventListener(
       "click",
@@ -2473,6 +3006,7 @@ function setupDarkMode() {
           !state.darkMode;
 
         saveState();
+
         applyDarkMode();
 
       }
@@ -2485,7 +3019,9 @@ function applyDarkMode() {
 
   document.body.classList.toggle(
     "dark",
-    Boolean(state.darkMode)
+    Boolean(
+      state.darkMode
+    )
   );
 
 }
@@ -2546,13 +3082,24 @@ function updateEverything() {
 
 
   renderHome();
+
   renderJournalStats();
+
   renderJournal();
+
   renderRecipes();
+
   renderShopping();
+
   renderWeightChart();
+
   renderPantry();
+
+  renderDays();
+
   renderSelectedDay();
+
+  updateStreakDisplay();
 
 }
 
