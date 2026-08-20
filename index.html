@@ -3,65 +3,65 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+
 <meta name="theme-color" content="#11140f">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="BudgetCook">
-<title>BudgetCook</title>
+
+<link rel="manifest" href="manifest.json">
+
+<title>BudgetCook V3</title>
 
 <style>
 :root{
   --bg:#f3f5ef;
-  --card:#fff;
-  --dark:#11140f;
-  --dark2:#252922;
-  --text:#11140f;
-  --muted:#7c8279;
+  --card:#ffffff;
+  --ink:#11140f;
+  --muted:#7b8278;
   --line:#e1e5dc;
-  --green:#c7ef58;
-  --green2:#9dcc35;
+  --lime:#c7ef58;
   --soft:#edf7d5;
-  --red:#ffe0db;
-  --orange:#fff0d3;
-  --shadow:0 8px 30px rgba(17,20,15,.06);
+  --danger:#ffe0db;
 }
 
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
 
-html,body{
+body{
   margin:0;
-  padding:0;
   background:var(--bg);
-  color:var(--text);
+  color:var(--ink);
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;
 }
 
 body.dark{
   --bg:#0d0f0c;
   --card:#181b16;
-  --dark:#f2f4ed;
-  --dark2:#252a22;
-  --text:#f2f4ed;
+  --ink:#f1f4ec;
   --muted:#969d91;
   --line:#30352d;
   --soft:#27351a;
-  --red:#40251f;
-  --orange:#3d311d;
-  --shadow:none;
+  --danger:#40251f;
 }
 
-button,input,select{font:inherit}
-button{cursor:pointer}
+button,input,select{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+}
 
 #app{
-  width:100%;
-  max-width:500px;
-  min-height:100vh;
+  max-width:520px;
   margin:auto;
-  padding:14px 15px 105px;
+  padding:14px 15px 100px;
 }
 
-.topbar{
+.top{
   height:48px;
   display:flex;
   align-items:center;
@@ -69,32 +69,38 @@ button{cursor:pointer}
 }
 
 .logo{
-  display:flex;
-  gap:8px;
-  align-items:center;
   font-size:21px;
   font-weight:950;
-  letter-spacing:-.8px;
 }
 
-.logo span{font-size:22px}
-
 .avatar{
+  border:0;
+  background:var(--ink);
+  color:var(--bg);
   width:40px;
   height:40px;
-  border:0;
   border-radius:50%;
-  background:var(--dark);
-  color:var(--bg);
   font-weight:950;
 }
 
-.page{display:none;animation:appear .2s ease}
-.page.active{display:block}
+.page{
+  display:none;
+}
 
-@keyframes appear{
-  from{opacity:0;transform:translateY(6px)}
-  to{opacity:1;transform:translateY(0)}
+.page.active{
+  display:block;
+  animation:up .18s ease;
+}
+
+@keyframes up{
+  from{
+    opacity:0;
+    transform:translateY(5px);
+  }
+  to{
+    opacity:1;
+    transform:none;
+  }
 }
 
 .eyebrow{
@@ -106,174 +112,155 @@ button{cursor:pointer}
 }
 
 h1{
-  margin:5px 0 18px;
   font-size:35px;
-  line-height:1;
   letter-spacing:-2px;
+  margin:5px 0 18px;
 }
 
 h2{
-  margin:0;
   font-size:18px;
-  letter-spacing:-.5px;
+  margin:0;
 }
 
-.section-head{
+.head{
   display:flex;
-  justify-content:space-between;
   align-items:center;
-  margin:24px 2px 10px;
+  justify-content:space-between;
+  margin:22px 2px 10px;
 }
 
-.section-head button{
+.head button{
   border:0;
   background:none;
   color:var(--muted);
-  font-size:10px;
+  font-size:9px;
   font-weight:900;
 }
 
-.card{
+.card,
+.meal,
+.recipe,
+.stat{
   background:var(--card);
   border:1px solid var(--line);
-  border-radius:22px;
-  padding:16px;
-  box-shadow:var(--shadow);
+  border-radius:21px;
+  padding:15px;
 }
 
 .hero{
-  padding:20px;
-  border-radius:26px;
-  background:var(--dark);
+  background:var(--ink);
   color:var(--bg);
+  border-radius:25px;
+  padding:19px;
 }
 
-.hero-top{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-start;
+.hero small,
+.hero .sub{
+  color:#aab0a5;
 }
 
-.hero small{color:#aab0a5}
-
-.hero-number{
-  margin-top:3px;
-  font-size:43px;
-  line-height:1;
+.big{
+  font-size:42px;
   font-weight:950;
   letter-spacing:-2px;
 }
 
-.hero-number span{
-  font-size:12px;
-  color:#aab0a5;
-  letter-spacing:0;
-}
-
-.pill{
-  padding:7px 9px;
-  border-radius:99px;
-  background:var(--green);
-  color:#11140f;
-  font-size:8px;
-  font-weight:950;
-}
-
-.progress{
+.bar{
   height:9px;
-  margin-top:20px;
-  background:#363a33;
+  background:#383c35;
   border-radius:99px;
   overflow:hidden;
+  margin-top:17px;
 }
 
-.progress div{
+.bar i{
+  display:block;
   height:100%;
   width:0;
-  background:var(--green);
-  transition:.4s;
+  background:var(--lime);
+  transition:.35s;
 }
 
-.hero-bottom{
+.herofoot{
   display:flex;
   justify-content:space-between;
+  font-size:9px;
   margin-top:8px;
   color:#aab0a5;
-  font-size:9px;
 }
 
-.hero-bottom b{color:var(--bg)}
+.herofoot b{
+  color:var(--bg);
+}
 
-.macros{
+.macros,
+.stats,
+.two{
   display:grid;
   grid-template-columns:repeat(3,1fr);
   gap:8px;
   margin-top:8px;
 }
 
-.macro{
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:20px;
-  padding:13px 10px;
+.stats{
+  grid-template-columns:1fr 1fr;
 }
 
-.macro-icon{font-size:18px}
-.macro strong{
-  display:block;
-  margin-top:4px;
-  font-size:18px;
+.stat{
+  padding:14px;
 }
-.macro small{
+
+.stat small{
   color:var(--muted);
   font-size:8px;
+}
+
+.stat strong{
+  display:block;
+  font-size:20px;
+  margin-top:4px;
 }
 
 .meal{
   display:flex;
   gap:10px;
   align-items:center;
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:20px;
-  padding:11px;
   margin-bottom:8px;
+  padding:11px;
 }
 
-.meal-img{
-  width:60px;
-  height:60px;
-  flex-shrink:0;
+.emoji{
+  width:58px;
+  height:58px;
+  border-radius:16px;
   display:grid;
   place-items:center;
   background:linear-gradient(135deg,#e5f1c9,#f4d6a4);
-  border-radius:17px;
-  font-size:27px;
+  font-size:26px;
+  flex:none;
 }
 
-.meal-body{min-width:0;flex:1}
+.grow{
+  flex:1;
+  min-width:0;
+}
 
-.meal-type{
+.type{
   color:var(--muted);
   font-size:8px;
   font-weight:950;
   letter-spacing:.8px;
 }
 
-.meal h3{
-  margin:3px 0;
+.meal h3,
+.recipe h3{
   font-size:13px;
+  margin:3px 0;
 }
 
-.meal-meta{
+.meta{
   color:var(--muted);
   font-size:9px;
-}
-
-.meal-price{
-  margin-top:3px;
-  font-size:9px;
-  font-weight:900;
 }
 
 .add{
@@ -281,508 +268,339 @@ h2{
   height:32px;
   border:0;
   border-radius:10px;
-  background:var(--green);
+  background:var(--lime);
   font-weight:950;
 }
 
-.delete{
+.del{
   width:30px;
   height:30px;
   border:0;
-  border-radius:10px;
-  background:var(--red);
-  font-weight:950;
+  border-radius:9px;
+  background:var(--danger);
 }
 
 .primary{
   width:100%;
   border:0;
-  border-radius:15px;
+  border-radius:14px;
   padding:14px;
-  background:var(--dark);
+  background:var(--ink);
   color:var(--bg);
-  font-size:12px;
+  font-size:11px;
   font-weight:950;
 }
 
 .secondary{
   border:1px solid var(--line);
-  border-radius:14px;
-  padding:11px 13px;
   background:var(--card);
-  color:var(--text);
-  font-size:10px;
-  font-weight:900;
-}
-
-.grid2{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px;
-}
-
-.stat-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px;
-}
-
-.stat{
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:20px;
-  padding:15px;
-}
-
-.stat small{
-  color:var(--muted);
+  color:var(--ink);
+  border-radius:13px;
+  padding:10px 12px;
   font-size:9px;
-}
-
-.stat strong{
-  display:block;
-  margin-top:5px;
-  font-size:21px;
+  font-weight:900;
 }
 
 .input{
   width:100%;
+  padding:12px;
   border:1px solid var(--line);
+  border-radius:13px;
   background:var(--card);
-  color:var(--text);
-  border-radius:14px;
-  padding:13px;
-  outline:none;
-  font-size:14px;
+  color:var(--ink);
+  outline:0;
 }
 
-.input:focus{border-color:var(--green2)}
-
-label{
+.label{
   display:block;
-  margin:13px 0 6px;
+  margin:12px 0 6px;
   font-size:9px;
   font-weight:950;
 }
 
-.input-row{
-  display:flex;
-  gap:7px;
+.recipe{
+  margin-bottom:8px;
+  padding:0;
+  overflow:hidden;
 }
 
-.input-row .input{flex:1}
+.recipeTop{
+  display:flex;
+  gap:10px;
+  padding:14px;
+}
 
-.quick{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px;
+.recipeDetail{
+  display:none;
+  border-top:1px solid var(--line);
+  padding:12px 14px;
+}
+
+.recipe.open .recipeDetail{
+  display:block;
+}
+
+.ing{
+  display:flex;
+  justify-content:space-between;
+  border-bottom:1px solid var(--line);
+  padding:7px 0;
+  font-size:9px;
+}
+
+.portion{
+  display:flex;
+  gap:6px;
+  align-items:center;
   margin-top:8px;
 }
 
-.quick button{
+.portion button{
+  width:27px;
+  height:27px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:var(--card);
+  color:var(--ink);
+}
+
+.week{
+  display:flex;
+  gap:7px;
+  overflow:auto;
+  padding-bottom:5px;
+}
+
+.day{
+  min-width:86px;
   border:1px solid var(--line);
   background:var(--card);
-  color:var(--text);
+  color:var(--ink);
   border-radius:15px;
-  padding:12px 7px;
+  padding:9px;
+  text-align:center;
   font-size:9px;
   font-weight:900;
 }
 
-.shopping-total{
+.day.active{
+  background:var(--ink);
+  color:var(--bg);
+}
+
+.plannerMeal{
   display:flex;
-  justify-content:space-between;
   align-items:center;
-}
-
-.shopping-total small{
-  display:block;
-  color:var(--muted);
-  font-size:9px;
-}
-
-.shopping-total strong{
-  display:block;
-  font-size:30px;
-  margin-top:3px;
-}
-
-.save{
-  background:var(--soft);
-  color:#526728;
-  border-radius:12px;
-  padding:8px;
-  font-size:8px;
-  font-weight:950;
-}
-
-.store{
-  display:flex;
   justify-content:space-between;
-  align-items:center;
-  padding:12px 0;
+  padding:11px 0;
   border-bottom:1px solid var(--line);
 }
 
-.store:last-child{border:0}
-
-.store-name{
-  font-size:11px;
-  font-weight:950;
+.plannerMeal:last-child{
+  border:0;
 }
 
-.store-note{
-  color:var(--muted);
-  font-size:8px;
-  margin-top:2px;
+.list{
+  padding:0 15px;
 }
 
-.store-price{
-  font-size:13px;
-  font-weight:950;
-}
-
-.list-item{
+.listrow{
   display:flex;
-  justify-content:space-between;
   align-items:center;
+  justify-content:space-between;
   padding:12px 0;
   border-bottom:1px solid var(--line);
-}
-
-.list-item:last-child{border:0}
-
-.list-left{
-  display:flex;
-  align-items:center;
-  gap:9px;
+  font-size:10px;
 }
 
 .check{
   width:23px;
   height:23px;
-  border:2px solid #ccd1c7;
-  background:transparent;
+  border:2px solid #cbd0c7;
   border-radius:7px;
-  display:grid;
-  place-items:center;
-  font-size:12px;
+  background:none;
 }
 
 .check.done{
-  background:var(--dark);
+  background:var(--ink);
   color:var(--bg);
-  border-color:var(--dark);
+  border-color:var(--ink);
 }
 
-.item-name{
-  font-size:11px;
-  font-weight:900;
-}
-
-.item-sub{
-  margin-top:2px;
-  color:var(--muted);
-  font-size:8px;
-}
-
-.recipe{
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:22px;
-  margin-bottom:9px;
-  overflow:hidden;
-}
-
-.recipe-top{
-  display:flex;
-  gap:12px;
+.chat{
+  background:var(--ink);
+  color:var(--bg);
+  border-radius:23px;
   padding:15px;
 }
 
-.recipe-icon{
-  width:55px;
-  height:55px;
-  display:grid;
-  place-items:center;
-  border-radius:16px;
-  background:var(--soft);
-  font-size:26px;
-}
-
-.recipe h3{
-  margin:0;
-  font-size:14px;
-}
-
-.recipe p{
-  margin:4px 0;
-  color:var(--muted);
-  font-size:9px;
-}
-
-.recipe-detail{
-  border-top:1px solid var(--line);
-  padding:12px 15px;
-  display:none;
-}
-
-.recipe.open .recipe-detail{display:block}
-
-.ingredient{
-  display:flex;
-  justify-content:space-between;
-  padding:7px 0;
-  border-bottom:1px solid var(--line);
-  font-size:9px;
-}
-
-.ingredient:last-child{border:0}
-
-.portion{
-  display:flex;
-  align-items:center;
-  gap:7px;
-  margin-top:8px;
-}
-
-.portion button{
-  width:29px;
-  height:29px;
-  border:1px solid var(--line);
-  border-radius:9px;
-  background:var(--card);
-  color:var(--text);
-}
-
-.portion strong{font-size:12px}
-
-.coach{
-  background:var(--dark);
-  color:var(--bg);
-  border-radius:24px;
-  padding:16px;
-}
-
-.coach-head{
-  display:flex;
-  align-items:center;
-  gap:9px;
-  padding-bottom:12px;
-  border-bottom:1px solid #383c35;
-}
-
-.ai{
-  width:40px;
-  height:40px;
-  display:grid;
-  place-items:center;
+.msg{
+  padding:10px 11px;
   border-radius:13px;
-  background:#2b3028;
-}
-
-.coach-head b{display:block;font-size:12px}
-.coach-head small{color:#9fa69b;font-size:8px}
-
-.messages{
-  max-height:350px;
-  overflow:auto;
-  padding:4px 0;
-}
-
-.message{
-  padding:10px 12px;
-  border-radius:14px;
-  margin-top:9px;
+  background:#292e27;
+  margin:7px 0;
   font-size:10px;
   line-height:1.45;
 }
 
-.message.bot{background:#292e27;color:#dfe3db}
-.message.user{background:var(--green);color:#11140f;margin-left:25px}
-
-.chat-input{
-  display:flex;
-  gap:7px;
-  margin-top:12px;
+.msg.me{
+  background:var(--lime);
+  color:#11140f;
+  margin-left:22px;
 }
 
-.chat-input input{
+.chatrow{
+  display:flex;
+  gap:6px;
+  margin-top:10px;
+}
+
+.chatrow input{
   flex:1;
-  min-width:0;
-  border:0;
-  border-radius:13px;
-  padding:11px;
   background:#292e27;
-  color:#fff;
-  outline:none;
-}
-
-.chat-input button{
-  width:43px;
   border:0;
-  border-radius:13px;
-  background:var(--green);
+  border-radius:12px;
+  padding:11px;
+  color:#fff;
+  outline:0;
 }
 
-.progress-chart{
-  height:180px;
-  display:flex;
-  align-items:flex-end;
-  gap:7px;
-  padding:20px 5px 5px;
-}
-
-.bar{
-  flex:1;
-  min-height:4px;
-  background:var(--green2);
-  border-radius:7px 7px 2px 2px;
-  position:relative;
-}
-
-.bar span{
-  position:absolute;
-  bottom:-17px;
-  width:100%;
-  text-align:center;
-  font-size:7px;
-  color:var(--muted);
-}
-
-.empty{
-  padding:22px 5px;
-  text-align:center;
-  color:var(--muted);
-  font-size:10px;
+.chatrow button{
+  width:42px;
+  border:0;
+  border-radius:12px;
+  background:var(--lime);
 }
 
 .bottom{
   position:fixed;
-  z-index:100;
+  z-index:10;
   bottom:0;
   left:50%;
   transform:translateX(-50%);
+  max-width:520px;
   width:100%;
-  max-width:500px;
   display:flex;
   padding:7px 3px calc(7px + env(safe-area-inset-bottom));
   background:rgba(255,255,255,.94);
-  backdrop-filter:blur(18px);
+  backdrop-filter:blur(16px);
   border-top:1px solid var(--line);
 }
 
-.dark .bottom{background:rgba(24,27,22,.94)}
+body.dark .bottom{
+  background:rgba(24,27,22,.94);
+}
 
 .nav{
   flex:1;
   border:0;
   background:none;
-  color:#8a9086;
+  color:#899087;
 }
 
 .nav span{
   display:block;
-  font-size:19px;
-  line-height:22px;
+  font-size:18px;
 }
 
 .nav small{
-  display:block;
   font-size:7px;
   font-weight:900;
 }
 
-.nav.active{color:var(--text)}
+.nav.active{
+  color:var(--ink);
+}
+
+.toast{
+  position:fixed;
+  z-index:30;
+  bottom:95px;
+  left:50%;
+  transform:translate(-50%,20px);
+  background:var(--ink);
+  color:var(--bg);
+  padding:10px 14px;
+  border-radius:13px;
+  font-size:9px;
+  font-weight:900;
+  opacity:0;
+  transition:.2s;
+}
+
+.toast.show{
+  opacity:1;
+  transform:translate(-50%,0);
+}
+
+.chart{
+  height:170px;
+  display:flex;
+  align-items:flex-end;
+  gap:7px;
+  padding:15px 4px;
+}
+
+.col{
+  flex:1;
+  background:var(--lime);
+  border-radius:7px 7px 2px 2px;
+  min-height:5px;
+  position:relative;
+}
+
+.col span{
+  position:absolute;
+  bottom:-15px;
+  width:100%;
+  text-align:center;
+  font-size:7px;
+  color:var(--muted);
+}
+
+.pill{
+  display:inline-block;
+  background:var(--lime);
+  color:#11140f;
+  border-radius:99px;
+  padding:7px 9px;
+  font-size:8px;
+  font-weight:950;
+}
 
 .modal{
   display:none;
   position:fixed;
   inset:0;
-  z-index:500;
-  background:rgba(0,0,0,.5);
+  z-index:20;
+  background:#0008;
   align-items:flex-end;
-  justify-content:center;
-  padding:15px;
+  padding:12px;
 }
 
-.modal.open{display:flex}
+.modal.open{
+  display:flex;
+}
 
-.modal-box{
+.sheet{
+  background:var(--card);
+  color:var(--ink);
   width:100%;
-  max-width:500px;
+  max-width:520px;
+  margin:auto;
+  border-radius:24px;
+  padding:16px;
   max-height:85vh;
   overflow:auto;
-  padding:17px;
-  background:var(--card);
-  color:var(--text);
-  border-radius:25px 25px 10px 10px;
-}
-
-.modal-head{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:12px;
-}
-
-.modal-head h2{font-size:18px}
-
-.modal-head button{
-  width:32px;
-  height:32px;
-  border:0;
-  border-radius:10px;
-  background:var(--bg);
-  color:var(--text);
-  font-size:20px;
 }
 
 .food{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  padding:12px 0;
+  padding:11px 0;
   border-bottom:1px solid var(--line);
-}
-
-.food b{font-size:11px}
-.food small{
-  display:block;
-  color:var(--muted);
-  font-size:8px;
-  margin-top:2px;
-}
-
-.food button{
-  width:31px;
-  height:31px;
-  border:0;
-  border-radius:10px;
-  background:var(--green);
-  font-weight:950;
-}
-
-.toast{
-  position:fixed;
-  z-index:1000;
-  left:50%;
-  bottom:100px;
-  transform:translateX(-50%) translateY(20px);
-  background:var(--dark);
-  color:var(--bg);
-  padding:11px 15px;
-  border-radius:14px;
   font-size:10px;
-  font-weight:900;
-  opacity:0;
-  pointer-events:none;
-  transition:.25s;
-}
-
-.toast.show{
-  opacity:1;
-  transform:translateX(-50%) translateY(0);
 }
 </style>
 </head>
@@ -791,517 +609,776 @@ label{
 
 <div id="app">
 
-<header class="topbar">
-  <div class="logo">
-    <span>🍝</span> BudgetCook
-  </div>
-  <button class="avatar" id="avatar">B</button>
+<header class="top">
+  <div class="logo">🍝 BudgetCook</div>
+  <button class="avatar" onclick="show('profile')">B</button>
 </header>
 
-
-<!-- ACCUEIL -->
 <section id="home" class="page active">
 
-  <div class="eyebrow">TABLEAU DE BORD</div>
-  <h1>Bonjour <span id="hello">👋</span></h1>
+<div class="eyebrow">TABLEAU DE BORD</div>
 
-  <div class="hero">
+<h1>
+Bonjour <span id="hello">👋</span>
+</h1>
 
-    <div class="hero-top">
-      <div>
-        <small>Objectif calories</small>
-        <div class="hero-number">
-          <span id="target">0</span>
-          <span>kcal</span>
-        </div>
-      </div>
+<div class="hero">
 
-      <div class="pill" id="goalPill">Profil</div>
-    </div>
+<div style="display:flex;justify-content:space-between">
 
-    <div class="progress">
-      <div id="calorieBar"></div>
-    </div>
+<div>
+<small>Objectif calories</small>
 
-    <div class="hero-bottom">
-      <span><b id="eaten">0</b> consommées</span>
-      <span><b id="left">0</b> restantes</span>
-    </div>
+<div class="big">
+<span id="target">0</span>
+<span style="font-size:11px">kcal</span>
+</div>
 
-  </div>
+</div>
 
+<span class="pill" id="goalPill">
+Profil
+</span>
 
-  <div class="macros">
+</div>
 
-    <div class="macro">
-      <div class="macro-icon">🥩</div>
-      <strong id="protein">0g</strong>
-      <small>Protéines</small>
-    </div>
+<div class="bar">
+<i id="calBar"></i>
+</div>
 
-    <div class="macro">
-      <div class="macro-icon">🍚</div>
-      <strong id="carbs">0g</strong>
-      <small>Glucides</small>
-    </div>
+<div class="herofoot">
 
-    <div class="macro">
-      <div class="macro-icon">🥑</div>
-      <strong id="fat">0g</strong>
-      <small>Lipides</small>
-    </div>
+<span>
+<b id="eaten">0</b>
+consommées
+</span>
 
-  </div>
+<span>
+<b id="left">0</b>
+restantes
+</span>
 
+</div>
 
-  <div class="section-head">
-    <h2>Repas du jour</h2>
-    <button onclick="go('journal')">Journal</button>
-  </div>
+</div>
 
-  <div id="homeMeals"></div>
+<div class="macros">
 
+<div class="stat">
+🥩
+<strong id="p">0g</strong>
+<small>Protéines</small>
+</div>
 
-  <div class="section-head">
-    <h2>💰 Budget</h2>
-  </div>
+<div class="stat">
+🍚
+<strong id="c">0g</strong>
+<small>Glucides</small>
+</div>
 
-  <div class="card shopping-total">
+<div class="stat">
+🥑
+<strong id="f">0g</strong>
+<small>Lipides</small>
+</div>
 
-    <div>
-      <small>Budget / semaine</small>
-      <strong><span id="budget">0</span> €</strong>
-    </div>
+</div>
 
-    <div class="save">
-      Panier optimisé<br>
-      <b>≈ 49,20 €</b>
-    </div>
+<div class="head">
 
-  </div>
+<h2>Repas du jour</h2>
 
+<button onclick="show('planner')">
+Planning
+</button>
 
-  <div class="section-head">
-    <h2>🔥 Série</h2>
-  </div>
+</div>
 
-  <div class="card">
-    <b id="streak">0 jour</b>
-    <div style="color:var(--muted);font-size:9px;margin-top:3px">
-      Continue ton objectif quotidien.
-    </div>
-  </div>
+<div id="todayMeals"></div>
+
+<div class="head">
+<h2>🔥 Série</h2>
+</div>
+
+<div class="card">
+
+<b id="streak">
+0 jour
+</b>
+
+<div class="meta">
+Ouvre l'application et enregistre au moins un repas chaque jour pour faire progresser ta série.
+</div>
+
+</div>
 
 </section>
 
 
-<!-- JOURNAL -->
+<section id="planner" class="page">
+
+<div class="eyebrow">
+PLANIFICATION
+</div>
+
+<h1>
+Ma semaine 📅
+</h1>
+
+<div class="card">
+
+<div class="week" id="days"></div>
+
+<div style="margin-top:12px" id="daySummary"></div>
+
+</div>
+
+<div class="head">
+
+<h2 id="selectedDay">
+Aujourd'hui
+</h2>
+
+<button onclick="generateWeek()">
+✨ Recalculer
+</button>
+
+</div>
+
+<div class="card" id="dayMeals"></div>
+
+</section>
+
+
 <section id="journal" class="page">
 
-  <div class="eyebrow">NUTRITION</div>
-  <h1>Journal 🍽️</h1>
+<div class="eyebrow">
+NUTRITION
+</div>
 
-  <div class="stat-grid">
+<h1>
+Journal 🍽️
+</h1>
 
-    <div class="stat">
-      <small>Calories</small>
-      <strong><span id="journalCal">0</span></strong>
-    </div>
+<div class="stats">
 
-    <div class="stat">
-      <small>Protéines</small>
-      <strong><span id="journalPro">0</span>g</strong>
-    </div>
+<div class="stat">
+<small>Calories</small>
+<strong id="jc">0</strong>
+</div>
 
-    <div class="stat">
-      <small>Glucides</small>
-      <strong><span id="journalCarb">0</span>g</strong>
-    </div>
+<div class="stat">
+<small>Protéines</small>
+<strong id="jp">0g</strong>
+</div>
 
-    <div class="stat">
-      <small>Lipides</small>
-      <strong><span id="journalFat">0</span>g</strong>
-    </div>
+<div class="stat">
+<small>Glucides</small>
+<strong id="jg">0g</strong>
+</div>
 
-  </div>
+<div class="stat">
+<small>Lipides</small>
+<strong id="jf">0g</strong>
+</div>
 
-  <div class="section-head">
-    <h2>Aliments</h2>
-    <button onclick="clearJournal()">Réinitialiser</button>
-  </div>
+</div>
 
-  <div id="journalList"></div>
+<div class="head">
 
-  <button class="primary" onclick="openFood()">
-    + Ajouter un aliment
-  </button>
+<h2>Aliments</h2>
 
-</section>
+<button onclick="clearJournal()">
+Vider
+</button>
 
+</div>
 
-<!-- REPAS -->
-<section id="meals" class="page">
+<div id="journalList"></div>
 
-  <div class="eyebrow">RECETTES</div>
-  <h1>Mes repas 🍳</h1>
-
-  <div class="card" style="margin-bottom:10px">
-
-    <b>✨ Générateur intelligent</b>
-
-    <p style="font-size:9px;color:var(--muted);line-height:1.5">
-      Les recettes sont adaptées à ton objectif calorique.
-      Tu peux modifier leur portion avant de les ajouter.
-    </p>
-
-    <button class="primary" onclick="generateDay()">
-      Générer ma journée
-    </button>
-
-  </div>
-
-  <div id="recipes"></div>
+<button class="primary" onclick="openFood()">
++ Ajouter un aliment
+</button>
 
 </section>
 
 
-<!-- COURSES -->
+<section id="recipes" class="page">
+
+<div class="eyebrow">
+RECETTES
+</div>
+
+<h1>
+Mes recettes 🍳
+</h1>
+
+<div class="card">
+
+<b>
+Portions intelligentes
+</b>
+
+<div class="meta" style="margin:5px 0 10px">
+Les quantités sont ajustées autour de ton objectif calorique.
+</div>
+
+<button class="primary" onclick="generateWeek()">
+Générer ma semaine
+</button>
+
+</div>
+
+<div class="head">
+<h2>Bibliothèque</h2>
+</div>
+
+<div id="recipeList"></div>
+
+</section>
+
+
 <section id="shopping" class="page">
 
-  <div class="eyebrow">BUDGET</div>
-  <h1>Courses 🛒</h1>
+<div class="eyebrow">
+BUDGET
+</div>
 
-  <div class="card shopping-total">
+<h1>
+Courses 🛒
+</h1>
 
-    <div>
-      <small>Panier estimé</small>
-      <strong>49,20 €</strong>
-    </div>
+<div class="card">
 
-    <div class="save">
-      Jusqu'à<br>
-      <b>8,20 €</b> d'économie
-    </div>
+<div style="display:flex;justify-content:space-between">
 
-  </div>
+<div>
 
+<div class="meta">
+Panier de la semaine
+</div>
 
-  <div class="section-head">
-    <h2>Comparateur</h2>
-  </div>
+<div class="big" style="font-size:30px">
 
-  <div class="card" id="stores"></div>
+<span id="shopTotal">
+0
+</span>
 
+€
 
-  <div class="section-head">
-    <h2>Ma liste</h2>
-    <button onclick="checkAll()">Tout cocher</button>
-  </div>
+</div>
 
-  <div class="card" id="shoppingList"></div>
+</div>
+
+<span class="pill">
+Auto
+</span>
+
+</div>
+
+</div>
+
+<div class="head">
+
+<h2>
+Liste générée
+</h2>
+
+<button onclick="checkAll()">
+Tout cocher
+</button>
+
+</div>
+
+<div class="card list" id="shopList"></div>
+
+<div class="head">
+<h2>Budget</h2>
+</div>
+
+<div class="stats">
+
+<div class="stat">
+<small>Budget</small>
+<strong>
+<span id="budget">0</span>€
+</strong>
+</div>
+
+<div class="stat">
+<small>Reste</small>
+<strong>
+<span id="budgetLeft">0</span>€
+</strong>
+</div>
+
+</div>
 
 </section>
 
 
-<!-- PROGRÈS -->
 <section id="progress" class="page">
 
-  <div class="eyebrow">ÉVOLUTION</div>
-  <h1>Progrès 📈</h1>
+<div class="eyebrow">
+ÉVOLUTION
+</div>
 
-  <div class="stat-grid">
+<h1>
+Progrès 📈
+</h1>
 
-    <div class="stat">
-      <small>Poids actuel</small>
-      <strong><span id="currentWeight">0</span> kg</strong>
-    </div>
+<div class="stats">
 
-    <div class="stat">
-      <small>Calories cible</small>
-      <strong id="progressTarget">0</strong>
-    </div>
+<div class="stat">
+<small>Poids</small>
+<strong>
+<span id="weightNow">0</span> kg
+</strong>
+</div>
 
-    <div class="stat">
-      <small>Protéines</small>
-      <strong><span id="progressProtein">0</span>g</strong>
-    </div>
+<div class="stat">
+<small>Cible</small>
+<strong id="targetGoal">—</strong>
+</div>
 
-    <div class="stat">
-      <small>Objectif</small>
-      <strong id="progressGoal">—</strong>
-    </div>
+<div class="stat">
+<small>Entretien</small>
+<strong id="maint">0</strong>
+</div>
 
-  </div>
+<div class="stat">
+<small>Calories</small>
+<strong id="ptarget">0</strong>
+</div>
 
+</div>
 
-  <div class="section-head">
-    <h2>Évolution du poids</h2>
-  </div>
+<div class="head">
+<h2>Historique</h2>
+</div>
 
-  <div class="card">
+<div class="card">
+<div class="chart" id="chart"></div>
+</div>
 
-    <div class="progress-chart" id="weightChart"></div>
+<div class="head">
+<h2>Nouvelle mesure</h2>
+</div>
 
-  </div>
+<div class="card">
 
+<div style="display:flex;gap:7px">
 
-  <div class="section-head">
-    <h2>Ajouter une mesure</h2>
-  </div>
+<input
+id="newWeight"
+class="input"
+type="number"
+step=".1"
+placeholder="80.0"
+>
 
-  <div class="card">
+<button
+class="secondary"
+onclick="addWeight()"
+>
+Ajouter
+</button>
 
-    <div class="input-row">
+</div>
 
-      <input
-        id="newWeight"
-        class="input"
-        type="number"
-        step=".1"
-        placeholder="80.0">
-
-      <button
-        class="secondary"
-        onclick="addWeight()">
-        Ajouter
-      </button>
-
-    </div>
-
-  </div>
+</div>
 
 </section>
 
 
-<!-- GARDE MANGER -->
 <section id="pantry" class="page">
 
-  <div class="eyebrow">MAISON</div>
-  <h1>Garde-manger 🧊</h1>
+<div class="eyebrow">
+MAISON
+</div>
 
-  <div class="card">
+<h1>
+Garde-manger 🥫
+</h1>
 
-    <div class="input-row">
+<div class="card">
 
-      <input
-        id="pantryInput"
-        class="input"
-        placeholder="Ex : riz, œufs...">
+<div style="display:flex;gap:7px">
 
-      <button
-        class="add"
-        onclick="addPantry()">
-        +
-      </button>
+<input
+id="pantryInput"
+class="input"
+placeholder="Ex : riz"
+>
 
-    </div>
+<button
+class="add"
+onclick="addPantry()"
+>
++
+</button>
 
-  </div>
+</div>
 
-  <div class="section-head">
-    <h2>Disponible</h2>
-  </div>
+</div>
 
-  <div class="card" id="pantryList"></div>
+<div class="head">
+<h2>Disponible</h2>
+</div>
+
+<div class="card list" id="pantryList"></div>
 
 </section>
 
 
-<!-- COACH -->
 <section id="coach" class="page">
 
-  <div class="eyebrow">BUDGETCOOK</div>
-  <h1>Coach 🤖</h1>
+<div class="eyebrow">
+ASSISTANT
+</div>
 
-  <div class="coach">
+<h1>
+Coach 🤖
+</h1>
 
-    <div class="coach-head">
+<div class="chat">
 
-      <div class="ai">🤖</div>
+<div id="messages">
 
-      <div>
-        <b>BudgetCook Coach</b>
-        <small>Analyse locale de ton profil</small>
-      </div>
+<div class="msg">
+Salut 👋 Je peux analyser tes calories, protéines, repas, budget et ta semaine.
+</div>
 
-    </div>
+</div>
 
-    <div class="messages" id="messages">
+<div class="chatrow">
 
-      <div class="message bot">
-        Salut 👋 Je connais ton objectif, tes calories
-        et ce que tu as mangé. Pose-moi une question.
-      </div>
+<input
+id="chatInput"
+placeholder="Ex : combien de calories me reste-t-il ?"
+>
 
-    </div>
+<button onclick="chat()">
+➤
+</button>
 
-    <div class="chat-input">
+</div>
 
-      <input
-        id="chatInput"
-        placeholder="Ex : que manger ce soir ?">
+</div>
 
-      <button onclick="sendChat()">➤</button>
+<div class="two" style="grid-template-columns:1fr 1fr;margin-top:8px">
 
-    </div>
+<button
+class="secondary"
+onclick="ask('Que manger ce soir ?')"
+>
+🍝 Repas
+</button>
 
-  </div>
+<button
+class="secondary"
+onclick="ask('Comment économiser ?')"
+>
+💰 Budget
+</button>
 
-
-  <div class="quick">
-
-    <button onclick="ask('Que manger ce soir ?')">
-      🍝 Repas
-    </button>
-
-    <button onclick="ask('Comment économiser ?')">
-      💰 Budget
-    </button>
-
-    <button onclick="ask('Combien de protéines ?')">
-      🥩 Protéines
-    </button>
-
-    <button onclick="ask('Combien de calories me reste-t-il ?')">
-      🔥 Calories
-    </button>
-
-  </div>
+</div>
 
 </section>
 
 
-<!-- PROFIL -->
 <section id="profile" class="page">
 
-  <div class="eyebrow">PERSONNALISATION</div>
-  <h1>Mon profil 👤</h1>
+<div class="eyebrow">
+PERSONNALISATION
+</div>
 
-  <div class="card">
+<h1>
+Mon profil 👤
+</h1>
 
-    <label>Prénom</label>
-    <input id="firstName" class="input">
+<div class="card">
 
-    <label>Âge</label>
-    <input id="age" class="input" type="number">
+<label class="label">
+Prénom
+</label>
 
-    <label>Sexe</label>
-    <select id="sex" class="input">
-      <option value="male">Homme</option>
-      <option value="female">Femme</option>
-    </select>
+<input
+id="name"
+class="input"
+>
 
-    <label>Taille (cm)</label>
-    <input id="height" class="input" type="number">
+<label class="label">
+Âge
+</label>
 
-    <label>Poids (kg)</label>
-    <input id="weight" class="input" type="number" step=".1">
+<input
+id="age"
+class="input"
+type="number"
+>
 
-    <label>Activité</label>
-    <select id="activity" class="input">
-      <option value="1.2">Sédentaire</option>
-      <option value="1.35">Légèrement actif</option>
-      <option value="1.5">Modérément actif</option>
-      <option value="1.65">Actif</option>
-      <option value="1.75">Très actif</option>
-    </select>
+<label class="label">
+Sexe
+</label>
 
-    <label>Entraînements / semaine</label>
-    <input id="training" class="input" type="number">
+<select
+id="sex"
+class="input"
+>
 
-    <label>Objectif</label>
-    <select id="goal" class="input">
-      <option value="cut">🔥 Perdre du gras</option>
-      <option value="maintain">⚖️ Maintenir</option>
-      <option value="bulk">💪 Prendre du muscle</option>
-    </select>
+<option value="male">
+Homme
+</option>
 
-    <label>Déficit / surplus</label>
-    <select id="adjustment" class="input">
-      <option value="200">200 kcal</option>
-      <option value="300">300 kcal</option>
-      <option value="400">400 kcal</option>
-      <option value="500">500 kcal</option>
-    </select>
+<option value="female">
+Femme
+</option>
 
-    <label>Budget courses / semaine</label>
-    <input id="budgetInput" class="input" type="number">
+</select>
 
-    <button class="primary" style="margin-top:15px" onclick="saveProfile()">
-      Enregistrer mon profil
-    </button>
+<label class="label">
+Taille (cm)
+</label>
 
-  </div>
+<input
+id="height"
+class="input"
+type="number"
+>
 
+<label class="label">
+Poids (kg)
+</label>
 
-  <div class="section-head">
-    <h2>Calcul nutritionnel</h2>
-  </div>
+<input
+id="weight"
+class="input"
+type="number"
+step=".1"
+>
 
-  <div class="card stat-grid">
+<label class="label">
+Activité
+</label>
 
-    <div class="stat">
-      <small>Métabolisme de base</small>
-      <strong id="bmr">0</strong>
-    </div>
+<select
+id="activity"
+class="input"
+>
 
-    <div class="stat">
-      <small>Entretien</small>
-      <strong id="maintenance">0</strong>
-    </div>
+<option value="1.2">
+Sédentaire
+</option>
 
-    <div class="stat">
-      <small>Calories cible</small>
-      <strong id="profileTarget">0</strong>
-    </div>
+<option value="1.35">
+Légèrement actif
+</option>
 
-    <div class="stat">
-      <small>Protéines</small>
-      <strong><span id="profileProtein">0</span>g</strong>
-    </div>
+<option value="1.5">
+Modérément actif
+</option>
 
-    <div class="stat">
-      <small>Glucides</small>
-      <strong><span id="profileCarbs">0</span>g</strong>
-    </div>
+<option value="1.65">
+Actif
+</option>
 
-    <div class="stat">
-      <small>Lipides</small>
-      <strong><span id="profileFat">0</span>g</strong>
-    </div>
+<option value="1.75">
+Très actif
+</option>
 
-  </div>
+</select>
 
+<label class="label">
+Entraînements / semaine
+</label>
 
-  <div class="section-head">
-    <h2>Apparence</h2>
-  </div>
+<input
+id="training"
+class="input"
+type="number"
+>
 
-  <button class="secondary" style="width:100%" onclick="toggleDark()">
-    🌙 Activer / désactiver le mode sombre
-  </button>
+<label class="label">
+Objectif
+</label>
+
+<select
+id="goal"
+class="input"
+>
+
+<option value="cut">
+🔥 Perdre du gras
+</option>
+
+<option value="maintain">
+⚖️ Maintenir
+</option>
+
+<option value="bulk">
+💪 Prendre du muscle
+</option>
+
+</select>
+
+<label class="label">
+Déficit / surplus
+</label>
+
+<select
+id="adjust"
+class="input"
+>
+
+<option value="200">
+200 kcal
+</option>
+
+<option value="300">
+300 kcal
+</option>
+
+<option value="400">
+400 kcal
+</option>
+
+<option value="500">
+500 kcal
+</option>
+
+</select>
+
+<label class="label">
+Budget / semaine (€)
+</label>
+
+<input
+id="budgetInput"
+class="input"
+type="number"
+>
+
+<button
+class="primary"
+style="margin-top:14px"
+onclick="saveProfile()"
+>
+Enregistrer
+</button>
+
+</div>
+
+<div class="head">
+<h2>Calcul</h2>
+</div>
+
+<div class="stats">
+
+<div class="stat">
+<small>BMR</small>
+<strong id="bmr">0</strong>
+</div>
+
+<div class="stat">
+<small>Entretien</small>
+<strong id="m">0</strong>
+</div>
+
+<div class="stat">
+<small>Cible</small>
+<strong id="t">0</strong>
+</div>
+
+<div class="stat">
+<small>Protéines</small>
+<strong id="tp">0g</strong>
+</div>
+
+<div class="stat">
+<small>Glucides</small>
+<strong id="tg">0g</strong>
+</div>
+
+<div class="stat">
+<small>Lipides</small>
+<strong id="tf">0g</strong>
+</div>
+
+</div>
+
+<button
+class="secondary"
+style="width:100%;margin-top:10px"
+onclick="toggleDark()"
+>
+🌙 Mode sombre
+</button>
 
 </section>
 
 
-<!-- FOOD MODAL -->
+<nav class="bottom">
+
+<button class="nav active" data-p="home">
+<span>⌂</span>
+<small>Accueil</small>
+</button>
+
+<button class="nav" data-p="planner">
+<span>📅</span>
+<small>Semaine</small>
+</button>
+
+<button class="nav" data-p="journal">
+<span>🍽️</span>
+<small>Journal</small>
+</button>
+
+<button class="nav" data-p="shopping">
+<span>🛒</span>
+<small>Courses</small>
+</button>
+
+<button class="nav" data-p="profile">
+<span>👤</span>
+<small>Profil</small>
+</button>
+
+</nav>
+
+</div>
+
+
 <div class="modal" id="foodModal">
 
-  <div class="modal-box">
+<div class="sheet">
 
-    <div class="modal-head">
-      <h2>Ajouter un aliment</h2>
-      <button onclick="closeFood()">×</button>
-    </div>
+<div style="display:flex;justify-content:space-between;align-items:center">
 
-    <input
-      id="foodSearch"
-      class="input"
-      placeholder="Rechercher...">
+<h2>
+Ajouter un aliment
+</h2>
 
-    <div id="foodResults"></div>
+<button
+class="secondary"
+onclick="closeFood()"
+>
+×
+</button>
 
-  </div>
+</div>
+
+<input
+id="foodSearch"
+class="input"
+placeholder="Rechercher..."
+style="margin-top:10px"
+>
+
+<div id="foodResults"></div>
+
+</div>
 
 </div>
 
@@ -1309,1355 +1386,1645 @@ label{
 <div class="toast" id="toast"></div>
 
 
-<!-- NAVIGATION -->
-<nav class="bottom">
-
-  <button class="nav active" data-page="home">
-    <span>⌂</span>
-    <small>Accueil</small>
-  </button>
-
-  <button class="nav" data-page="journal">
-    <span>🍽️</span>
-    <small>Journal</small>
-  </button>
-
-  <button class="nav" data-page="meals">
-    <span>✨</span>
-    <small>Repas</small>
-  </button>
-
-  <button class="nav" data-page="shopping">
-    <span>🛒</span>
-    <small>Courses</small>
-  </button>
-
-  <button class="nav" data-page="profile">
-    <span>👤</span>
-    <small>Profil</small>
-  </button>
-
-</nav>
-
-</div>
-
-
 <script>
 
-/* =========================================================
-   BUDGETCOOK V2
-   ========================================================= */
+const foods=[
 
-const FOODS = [
-
- {id:1,n:"Poulet",e:"🍗",c:165,p:31,g:0,l:3.6,price:.95},
- {id:2,n:"Riz",e:"🍚",c:360,p:7,g:79,l:.7,price:.16},
- {id:3,n:"Œufs",e:"🥚",c:143,p:13,g:1,l:10,price:.24},
- {id:4,n:"Skyr",e:"🥛",c:63,p:10,g:4,l:.2,price:.42},
- {id:5,n:"Banane",e:"🍌",c:89,p:1.1,g:23,l:.3,price:.22},
- {id:6,n:"Flocons d'avoine",e:"🥣",c:370,p:13,g:60,l:7,price:.15},
- {id:7,n:"Pâtes",e:"🍝",c:350,p:12,g:70,l:2,price:.16},
- {id:8,n:"Thon",e:"🐟",c:116,p:26,g:0,l:1,price:1.05},
- {id:9,n:"Pomme",e:"🍎",c:52,p:.3,g:14,l:.2,price:.25},
- {id:10,n:"Pain complet",e:"🍞",c:247,p:13,g:41,l:4,price:.12},
- {id:11,n:"Lentilles",e:"🫘",c:116,p:9,g:20,l:.4,price:.18},
- {id:12,n:"Pommes de terre",e:"🥔",c:77,p:2,g:17,l:.1,price:.12},
- {id:13,n:"Brocoli",e:"🥦",c:34,p:2.8,g:7,l:.4,price:.25},
- {id:14,n:"Carottes",e:"🥕",c:41,p:.9,g:10,l:.2,price:.12},
- {id:15,n:"Fromage blanc",e:"🥣",c:70,p:8,g:4,l:2,price:.35},
- {id:16,n:"Beurre de cacahuète",e:"🥜",c:588,p:25,g:20,l:50,price:.30}
+["Poulet","🍗",165,31,0,3.6,.95],
+["Riz","🍚",360,7,79,.7,.16],
+["Œufs","🥚",143,13,1,10,.24],
+["Skyr","🥛",63,10,4,.2,.42],
+["Banane","🍌",89,1.1,23,.3,.22],
+["Flocons d'avoine","🥣",370,13,60,7,.15],
+["Pâtes","🍝",350,12,70,2,.16],
+["Thon","🐟",116,26,0,1,1.05],
+["Pomme","🍎",52,.3,14,.2,.25],
+["Pain complet","🍞",247,13,41,4,.12],
+["Lentilles","🫘",116,9,20,.4,.18],
+["Pommes de terre","🥔",77,2,17,.1,.12],
+["Brocoli","🥦",34,2.8,7,.4,.25],
+["Carottes","🥕",41,.9,10,.2,.12],
+["Fromage blanc","🥣",70,8,4,2,.35],
+["Beurre de cacahuète","🥜",588,25,20,50,.30]
 
 ];
 
 
-const RECIPES = [
+const recipes=[
 
- {
-  id:1,
-  name:"Porridge banane & skyr",
-  type:"PETIT-DÉJEUNER",
-  emoji:"🥣",
-  base:1,
-  calories:470,
-  protein:31,
-  carbs:66,
-  fat:8,
-  price:1.35,
-  ingredients:[
-   ["Flocons d'avoine","60 g"],
-   ["Skyr","200 g"],
-   ["Banane","1"],
-   ["Beurre de cacahuète","10 g"]
-  ]
- },
+{
+id:1,
+n:"Porridge banane & skyr",
+type:"PETIT-DÉJEUNER",
+e:"🥣",
+k:470,
+p:31,
+g:66,
+f:8,
+price:1.35,
+ing:[
+["Flocons d'avoine","60 g"],
+["Skyr","200 g"],
+["Banane","1"],
+["Beurre de cacahuète","10 g"]
+]
+},
 
- {
-  id:2,
-  name:"Poulet, riz & brocoli",
-  type:"DÉJEUNER",
-  emoji:"🍗",
-  base:1,
-  calories:650,
-  protein:55,
-  carbs:78,
-  fat:9,
-  price:2.70,
-  ingredients:[
-   ["Poulet","180 g"],
-   ["Riz","100 g"],
-   ["Brocoli","150 g"]
-  ]
- },
+{
+id:2,
+n:"Poulet, riz & brocoli",
+type:"DÉJEUNER",
+e:"🍗",
+k:650,
+p:55,
+g:78,
+f:9,
+price:2.70,
+ing:[
+["Poulet","180 g"],
+["Riz","100 g"],
+["Brocoli","150 g"]
+]
+},
 
- {
-  id:3,
-  name:"Skyr & banane",
-  type:"COLLATION",
-  emoji:"🥛",
-  base:1,
-  calories:210,
-  protein:18,
-  carbs:31,
-  fat:1,
-  price:.85,
-  ingredients:[
-   ["Skyr","200 g"],
-   ["Banane","1"]
-  ]
- },
+{
+id:3,
+n:"Skyr & banane",
+type:"COLLATION",
+e:"🥛",
+k:210,
+p:18,
+g:31,
+f:1,
+price:.85,
+ing:[
+["Skyr","200 g"],
+["Banane","1"]
+]
+},
 
- {
-  id:4,
-  name:"Pâtes au thon",
-  type:"DÎNER",
-  emoji:"🍝",
-  base:1,
-  calories:590,
-  protein:47,
-  carbs:72,
-  fat:10,
-  price:2.20,
-  ingredients:[
-   ["Pâtes","100 g"],
-   ["Thon","120 g"],
-   ["Carottes","100 g"]
-  ]
- }
+{
+id:4,
+n:"Pâtes au thon",
+type:"DÎNER",
+e:"🍝",
+k:590,
+p:47,
+g:72,
+f:10,
+price:2.20,
+ing:[
+["Pâtes","100 g"],
+["Thon","120 g"],
+["Carottes","100 g"]
+]
+}
 
 ];
 
 
-const STORES = [
- ["🟡","Lidl",49.20,"Meilleur prix"],
- ["🔵","ALDI",50.70,"Très proche"],
- ["🔴","E.Leclerc",52.40,"Prix moyen"],
- ["🟢","Intermarché",54.10,"Prix moyen"],
- ["🔵","Carrefour",57.40,"Plus cher"]
-];
+const key="budgetcook_v3";
 
 
-const SHOPPING = [
- ["🍗","Poulet","1,5 kg"],
- ["🥚","Œufs","24"],
- ["🥛","Skyr","2 kg"],
- ["🍚","Riz","2 kg"],
- ["🍌","Bananes","1,5 kg"],
- ["🥦","Brocoli","1 kg"],
- ["🍝","Pâtes","1 kg"],
- ["🐟","Thon","4 boîtes"],
- ["🍎","Pommes","1 kg"],
- ["🥕","Carottes","1 kg"]
-];
+let S=
+JSON.parse(
+localStorage.getItem(key)||"null"
+)
+||
+{
+profile:{
+name:"",
+age:"",
+sex:"male",
+height:"",
+weight:"",
+activity:"1.5",
+training:"0",
+goal:"cut",
+adjust:300,
+budget:50
+},
 
-
-const DEFAULT = {
- profile:{
-  firstName:"",
-  age:"",
-  sex:"male",
-  height:"",
-  weight:"",
-  activity:"1.5",
-  training:"0",
-  goal:"cut",
-  adjustment:"300",
-  budget:"50"
- },
- consumed:[],
- weights:[],
- pantry:[],
- checked:[],
- streak:0,
- dark:false
+journal:[],
+weights:[],
+pantry:[],
+checked:[],
+streak:0,
+dark:false,
+week:[],
+selectedDay:0
 };
 
 
-let state = load();
-
-
-function load(){
-
- try{
-
-  const s=localStorage.getItem("budgetcook_v2");
-
-  if(s){
-
-   const parsed=JSON.parse(s);
-
-   return {
-    ...DEFAULT,
-    ...parsed,
-    profile:{
-     ...DEFAULT.profile,
-     ...(parsed.profile||{})
-    }
-   };
-
-  }
-
- }catch(e){}
-
- return JSON.parse(JSON.stringify(DEFAULT));
-
-}
-
-
 function save(){
- localStorage.setItem("budgetcook_v2",JSON.stringify(state));
-}
 
-
-function $(id){
- return document.getElementById(id);
-}
-
-
-function escape(v){
-
- return String(v)
-  .replaceAll("&","&amp;")
-  .replaceAll("<","&lt;")
-  .replaceAll(">","&gt;")
-  .replaceAll('"',"&quot;")
-  .replaceAll("'","&#039;");
+localStorage.setItem(
+key,
+JSON.stringify(S)
+);
 
 }
 
 
-function toast(text){
+function $(x){
 
- const t=$("toast");
-
- t.textContent=text;
- t.classList.add("show");
-
- clearTimeout(window.toastTimer);
-
- window.toastTimer=setTimeout(()=>{
-  t.classList.remove("show");
- },1800);
+return document.getElementById(x);
 
 }
 
 
-/* NAVIGATION */
+function esc(x){
 
-function go(page){
-
- document.querySelectorAll(".page")
-  .forEach(p=>p.classList.remove("active"));
-
- $(page).classList.add("active");
-
- document.querySelectorAll(".nav")
-  .forEach(n=>{
-   n.classList.toggle(
-    "active",
-    n.dataset.page===page
-   );
-  });
-
- window.scrollTo({top:0,behavior:"smooth"});
+return String(x)
+.replaceAll("&","&amp;")
+.replaceAll("<","&lt;")
+.replaceAll(">","&gt;")
+.replaceAll('"',"&quot;");
 
 }
 
 
-document.querySelectorAll(".nav")
-.forEach(n=>{
- n.addEventListener("click",()=>{
-  go(n.dataset.page);
- });
-});
+function toast(x){
 
+let t=$("toast");
 
-$("avatar").onclick=()=>go("profile");
+t.textContent=x;
 
+t.classList.add("show");
 
-/* NUTRITION */
+clearTimeout(window.tt);
 
-function nutrition(){
-
- const p=state.profile;
-
- const age=Number(p.age);
- const h=Number(p.height);
- const w=Number(p.weight);
- const activity=Number(p.activity)||1.5;
- const adjustment=Number(p.adjustment)||300;
-
- if(!age||!h||!w){
-
-  return {
-   bmr:0,
-   maintenance:0,
-   target:0,
-   protein:0,
-   carbs:0,
-   fat:0
-  };
-
- }
-
- let bmr;
-
- if(p.sex==="female"){
-
-  bmr=
-   10*w+
-   6.25*h-
-   5*age-
-   161;
-
- }else{
-
-  bmr=
-   10*w+
-   6.25*h-
-   5*age+
-   5;
-
- }
-
- const maintenance=Math.round(bmr*activity);
-
- let target=maintenance;
-
- if(p.goal==="cut")
-  target=maintenance-adjustment;
-
- if(p.goal==="bulk")
-  target=maintenance+adjustment;
-
- target=Math.max(
-  p.sex==="female"?1200:1500,
-  target
- );
-
- target=Math.round(target);
-
- /*
-  Protéines autour de 2 g/kg.
-  Les glucides sont calculés APRES protéines
-  et lipides, afin d'éviter les incohérences.
- */
-
- let protein=Math.round(w*2);
-
- let fat=Math.round(w*.8);
-
- protein=Math.min(
-  protein,
-  Math.floor(target*.35/4)
- );
-
- fat=Math.min(
-  fat,
-  Math.floor(target*.35/9)
- );
-
- let caloriesLeft=
-  target-
-  protein*4-
-  fat*9;
-
- let carbs=
-  Math.max(
-   0,
-   Math.round(caloriesLeft/4)
-  );
-
- return {
-  bmr:Math.round(bmr),
-  maintenance,
-  target,
-  protein,
-  carbs,
-  fat
- };
+window.tt=
+setTimeout(
+()=>t.classList.remove("show"),
+1700
+);
 
 }
 
 
-/* PROFILE */
+function show(p){
 
-function loadProfile(){
+document
+.querySelectorAll(".page")
+.forEach(
+x=>x.classList.remove("active")
+);
 
- const p=state.profile;
+$(p).classList.add("active");
 
- $("firstName").value=p.firstName||"";
- $("age").value=p.age||"";
- $("sex").value=p.sex||"male";
- $("height").value=p.height||"";
- $("weight").value=p.weight||"";
- $("activity").value=p.activity||"1.5";
- $("training").value=p.training||"";
- $("goal").value=p.goal||"cut";
- $("adjustment").value=p.adjustment||"300";
- $("budgetInput").value=p.budget||"50";
+document
+.querySelectorAll(".nav")
+.forEach(
+x=>x.classList.toggle(
+"active",
+x.dataset.p===p
+)
+);
 
-}
-
-
-function saveProfile(){
-
- state.profile.firstName=$("firstName").value.trim();
- state.profile.age=$("age").value;
- state.profile.sex=$("sex").value;
- state.profile.height=$("height").value;
- state.profile.weight=$("weight").value;
- state.profile.activity=$("activity").value;
- state.profile.training=$("training").value;
- state.profile.goal=$("goal").value;
- state.profile.adjustment=$("adjustment").value;
- state.profile.budget=$("budgetInput").value;
-
- save();
- update();
-
- toast("Profil enregistré ✅");
+scrollTo(0,0);
 
 }
 
 
-function goalName(){
-
- if(state.profile.goal==="cut")
-  return "Perte de gras";
-
- if(state.profile.goal==="bulk")
-  return "Prise de muscle";
-
- return "Maintien";
-
-}
-
-
-/* CONSUMPTION */
-
-function totals(){
-
- return state.consumed.reduce(
-  (a,x)=>{
-
-   a.c+=Number(x.c)||0;
-   a.p+=Number(x.p)||0;
-   a.g+=Number(x.g)||0;
-   a.l+=Number(x.l)||0;
-
-   return a;
-
-  },
-  {c:0,p:0,g:0,l:0}
- );
-
-}
-
-
-function updateHome(){
-
- const n=nutrition();
- const t=totals();
-
- $("hello").textContent=
-  state.profile.firstName||
-  "👋";
-
- $("target").textContent=n.target||0;
- $("protein").textContent=Math.round(n.protein)+"g";
- $("carbs").textContent=Math.round(n.carbs)+"g";
- $("fat").textContent=Math.round(n.fat)+"g";
-
- $("eaten").textContent=Math.round(t.c);
- $("left").textContent=Math.max(0,Math.round(n.target-t.c));
-
- $("budget").textContent=
-  state.profile.budget||0;
-
- $("goalPill").textContent=
-  n.target?goalName():"Configure ton profil";
-
- $("streak").textContent=
-  state.streak+
-  (state.streak===1?" jour":" jours");
-
- const percentage=n.target
-  ?Math.min(100,t.c/n.target*100)
-  :0;
-
- $("calorieBar").style.width=
-  percentage+"%";
-
- renderHomeMeals();
-
-}
-
-
-function renderHomeMeals(){
-
- $("homeMeals").innerHTML=
-  RECIPES.slice(0,3)
-   .map(r=>mealHTML(r))
-   .join("");
-
-}
-
-
-function mealHTML(r,portion=1){
-
- const c=Math.round(r.calories*portion);
- const p=Math.round(r.protein*portion);
-
- return `
-
- <div class="meal">
-
-  <div class="meal-img">${r.emoji}</div>
-
-  <div class="meal-body">
-
-   <div class="meal-type">${r.type}</div>
-
-   <h3>${escape(r.name)}</h3>
-
-   <div class="meal-meta">
-    ${c} kcal · ${p}g protéines
-   </div>
-
-   <div class="meal-price">
-    ≈ ${(r.price*portion).toFixed(2)} €
-   </div>
-
-  </div>
-
-  <button class="add"
-   onclick="addRecipe(${r.id},${portion})">
-   +
-  </button>
-
- </div>
-
- `;
-
-}
-
-
-/* JOURNAL */
-
-function renderJournal(){
-
- const t=totals();
-
- $("journalCal").textContent=Math.round(t.c);
- $("journalPro").textContent=Math.round(t.p);
- $("journalCarb").textContent=Math.round(t.g);
- $("journalFat").textContent=Math.round(t.l);
-
- if(!state.consumed.length){
-
-  $("journalList").innerHTML=
-   `<div class="card empty">
-    Rien pour l'instant. Ajoute ton premier aliment 👇
-   </div>`;
-
-  return;
-
- }
-
- $("journalList").innerHTML=
-  state.consumed.map((x,i)=>`
-
-   <div class="meal">
-
-    <div class="meal-img">${x.e||"🍽️"}</div>
-
-    <div class="meal-body">
-
-     <div class="meal-type">${x.meal||"ALIMENT"}</div>
-
-     <h3>${escape(x.name)}</h3>
-
-     <div class="meal-meta">
-      ${Math.round(x.c)} kcal ·
-      ${Math.round(x.p)}g P ·
-      ${Math.round(x.g)}g G ·
-      ${Math.round(x.l)}g L
-     </div>
-
-    </div>
-
-    <button class="delete"
-     onclick="removeFood(${i})">
-     ×
-    </button>
-
-   </div>
-
-  `).join("");
-
-}
-
-
-function addFoodData(food,portion=.1){
-
- /*
-  food values = 100 g.
-  portion=.1 => 10 g.
-  Pour une utilisation normale, le modal
-  propose 100 g.
- */
-
- state.consumed.push({
-
-  name:food.n,
-  e:food.e,
-  c:food.c*portion,
-  p:food.p*portion,
-  g:food.g*portion,
-  l:food.l*portion,
-  meal:"ALIMENT"
-
- });
-
- save();
- update();
-
- toast(food.n+" ajouté ✅");
-
-}
-
-
-function removeFood(i){
-
- state.consumed.splice(i,1);
-
- save();
- update();
-
-}
-
-
-function clearJournal(){
-
- if(!state.consumed.length)return;
-
- state.consumed=[];
-
- save();
- update();
-
- toast("Journal réinitialisé");
-
-}
-
-
-/* FOOD MODAL */
-
-function openFood(){
-
- $("foodModal").classList.add("open");
-
- $("foodSearch").value="";
-
- renderFood("");
-
- setTimeout(()=>{
-  $("foodSearch").focus();
- },100);
-
-}
-
-
-function closeFood(){
- $("foodModal").classList.remove("open");
-}
-
-
-$("foodSearch").addEventListener(
- "input",
- e=>renderFood(e.target.value)
+document
+.querySelectorAll(".nav")
+.forEach(
+x=>x.onclick=
+()=>show(x.dataset.p)
 );
 
 
-function renderFood(query){
+function nutrition(){
 
- const q=query.toLowerCase().trim();
+let p=S.profile;
 
- const arr=FOODS.filter(f=>
-  f.n.toLowerCase().includes(q)
- );
+let w=+p.weight;
+let h=+p.height;
+let a=+p.age;
+let act=+p.activity||1.5;
+let adj=+p.adjust||300;
 
- $("foodResults").innerHTML=
-  arr.map(f=>`
+if(!w||!h||!a){
 
-   <div class="food">
-
-    <div>
-
-     <b>${f.e} ${escape(f.n)}</b>
-
-     <small>
-      ${f.c} kcal ·
-      ${f.p}g protéines / 100g
-     </small>
-
-    </div>
-
-    <button
-     onclick="addFoodData(FOODS.find(x=>x.id===${f.id}),1)">
-     +
-    </button>
-
-   </div>
-
-  `).join("");
+return{
+bmr:0,
+m:0,
+t:0,
+p:0,
+g:0,
+f:0
+};
 
 }
 
 
-/* RECIPES */
+let bmr=
+p.sex==="female"
+?
+10*w+6.25*h-5*a-161
+:
+10*w+6.25*h-5*a+5;
 
-function renderRecipes(){
 
- $("recipes").innerHTML=
-  RECIPES.map((r,index)=>`
+let m=
+Math.round(
+bmr*act
+);
 
-   <div class="recipe" id="recipe-${r.id}">
 
-    <div class="recipe-top">
+let t=
+p.goal==="cut"
+?
+m-adj
+:
+p.goal==="bulk"
+?
+m+adj
+:
+m;
 
-     <div class="recipe-icon">${r.emoji}</div>
 
-     <div style="flex:1">
+t=
+Math.max(
+p.sex==="female"?1200:1500,
+Math.round(t)
+);
 
-      <h3>${escape(r.name)}</h3>
 
-      <p>
-       ${r.calories} kcal ·
-       ${r.protein}g protéines ·
-       ${r.price.toFixed(2)} €
-      </p>
+let pr=
+Math.min(
+Math.round(w*2),
+Math.floor(t*.35/4)
+);
 
-      <div class="portion">
 
-       <button onclick="changePortion(${r.id},-0.25)">
-        −
-       </button>
+let f=
+Math.min(
+Math.round(w*.8),
+Math.floor(t*.35/9)
+);
 
-       <strong id="portion-${r.id}">1×</strong>
 
-       <button onclick="changePortion(${r.id},.25)">
-        +
-       </button>
+let g=
+Math.max(
+0,
+Math.round(
+(t-pr*4-f*9)/4
+)
+);
 
-       <button
-        class="secondary"
-        style="padding:7px 9px"
-        onclick="addRecipe(${r.id},getPortion(${r.id}))">
-        Ajouter
-       </button>
 
-      </div>
-
-     </div>
-
-     <button
-      class="secondary"
-      style="height:31px;padding:5px 9px"
-      onclick="toggleRecipe(${r.id})">
-      ⋯
-     </button>
-
-    </div>
-
-    <div class="recipe-detail">
-
-     <b style="font-size:10px">Ingrédients</b>
-
-     ${r.ingredients.map(i=>`
-
-      <div class="ingredient">
-       <span>${escape(i[0])}</span>
-       <b>${i[1]}</b>
-      </div>
-
-     `).join("")}
-
-    </div>
-
-   </div>
-
-  `).join("");
+return{
+bmr:Math.round(bmr),
+m,
+t,
+p:pr,
+g,
+f
+};
 
 }
 
 
-const portions={};
+function totals(){
 
-
-function getPortion(id){
- return portions[id]||1;
+return S.journal.reduce(
+(a,x)=>(
+a.k+=x.k,
+a.p+=x.p,
+a.g+=x.g,
+a.f+=x.f,
+a
+),
+{
+k:0,
+p:0,
+g:0,
+f:0
 }
-
-
-function changePortion(id,delta){
-
- let value=
-  Math.round(
-   (getPortion(id)+delta)*4
-  )/4;
-
- value=Math.max(.25,Math.min(4,value));
-
- portions[id]=value;
-
- $("portion-"+id).textContent=
-  value+"×";
+);
 
 }
 
 
-function toggleRecipe(id){
+function renderHome(){
 
- $("recipe-"+id)
-  .classList.toggle("open");
+let n=nutrition();
+
+let x=totals();
+
+$("hello").textContent=
+S.profile.name||"👋";
+
+$("target").textContent=n.t;
+
+$("eaten").textContent=
+Math.round(x.k);
+
+$("left").textContent=
+Math.max(
+0,
+Math.round(n.t-x.k)
+);
+
+$("p").textContent=
+Math.round(x.p)+"g";
+
+$("c").textContent=
+Math.round(x.g)+"g";
+
+$("f").textContent=
+Math.round(x.f)+"g";
+
+$("goalPill").textContent=
+n.t
+?
+(
+S.profile.goal==="cut"
+?
+"Perte de gras"
+:
+S.profile.goal==="bulk"
+?
+"Prise de muscle"
+:
+"Maintien"
+)
+:
+"Profil";
+
+$("calBar").style.width=
+(
+n.t
+?
+Math.min(
+100,
+x.k/n.t*100
+)
+:
+0
+)+"%";
+
+$("streak").textContent=
+S.streak+
+" "+
+(
+S.streak===1
+?
+"jour"
+:
+"jours"
+);
+
+
+$("todayMeals").innerHTML=
+(
+S.week[S.selectedDay]||
+recipes
+)
+.slice(0,4)
+.map(
+r=>meal(r,1)
+)
+.join("");
+
+}
+
+
+function meal(r,portion=1){
+
+return`
+
+<div class="meal">
+
+<div class="emoji">
+${r.e}
+</div>
+
+<div class="grow">
+
+<div class="type">
+${r.type}
+</div>
+
+<h3>
+${esc(r.n)}
+</h3>
+
+<div class="meta">
+${Math.round(r.k*portion)}
+kcal ·
+${Math.round(r.p*portion)}
+g protéines ·
+${(r.price*portion).toFixed(2)}
+€
+</div>
+
+</div>
+
+<button
+class="add"
+onclick="addRecipe(${r.id},${portion})"
+>
++
+</button>
+
+</div>
+
+`;
+
+}
+
+
+function renderJournal(){
+
+let x=totals();
+
+$("jc").textContent=
+Math.round(x.k);
+
+$("jp").textContent=
+Math.round(x.p)+"g";
+
+$("jg").textContent=
+Math.round(x.g)+"g";
+
+$("jf").textContent=
+Math.round(x.f)+"g";
+
+
+$("journalList").innerHTML=
+
+S.journal.length
+
+?
+
+S.journal.map(
+(x,i)=>
+
+`
+
+<div class="meal">
+
+<div class="emoji">
+${x.e}
+</div>
+
+<div class="grow">
+
+<div class="type">
+${x.type||"ALIMENT"}
+</div>
+
+<h3>
+${esc(x.n)}
+</h3>
+
+<div class="meta">
+${Math.round(x.k)} kcal ·
+${Math.round(x.p)}g P ·
+${Math.round(x.g)}g G ·
+${Math.round(x.f)}g L
+</div>
+
+</div>
+
+<button
+class="del"
+onclick="delJournal(${i})"
+>
+×
+</button>
+
+</div>
+
+`
+).join("")
+
+:
+
+`
+
+<div
+class="card"
+style="margin-bottom:8px;text-align:center;color:var(--muted);font-size:10px"
+>
+Aucun aliment aujourd'hui.
+</div>
+
+`;
 
 }
 
 
 function addRecipe(id,portion=1){
 
- const r=RECIPES.find(x=>x.id===id);
+let r=
+recipes.find(
+x=>x.id===id
+);
 
- if(!r)return;
+if(!r)return;
 
- state.consumed.push({
+S.journal.push({
 
-  name:r.name,
-  e:r.emoji,
-  c:r.calories*portion,
-  p:r.protein*portion,
-  g:r.carbs*portion,
-  l:r.fat*portion,
-  meal:r.type
+n:r.n,
+e:r.e,
+type:r.type,
+k:r.k*portion,
+p:r.p*portion,
+g:r.g*portion,
+f:r.f*portion
 
- });
+});
 
- save();
- update();
+save();
 
- toast(r.name+" ajouté au journal 🍽️");
+renderAll();
 
-}
-
-
-function generateDay(){
-
- const n=nutrition();
-
- if(!n.target){
-
-  toast("Configure d'abord ton profil");
-
-  go("profile");
-
-  return;
-
- }
-
- /*
-  On adapte les portions de la journée
-  autour de la cible calorique.
- */
-
- const base=
-  RECIPES.reduce(
-   (sum,r)=>sum+r.calories,
-   0
-  );
-
- const factor=
-  n.target/base;
-
- RECIPES.forEach(r=>{
-  portions[r.id]=
-   Math.round(
-    Math.max(.5,Math.min(2,factor))*4
-   )/4;
- });
-
- renderRecipes();
-
- toast("Journée adaptée à ton objectif ✨");
+toast("Ajouté au journal ✅");
 
 }
 
 
-/* SHOPPING */
+function delJournal(i){
 
-function renderStores(){
+S.journal.splice(i,1);
 
- $("stores").innerHTML=
-  STORES.map((s,i)=>`
+save();
 
-   <div class="store">
+renderAll();
 
-    <div>
+}
 
-     <div class="store-name">
-      ${s[0]} ${s[1]}
-     </div>
 
-     <div class="store-note">
-      ${s[3]}
-     </div>
+function clearJournal(){
 
-    </div>
+S.journal=[];
 
-    <div class="store-price">
-     ${s[2].toFixed(2)} €
-    </div>
+save();
 
-   </div>
+renderAll();
 
-  `).join("")
+toast("Journal vidé");
 
-  +
-  `<div class="empty">
-    Prix indicatifs de démonstration.
-   </div>`;
+}
+
+
+function renderRecipes(){
+
+$("recipeList").innerHTML=
+
+recipes.map(
+r=>
+
+`
+
+<div
+class="recipe"
+id="r${r.id}"
+>
+
+<div class="recipeTop">
+
+<div class="emoji">
+${r.e}
+</div>
+
+<div class="grow">
+
+<h3>
+${esc(r.n)}
+</h3>
+
+<div class="meta">
+${r.k} kcal ·
+${r.p}g P ·
+${r.g}g G ·
+${r.f}g L
+</div>
+
+<div class="portion">
+
+<button onclick="portion(${r.id},-.25)">
+−
+</button>
+
+<b id="po${r.id}">
+1×
+</b>
+
+<button onclick="portion(${r.id},.25)">
++
+</button>
+
+<button
+class="secondary"
+onclick="addRecipe(${r.id},getPo(${r.id}))"
+>
+Ajouter
+</button>
+
+</div>
+
+</div>
+
+<button
+class="secondary"
+onclick="$('r${r.id}').classList.toggle('open')"
+>
+⋯
+</button>
+
+</div>
+
+<div class="recipeDetail">
+
+<b style="font-size:9px">
+Ingrédients
+</b>
+
+${r.ing.map(
+i=>
+
+`
+
+<div class="ing">
+
+<span>
+${esc(i[0])}
+</span>
+
+<b>
+${i[1]}
+</b>
+
+</div>
+
+`
+).join("")}
+
+</div>
+
+</div>
+
+`
+).join("");
+
+}
+
+
+let pos={};
+
+
+function getPo(id){
+
+return pos[id]||1;
+
+}
+
+
+function portion(id,d){
+
+pos[id]=Math.max(
+.25,
+Math.min(
+4,
+Math.round(
+(getPo(id)+d)*4
+)/4
+)
+);
+
+$("po"+id).textContent=
+pos[id]+"×";
+
+}
+
+
+function weekDefault(){
+
+return Array.from(
+{length:7},
+(_,d)=>
+
+recipes.map(
+(r,i)=>({
+
+...r,
+
+portion:
+d%2&&i===1
+?
+1.1
+:
+1
+
+})
+)
+
+);
+
+}
+
+
+function generateWeek(){
+
+S.week=
+weekDefault();
+
+S.selectedDay=0;
+
+save();
+
+renderPlanner();
+
+renderShopping();
+
+toast(
+"Semaine recalculée ✨"
+);
+
+}
+
+
+function renderPlanner(){
+
+if(!S.week.length)
+S.week=weekDefault();
+
+const names=[
+"Lun",
+"Mar",
+"Mer",
+"Jeu",
+"Ven",
+"Sam",
+"Dim"
+];
+
+
+$("days").innerHTML=
+
+names.map(
+(n,i)=>
+
+`
+
+<button
+class="day ${i===S.selectedDay?"active":""}"
+onclick="selectDay(${i})"
+>
+
+${n}
+
+<br>
+
+<span
+style="font-size:7px;color:var(--muted)"
+>
+${Math.round(
+S.week[i].reduce(
+(a,r)=>
+a+r.k*r.portion,
+0
+)
+)}
+kcal
+</span>
+
+</button>
+
+`
+).join("");
+
+
+$("selectedDay").textContent=
+names[S.selectedDay];
+
+
+$("dayMeals").innerHTML=
+
+S.week[S.selectedDay].map(
+(r,i)=>
+
+`
+
+<div class="plannerMeal">
+
+<div>
+
+<b style="font-size:10px">
+${r.e} ${esc(r.n)}
+</b>
+
+<div class="meta">
+${Math.round(r.k*r.portion)}
+kcal ·
+${(r.price*r.portion).toFixed(2)}
+€
+</div>
+
+</div>
+
+<button
+class="secondary"
+onclick="replaceMeal(${S.selectedDay},${i})"
+>
+Remplacer
+</button>
+
+</div>
+
+`
+).join("");
+
+}
+
+
+function selectDay(i){
+
+S.selectedDay=i;
+
+save();
+
+renderPlanner();
+
+}
+
+
+function replaceMeal(d,i){
+
+let pool=
+recipes.filter(
+r=>r.id!==S.week[d][i].id
+);
+
+let r=
+pool[
+Math.floor(
+Math.random()*pool.length
+)
+];
+
+S.week[d][i]={
+...r,
+portion:1
+};
+
+save();
+
+renderPlanner();
+
+renderShopping();
+
+toast(
+"Repas remplacé 🔄"
+);
 
 }
 
 
 function renderShopping(){
 
- $("shoppingList").innerHTML=
-  SHOPPING.map((x,i)=>{
+let map={};
 
-   const checked=
-    state.checked.includes(i);
+S.week
+.flat()
+.forEach(
+r=>
+r.ing.forEach(
+i=>{
+map[i[0]]=
+(map[i[0]]||0)+1;
+}
+)
+);
 
-   return `
 
-    <div class="list-item">
+let base=
+Object.entries(map)
+.map(
+([n,q])=>({
 
-     <div class="list-left">
+n,
+q,
+e:
+(
+foods.find(
+f=>f[0]===n
+)||[]
+)[1]||"🛒"
 
-      <button
-       class="check ${checked?"done":""}"
-       onclick="toggleCheck(${i})">
+})
+);
 
-       ${checked?"✓":""}
 
-      </button>
+let total=
+base.reduce(
+(a,x)=>
+a+
+(
+foods.find(
+f=>f[0]===x.n
+)||
+["","","","","","",.5]
+)[6]
+*x.q
+*1.5,
+0
+);
 
-      <div>
 
-       <div class="item-name">
-        ${x[0]} ${x[1]}
-       </div>
+$("shopTotal").textContent=
+total.toFixed(2);
 
-       <div class="item-sub">
-        ${x[2]}
-       </div>
+$("budget").textContent=
+(+S.profile.budget||0)
+.toFixed(0);
 
-      </div>
+$("budgetLeft").textContent=
+Math.max(
+0,
+(+S.profile.budget||0)-total
+).toFixed(2);
 
-     </div>
 
-    </div>
+$("shopList").innerHTML=
 
-   `;
+base.length
 
-  }).join("");
+?
+
+base.map(
+(x,i)=>
+
+`
+
+<div class="listrow">
+
+<div
+style="display:flex;align-items:center;gap:8px"
+>
+
+<button
+class="check ${S.checked.includes(i)?"done":""}"
+onclick="check(${i})"
+>
+
+${S.checked.includes(i)?"✓":""}
+
+</button>
+
+<span>
+${x.e} ${esc(x.n)} · ${x.q}
+</span>
+
+</div>
+
+<b>
+${(
+(
+foods.find(
+f=>f[0]===x.n
+)||
+["","","","","","",.5]
+)[6]
+*x.q*1.5
+).toFixed(2)}
+€
+</b>
+
+</div>
+
+`
+).join("")
+
+:
+
+`
+
+<div
+style="padding:18px 0;text-align:center;color:var(--muted);font-size:9px"
+>
+Génère ta semaine pour créer la liste.
+</div>
+
+`;
 
 }
 
 
-function toggleCheck(i){
+function check(i){
 
- if(state.checked.includes(i)){
+S.checked.includes(i)
 
-  state.checked=
-   state.checked.filter(x=>x!==i);
+?
 
- }else{
+S.checked=
+S.checked.filter(
+x=>x!==i
+)
 
-  state.checked.push(i);
+:
 
- }
+S.checked.push(i);
 
- save();
- renderShopping();
+save();
+
+renderShopping();
 
 }
 
 
 function checkAll(){
 
- state.checked=
-  SHOPPING.map((_,i)=>i);
+let count=
+Object.keys(
+Object.fromEntries(
+S.week
+.flat()
+.flatMap(
+r=>r.ing.map(
+i=>i[0]
+)
+)
+)
+).length;
 
- save();
- renderShopping();
+S.checked=
+Array.from(
+{length:count},
+(_,i)=>i
+);
 
- toast("Courses cochées 🛒");
+save();
 
-}
-
-
-/* PANTRY */
-
-function renderPantry(){
-
- if(!state.pantry.length){
-
-  $("pantryList").innerHTML=
-   `<div class="empty">
-    Ton garde-manger est vide.
-   </div>`;
-
-  return;
-
- }
-
- $("pantryList").innerHTML=
-  state.pantry.map((x,i)=>`
-
-   <div class="list-item">
-
-    <div class="item-name">
-     🧊 ${escape(x)}
-    </div>
-
-    <button
-     class="delete"
-     onclick="removePantry(${i})">
-     ×
-    </button>
-
-   </div>
-
-  `).join("");
+renderShopping();
 
 }
 
-
-function addPantry(){
-
- const value=
-  $("pantryInput").value.trim();
-
- if(!value)return;
-
- state.pantry.push(value);
-
- $("pantryInput").value="";
-
- save();
- renderPantry();
-
- toast(value+" ajouté 🧊");
-
-}
-
-
-function removePantry(i){
-
- state.pantry.splice(i,1);
-
- save();
- renderPantry();
-
-}
-
-
-/* PROGRESS */
 
 function renderProgress(){
 
- const n=nutrition();
+let n=nutrition();
 
- $("currentWeight").textContent=
-  state.profile.weight||0;
+$("weightNow").textContent=
+S.profile.weight||0;
 
- $("progressTarget").textContent=
-  n.target||0;
+$("targetGoal").textContent=
+S.profile.goal==="cut"
+?
+"Perte"
+:
+S.profile.goal==="bulk"
+?
+"Muscle"
+:
+"Maintien";
 
- $("progressProtein").textContent=
-  n.protein||0;
+$("maint").textContent=n.m;
 
- $("progressGoal").textContent=
-  n.target?goalName():"—";
+$("ptarget").textContent=n.t;
 
 
- const arr=state.weights;
+let a=
+S.weights.slice(-14);
 
- if(!arr.length){
+$("chart").innerHTML=
 
-  $("weightChart").innerHTML=
-   `<div class="empty" style="width:100%">
-    Ajoute ton premier poids pour commencer le suivi.
-   </div>`;
+a.length
 
-  return;
+?
 
- }
+a.map(
+x=>{
 
- const values=
-  arr.map(x=>Number(x.weight));
+let vals=
+a.map(
+z=>+z.w
+);
 
- const min=Math.min(...values);
- const max=Math.max(...values);
+let min=Math.min(...vals);
+let max=Math.max(...vals);
 
- $("weightChart").innerHTML=
-  arr.slice(-14).map(x=>{
+let h=
+max===min
+?
+50
+:
+15+
+(x.w-min)/
+(max-min)*
+75;
 
-   let percent=50;
+return`
 
-   if(max!==min){
+<div
+class="col"
+style="height:${h}%"
+>
 
-    percent=
-     15+
-     ((x.weight-min)/(max-min))*75;
+<span>
+${x.w}
+</span>
 
-   }
+</div>
 
-   return `
+`;
 
-    <div
-     class="bar"
-     style="height:${percent}%">
+}
+).join("")
 
-     <span>${x.weight}</span>
+:
 
-    </div>
+`
 
-   `;
+<div
+style="width:100%;text-align:center;color:var(--muted);font-size:9px"
+>
+Ajoute une mesure.
+</div>
 
-  }).join("");
+`;
 
 }
 
 
 function addWeight(){
 
- const v=Number($("newWeight").value);
+let w=
++$("newWeight").value;
 
- if(!v||v<30||v>300){
+if(w<30||w>300)
+return toast("Poids invalide");
 
-  toast("Poids invalide");
+S.profile.weight=w;
 
-  return;
+S.weights.push({
+w,
+date:Date.now()
+});
 
- }
+$("newWeight").value="";
 
- state.profile.weight=v;
+save();
 
- state.weights.push({
-  weight:v,
-  date:new Date().toLocaleDateString("fr-FR")
- });
+renderAll();
 
- $("newWeight").value="";
-
- save();
- update();
-
- toast("Poids enregistré 📈");
-
-}
-
-
-/* COACH */
-
-function answer(text){
-
- const q=text.toLowerCase();
-
- const n=nutrition();
- const t=totals();
-
- if(q.includes("protéine")){
-
-  return `
-   Ton objectif est d'environ
-   <b>${n.protein} g</b> de protéines par jour.
-   Tu en as actuellement consommé
-   <b>${Math.round(t.p)} g</b>.
-  `;
-
- }
-
- if(q.includes("calorie")){
-
-  return `
-   Objectif : <b>${n.target} kcal</b>.<br>
-   Consommé : <b>${Math.round(t.c)} kcal</b>.<br>
-   Il te reste environ
-   <b>${Math.max(0,Math.round(n.target-t.c))} kcal</b>.
-  `;
-
- }
-
- if(q.includes("budget")||q.includes("économ")){
-
-  return `
-   Ton budget hebdomadaire est de
-   <b>${state.profile.budget||0} €</b>.
-   Pour économiser, construis tes repas autour
-   d'aliments peu chers et riches en protéines :
-   œufs, poulet, lentilles, skyr, thon et féculents.
-  `;
-
- }
-
- if(q.includes("soir")){
-
-  const remaining=
-   Math.max(0,n.target-t.c);
-
-  return `
-   Il te reste environ
-   <b>${Math.round(remaining)} kcal</b>.
-   Je choisirais une portion de
-   <b>pâtes au thon</b>, ajustée selon ce qu'il te reste.
-  `;
-
- }
-
- if(q.includes("manger")||q.includes("repas")){
-
-  return `
-   Pour ton objectif, mes choix faciles seraient :
-   <b>poulet/riz</b>, <b>pâtes au thon</b>
-   ou <b>skyr + banane</b>.
-   Le meilleur choix dépend surtout de tes calories restantes.
-  `;
-
- }
-
- return `
-  Je peux analyser tes calories, protéines,
-  repas et budget. Essaie par exemple :
-  « combien de calories me reste-t-il ? »
- `;
+toast(
+"Poids enregistré 📈"
+);
 
 }
 
 
-function ask(text){
+function renderPantry(){
 
- $("chatInput").value=text;
+$("pantryList").innerHTML=
 
- sendChat();
+S.pantry.length
+
+?
+
+S.pantry.map(
+(x,i)=>
+
+`
+
+<div class="listrow">
+
+<span>
+🥫 ${esc(x)}
+</span>
+
+<button
+class="del"
+onclick="S.pantry.splice(${i},1);save();renderPantry()"
+>
+×
+</button>
+
+</div>
+
+`
+).join("")
+
+:
+
+`
+
+<div
+style="padding:18px 0;text-align:center;color:var(--muted);font-size:9px"
+>
+Garde-manger vide.
+</div>
+
+`;
 
 }
 
 
-function sendChat(){
+function addPantry(){
 
- const input=$("chatInput");
- const text=input.value.trim();
+let x=
+$("pantryInput")
+.value
+.trim();
 
- if(!text)return;
+if(!x)return;
 
- const messages=$("messages");
+S.pantry.push(x);
 
- messages.innerHTML+=`
-  <div class="message user">
-   ${escape(text)}
-  </div>
- `;
+$("pantryInput").value="";
 
- input.value="";
+save();
 
- setTimeout(()=>{
+renderPantry();
 
-  messages.innerHTML+=`
-   <div class="message bot">
-    🤖 ${answer(text)}
-   </div>
-  `;
-
-  messages.scrollTop=messages.scrollHeight;
-
- },150);
+toast(
+"Ajouté 🥫"
+);
 
 }
 
 
-/* DARK MODE */
+function loadProfile(){
+
+let p=S.profile;
+
+for(
+let [id,v]
+of
+[
+["name",p.name],
+["age",p.age],
+["sex",p.sex],
+["height",p.height],
+["weight",p.weight],
+["activity",p.activity],
+["training",p.training],
+["goal",p.goal],
+["adjust",p.adjust],
+["budgetInput",p.budget]
+]
+){
+
+$(id).value=
+v??"";
+
+}
+
+}
+
+
+function saveProfile(){
+
+S.profile={
+
+name:$("name").value.trim(),
+
+age:$("age").value,
+
+sex:$("sex").value,
+
+height:$("height").value,
+
+weight:$("weight").value,
+
+activity:$("activity").value,
+
+training:$("training").value,
+
+goal:$("goal").value,
+
+adjust:+$("adjust").value,
+
+budget:+$("budgetInput").value
+
+};
+
+save();
+
+renderAll();
+
+toast(
+"Profil enregistré ✅"
+);
+
+}
+
+
+function renderProfile(){
+
+let n=nutrition();
+
+$("bmr").textContent=n.bmr;
+
+$("m").textContent=n.m;
+
+$("t").textContent=n.t;
+
+$("tp").textContent=n.p+"g";
+
+$("tg").textContent=n.g+"g";
+
+$("tf").textContent=n.f+"g";
+
+}
+
 
 function toggleDark(){
 
- state.dark=!state.dark;
+S.dark=!S.dark;
 
- document.body.classList.toggle(
-  "dark",
-  state.dark
- );
+document.body.classList.toggle(
+"dark",
+S.dark
+);
 
- save();
-
-}
-
-
-/* GLOBAL UPDATE */
-
-function update(){
-
- updateHome();
- renderJournal();
- renderRecipes();
- renderStores();
- renderShopping();
- renderPantry();
- renderProgress();
-
- const n=nutrition();
-
- $("bmr").textContent=n.bmr||0;
- $("maintenance").textContent=n.maintenance||0;
- $("profileTarget").textContent=n.target||0;
- $("profileProtein").textContent=n.protein||0;
- $("profileCarbs").textContent=n.carbs||0;
- $("profileFat").textContent=n.fat||0;
+save();
 
 }
 
 
-/* INIT */
+function openFood(){
+
+$("foodModal")
+.classList.add("open");
+
+$("foodSearch").value="";
+
+renderFood("");
+
+}
+
+
+function closeFood(){
+
+$("foodModal")
+.classList.remove("open");
+
+}
+
+
+function renderFood(q){
+
+q=q.toLowerCase();
+
+$("foodResults").innerHTML=
+
+foods
+.filter(
+f=>f[0]
+.toLowerCase()
+.includes(q)
+)
+.map(
+(f,i)=>
+
+`
+
+<div class="food">
+
+<span>
+
+<b>
+${f[1]} ${esc(f[0])}
+</b>
+
+<br>
+
+<small>
+${f[2]} kcal / 100g ·
+${f[3]}g P
+</small>
+
+</span>
+
+<button
+class="add"
+onclick="addFood(${i})"
+>
++
+</button>
+
+</div>
+
+`
+).join("");
+
+}
+
+
+function addFood(i){
+
+let f=foods[i];
+
+S.journal.push({
+
+n:f[0],
+e:f[1],
+type:"ALIMENT",
+k:f[2],
+p:f[3],
+g:f[4],
+f:f[5]
+
+});
+
+save();
+
+closeFood();
+
+renderAll();
+
+toast(
+f[0]+" ajouté ✅"
+);
+
+}
+
+
+$("foodSearch")
+.addEventListener(
+"input",
+e=>
+renderFood(
+e.target.value
+)
+);
+
+
+function answer(q){
+
+q=q.toLowerCase();
+
+let n=nutrition();
+
+let t=totals();
+
+
+if(q.includes("proté"))
+return`
+
+Ton objectif est d'environ
+<b>${n.p} g</b>.
+Tu as consommé
+${Math.round(t.p)} g.
+`;
+
+
+if(q.includes("calorie"))
+return`
+
+Objectif :
+<b>${n.t} kcal</b>.
+
+Il te reste environ
+<b>${Math.max(
+0,
+Math.round(n.t-t.k)
+)} kcal</b>.
+`;
+
+
+if(
+q.includes("budget")||
+q.includes("économ")
+)
+return`
+
+Ton budget est de
+<b>${S.profile.budget||0} €</b>.
+
+Le planning génère automatiquement
+un panier et estime son coût.
+`;
+
+
+if(
+q.includes("soir")||
+q.includes("repas")
+)
+return`
+
+Je choisirais
+<b>pâtes au thon</b>
+ou
+<b>poulet, riz & brocoli</b>,
+puis j'ajusterais la portion selon
+tes calories restantes.
+`;
+
+
+return`
+
+Je peux analyser tes calories,
+protéines, repas, planning et budget.
+
+Essaie :
+« combien de calories me reste-t-il ? »
+`;
+
+}
+
+
+function chat(){
+
+let i=$("chatInput");
+
+let q=i.value.trim();
+
+if(!q)return;
+
+$("messages").innerHTML+=`
+
+<div class="msg me">
+${esc(q)}
+</div>
+`;
+
+i.value="";
+
+setTimeout(
+()=>{
+
+$("messages").innerHTML+=`
+
+<div class="msg">
+🤖 ${answer(q)}
+</div>
+`;
+
+},
+100
+);
+
+}
+
+
+function ask(q){
+
+$("chatInput").value=q;
+
+chat();
+
+}
+
+
+function renderAll(){
+
+renderHome();
+
+renderJournal();
+
+renderRecipes();
+
+renderPlanner();
+
+renderShopping();
+
+renderProgress();
+
+renderPantry();
+
+renderProfile();
+
+}
+
 
 loadProfile();
 
 document.body.classList.toggle(
- "dark",
- state.dark
+"dark",
+S.dark
 );
 
-update();
+if(!S.week.length)
+S.week=weekDefault();
+
+renderAll();
+
+
+if(
+"serviceWorker"
+in navigator
+){
+
+window.addEventListener(
+"load",
+()=>
+navigator
+.serviceWorker
+.register("sw.js")
+.catch(
+()=>{}
+)
+);
+
+}
 
 </script>
 
