@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BudgetCook</title>
+
+<style>
+
+:root {
+    --background: #f4f5ef;
+    --card: #ffffff;
+    --dark: #171a17;
+    --grey: #747970;
+    --green: #b8e34b;
+    --light-green: #eaf6c9;
+    --border: #e2e5dc;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: var(--background);
+    color: var(--dark);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.app {
+    max-width: 430px;
+    margin: auto;
+    min-height: 100vh;
+    padding: 20px 17px 100px;
+}
+
+/* LOGO */
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: 900;
+    letter-spacing: -1px;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--dark);
+    color: white;
+    display: grid;
+    place-items: center;
+    font-weight: 800;
+}
+
+/* TITRE */
+
+.eyebrow {
+    margin-top: 25px;
+    color: var(--grey);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.title {
+    font-size: 31px;
+    line-height: 1.05;
+    letter-spacing: -1.2px;
+    margin: 5px 0 0;
+}
+
+/* CALORIES */
+
+.hero {
+    margin-top: 20px;
+    padding: 21px;
+    background: var(--dark);
+    color: white;
+    border-radius: 25px;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::after {
+    content: "";
+    position: absolute;
+    width: 170px;
+    height: 170px;
+    border-radius: 50%;
+    background: var(--green);
+    right: -85px;
+    top: -85px;
+}
+
+.hero small {
+    color: #c7ccc3;
+}
+
+.calories {
+    font-size: 38px;
+    font-weight: 900;
+    margin-top: 8px;
+}
+
+.calories span {
+    font-size: 16px;
+}
+
+.hero-info {
+    font-size: 13px;
+    color: #c7ccc3;
+}
+
+.progress {
+    height: 9px;
+    background: #3d423b;
+    border-radius: 20px;
+    margin-top: 17px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    width: 48%;
+    height: 100%;
+    background: var(--green);
+    border-radius: 20px;
+}
+
+/* MACROS */
+
+.macros {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 9px;
+    margin-top: 12px;
+}
+
+.macro {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 13px 10px;
+}
+
+.macro-icon {
+    font-size: 19px;
+}
+
+.macro-value {
+    font-size: 20px;
+    font-weight: 900;
+    margin-top: 5px;
+}
+
+.macro-text {
+    color: var(--grey);
+    font-size: 11px;
+    line-height: 1.3;
+}
+
+/* SECTIONS */
+
+.section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 26px 2px 11px;
+}
+
+.section h2 {
+    margin: 0;
+    font-size: 19px;
+}
+
+.section span {
+    color: var(--grey);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+/* REPAS */
+
+.meal {
+    display: flex;
+    gap: 12px;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 12px;
+    margin-bottom: 10px;
+}
+
+.meal-image {
+    width: 68px;
+    height: 68px;
+    border-radius: 17px;
+    display: grid;
+    place-items: center;
+    font-size: 31px;
+    background: linear-gradient(135deg, #dce9b9, #f3d5a6);
+}
+
+.meal-info {
+    flex: 1;
+}
+
+.meal-type {
+    color: var(--grey);
+    font-size: 10px;
+    font-weight: 900;
+}
+
+.meal-title {
+    font-size: 15px;
+    font-weight: 800;
+    margin: 5px 0;
+}
+
+.meal-stats {
+    color: var(--grey);
+    font-size: 12px;
+}
+
+.meal-stats strong {
+    color: var(--dark);
+}
+
+/* COURSES */
+
+.shopping {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    padding: 15px;
+}
+
+.store {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.store:last-of-type {
+    border-bottom: none;
+}
+
+.store-name {
+    font-weight: 800;
+}
+
+.store-sub {
+    color: var(--grey);
+    font-size: 11px;
+    margin-top: 2px;
+}
+
+.store-price {
+    font-weight: 900;
+}
+
+.best-price {
+    margin-top: 10px;
+    background: var(--light-green);
+    border-radius: 14px;
+    padding: 11px;
+    font-size: 12px;
+}
+
+.best-price strong {
+    font-size: 14px;
+}
+
+/* NAVIGATION */
+
+.navigation {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 430px;
+    display: flex;
+    background: rgba(255,255,255,0.96);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid var(--border);
+    padding: 8px 5px;
+}
+
+.navigation button {
+    flex: 1;
+    border: none;
+    background: transparent;
+    color: #7c827a;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.navigation button span {
+    display: block;
+    font-size: 20px;
+    margin-bottom: 3px;
+}
+
+.navigation button.active {
+    color: var(--dark);
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header>
+
+<div class="logo">
+🍝 BudgetCook
+</div>
+
+<div class="avatar">
+E
+</div>
+
+</header>
+
+<div class="eyebrow">
+JEUDI 20 AOÛT
+</div>
+
+<h1 class="title">
+Bonjour 👋<br>
+Voici ta journée.
+</h1>
+
+
+<!-- CALORIES -->
+
+<div class="hero">
+
+<small>
+Calories restantes
+</small>
+
+<div class="calories">
+1 280 <span>kcal</span>
+</div>
+
+<div class="hero-info">
+1 170 consommées · objectif 2 450
+</div>
+
+<div class="progress">
+<div class="progress-bar"></div>
+</div>
+
+</div>
+
+
+<!-- MACROS -->
+
+<div class="macros">
+
+<div class="macro">
+
+<div class="macro-icon">
+🥩
+</div>
+
+<div class="macro-value">
+96 g
+</div>
+
+<div class="macro-text">
+Protéines<br>
+/ 160 g
+</div>
+
+</div>
+
+
+<div class="macro">
+
+<div class="macro-icon">
+🍚
+</div>
+
+<div class="macro-value">
+118 g
+</div>
+
+<div class="macro-text">
+Glucides<br>
+/ 270 g
+</div>
+
+</div>
+
+
+<div class="macro">
+
+<div class="macro-icon">
+🥑
+</div>
+
+<div class="macro-value">
+38 g
+</div>
+
+<div class="macro-text">
+Lipides<br>
+/ 82 g
+</div>
+
+</div>
+
+</div>
+
+
+<!-- REPAS -->
+
+<div class="section">
+
+<h2>
+🍽️ Tes repas
+</h2>
+
+<span>
+Voir la journée →
+</span>
+
+</div>
+
+
+<div class="meal">
+
+<div class="meal-image">
+🥣
+</div>
+
+<div class="meal-info">
+
+<div class="meal-type">
+PETIT-DÉJEUNER
+</div>
+
+<div class="meal-title">
+Skyr, avoine & banane
+</div>
+
+<div class="meal-stats">
+420 kcal · <strong>31 g protéines</strong>
+</div>
+
+</div>
+
+</div>
+
+
+<div class="meal">
+
+<div class="meal-image">
+🍗
+</div>
+
+<div class="meal-info">
+
+<div class="meal-type">
+DÉJEUNER
+</div>
+
+<div class="meal-title">
+Poulet, riz & légumes
+</div>
+
+<div class="meal-stats">
+650 kcal · <strong>52 g protéines</strong>
+</div>
+
+</div>
+
+</div>
+
+
+<div class="meal">
+
+<div class="meal-image">
+🌯
+</div>
+
+<div class="meal-info">
+
+<div class="meal-type">
+DÎNER
+</div>
+
+<div class="meal-title">
+Wraps poulet & crudités
+</div>
+
+<div class="meal-stats">
+580 kcal · <strong>45 g protéines</strong>
+</div>
+
+</div>
+
+</div>
+
+
+<!-- MAGASINS -->
+
+<div class="section">
+
+<h2>
+🛒 Ton panier
+</h2>
+
+<span>
+Cette semaine
+</span>
+
+</div>
+
+
+<div class="shopping">
+
+
+<div class="store">
+
+<div>
+
+<div class="store-name">
+🏆 Lidl
+</div>
+
+<div class="store-sub">
+Meilleur prix estimé
+</div>
+
+</div>
+
+<div class="store-price">
+49,20 €
+</div>
+
+</div>
+
+
+<div class="store">
+
+<div class="store-name">
+ALDI
+</div>
+
+<div class="store-price">
+50,70 €
+</div>
+
+</div>
+
+
+<div class="store">
+
+<div class="store-name">
+E.Leclerc
+</div>
+
+<div class="store-price">
+52,40 €
+</div>
+
+</div>
+
+
+<div class="store">
+
+<div class="store-name">
+Carrefour
+</div>
+
+<div class="store-price">
+57,40 €
+</div>
+
+</div>
+
+
+<div class="best-price">
+
+💰 <strong>Économie estimée : 8,20 €</strong>
+
+<br>
+
+Les prix sont indicatifs dans cette version.
+
+</div>
+
+</div>
+
+
+<!-- NAVIGATION -->
+
+<div class="navigation">
+
+<button class="active">
+<span>⌂</span>
+Accueil
+</button>
+
+<button>
+<span>🍽️</span>
+Repas
+</button>
+
+<button>
+<span>🛒</span>
+Courses
+</button>
+
+<button>
+<span>📊</span>
+Progrès
+</button>
+
+<button>
+<span>👤</span>
+Profil
+</button>
+
+</div>
+
+</div>
+
+</body>
+</html>
