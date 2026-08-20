@@ -1,9 +1,20 @@
+/* =========================================================
+   BUDGETCOOK V4 — DATA.JS
+   Aliments • Recettes • Courses • Jours
+========================================================= */
+
+
+/* =========================================================
+   ALIMENTS
+========================================================= */
+
 const FOODS = [
+
   {
     id: "chicken",
     name: "Poulet",
     emoji: "🍗",
-    unit: "100 g",
+    unit: "g",
     kcal: 165,
     protein: 31,
     carbs: 0,
@@ -14,7 +25,7 @@ const FOODS = [
     id: "rice",
     name: "Riz blanc cuit",
     emoji: "🍚",
-    unit: "100 g",
+    unit: "g",
     kcal: 130,
     protein: 2.7,
     carbs: 28,
@@ -25,7 +36,7 @@ const FOODS = [
     id: "pasta",
     name: "Pâtes cuites",
     emoji: "🍝",
-    unit: "100 g",
+    unit: "g",
     kcal: 158,
     protein: 5.8,
     carbs: 30.9,
@@ -36,7 +47,7 @@ const FOODS = [
     id: "tuna",
     name: "Thon au naturel",
     emoji: "🐟",
-    unit: "100 g",
+    unit: "g",
     kcal: 116,
     protein: 26,
     carbs: 0,
@@ -47,7 +58,7 @@ const FOODS = [
     id: "egg",
     name: "Œuf",
     emoji: "🥚",
-    unit: "100 g",
+    unit: "g",
     kcal: 143,
     protein: 12.6,
     carbs: 0.7,
@@ -58,7 +69,7 @@ const FOODS = [
     id: "beef",
     name: "Bœuf haché 5%",
     emoji: "🥩",
-    unit: "100 g",
+    unit: "g",
     kcal: 137,
     protein: 21,
     carbs: 0,
@@ -69,7 +80,7 @@ const FOODS = [
     id: "salmon",
     name: "Saumon",
     emoji: "🐟",
-    unit: "100 g",
+    unit: "g",
     kcal: 208,
     protein: 20,
     carbs: 0,
@@ -80,7 +91,7 @@ const FOODS = [
     id: "potato",
     name: "Pomme de terre",
     emoji: "🥔",
-    unit: "100 g",
+    unit: "g",
     kcal: 77,
     protein: 2,
     carbs: 17,
@@ -91,7 +102,7 @@ const FOODS = [
     id: "oats",
     name: "Flocons d’avoine",
     emoji: "🥣",
-    unit: "100 g",
+    unit: "g",
     kcal: 389,
     protein: 16.9,
     carbs: 66.3,
@@ -102,7 +113,7 @@ const FOODS = [
     id: "banana",
     name: "Banane",
     emoji: "🍌",
-    unit: "100 g",
+    unit: "g",
     kcal: 89,
     protein: 1.1,
     carbs: 22.8,
@@ -113,7 +124,7 @@ const FOODS = [
     id: "apple",
     name: "Pomme",
     emoji: "🍎",
-    unit: "100 g",
+    unit: "g",
     kcal: 52,
     protein: 0.3,
     carbs: 13.8,
@@ -124,7 +135,7 @@ const FOODS = [
     id: "avocado",
     name: "Avocat",
     emoji: "🥑",
-    unit: "100 g",
+    unit: "g",
     kcal: 160,
     protein: 2,
     carbs: 8.5,
@@ -135,7 +146,7 @@ const FOODS = [
     id: "bread",
     name: "Pain",
     emoji: "🍞",
-    unit: "100 g",
+    unit: "g",
     kcal: 265,
     protein: 9,
     carbs: 49,
@@ -146,7 +157,7 @@ const FOODS = [
     id: "milk",
     name: "Lait demi-écrémé",
     emoji: "🥛",
-    unit: "100 ml",
+    unit: "ml",
     kcal: 46,
     protein: 3.2,
     carbs: 4.8,
@@ -157,7 +168,7 @@ const FOODS = [
     id: "yogurt",
     name: "Yaourt nature",
     emoji: "🥛",
-    unit: "100 g",
+    unit: "g",
     kcal: 61,
     protein: 3.5,
     carbs: 4.7,
@@ -168,7 +179,7 @@ const FOODS = [
     id: "greek_yogurt",
     name: "Skyr",
     emoji: "🥣",
-    unit: "100 g",
+    unit: "g",
     kcal: 63,
     protein: 10.6,
     carbs: 3.9,
@@ -179,7 +190,7 @@ const FOODS = [
     id: "cheese",
     name: "Emmental",
     emoji: "🧀",
-    unit: "100 g",
+    unit: "g",
     kcal: 380,
     protein: 28,
     carbs: 0.5,
@@ -190,7 +201,7 @@ const FOODS = [
     id: "olive_oil",
     name: "Huile d’olive",
     emoji: "🫒",
-    unit: "100 g",
+    unit: "g",
     kcal: 884,
     protein: 0,
     carbs: 0,
@@ -201,7 +212,7 @@ const FOODS = [
     id: "tomato",
     name: "Tomate",
     emoji: "🍅",
-    unit: "100 g",
+    unit: "g",
     kcal: 18,
     protein: 0.9,
     carbs: 3.9,
@@ -212,7 +223,7 @@ const FOODS = [
     id: "broccoli",
     name: "Brocoli",
     emoji: "🥦",
-    unit: "100 g",
+    unit: "g",
     kcal: 34,
     protein: 2.8,
     carbs: 7,
@@ -223,7 +234,7 @@ const FOODS = [
     id: "carrot",
     name: "Carotte",
     emoji: "🥕",
-    unit: "100 g",
+    unit: "g",
     kcal: 41,
     protein: 0.9,
     carbs: 9.6,
@@ -234,7 +245,7 @@ const FOODS = [
     id: "lentils",
     name: "Lentilles cuites",
     emoji: "🫘",
-    unit: "100 g",
+    unit: "g",
     kcal: 116,
     protein: 9,
     carbs: 20,
@@ -245,7 +256,7 @@ const FOODS = [
     id: "beans",
     name: "Haricots rouges cuits",
     emoji: "🫘",
-    unit: "100 g",
+    unit: "g",
     kcal: 127,
     protein: 8.7,
     carbs: 22.8,
@@ -256,24 +267,158 @@ const FOODS = [
     id: "chickpeas",
     name: "Pois chiches cuits",
     emoji: "🫘",
-    unit: "100 g",
+    unit: "g",
     kcal: 164,
     protein: 8.9,
     carbs: 27.4,
     fat: 2.6
+  },
+
+  {
+    id: "turkey",
+    name: "Escalope de dinde",
+    emoji: "🦃",
+    unit: "g",
+    kcal: 114,
+    protein: 24,
+    carbs: 0,
+    fat: 1.5
+  },
+
+  {
+    id: "ham",
+    name: "Jambon blanc",
+    emoji: "🥩",
+    unit: "g",
+    kcal: 116,
+    protein: 20,
+    carbs: 1.5,
+    fat: 3
+  },
+
+  {
+    id: "cottage_cheese",
+    name: "Fromage blanc 0%",
+    emoji: "🥛",
+    unit: "g",
+    kcal: 48,
+    protein: 8,
+    carbs: 4,
+    fat: 0.2
+  },
+
+  {
+    id: "peanut_butter",
+    name: "Beurre de cacahuète",
+    emoji: "🥜",
+    unit: "g",
+    kcal: 588,
+    protein: 25,
+    carbs: 20,
+    fat: 50
+  },
+
+  {
+    id: "corn",
+    name: "Maïs",
+    emoji: "🌽",
+    unit: "g",
+    kcal: 86,
+    protein: 3.2,
+    carbs: 19,
+    fat: 1.2
+  },
+
+  {
+    id: "cucumber",
+    name: "Concombre",
+    emoji: "🥒",
+    unit: "g",
+    kcal: 15,
+    protein: 0.7,
+    carbs: 3.6,
+    fat: 0.1
+  },
+
+  {
+    id: "onion",
+    name: "Oignon",
+    emoji: "🧅",
+    unit: "g",
+    kcal: 40,
+    protein: 1.1,
+    carbs: 9.3,
+    fat: 0.1
+  },
+
+  {
+    id: "green_beans",
+    name: "Haricots verts",
+    emoji: "🫛",
+    unit: "g",
+    kcal: 31,
+    protein: 1.8,
+    carbs: 7,
+    fat: 0.2
+  },
+
+  {
+    id: "spinach",
+    name: "Épinards",
+    emoji: "🥬",
+    unit: "g",
+    kcal: 23,
+    protein: 2.9,
+    carbs: 3.6,
+    fat: 0.4
+  },
+
+  {
+    id: "strawberry",
+    name: "Fraises",
+    emoji: "🍓",
+    unit: "g",
+    kcal: 32,
+    protein: 0.7,
+    carbs: 7.7,
+    fat: 0.3
+  },
+
+  {
+    id: "orange",
+    name: "Orange",
+    emoji: "🍊",
+    unit: "g",
+    kcal: 47,
+    protein: 0.9,
+    carbs: 11.8,
+    fat: 0.1
+  },
+
+  {
+    id: "protein_powder",
+    name: "Protéine en poudre",
+    emoji: "🥤",
+    unit: "g",
+    kcal: 400,
+    protein: 80,
+    carbs: 8,
+    fat: 6
   }
+
 ];
 
 
+/* =========================================================
+   RECETTES
+========================================================= */
+
 const RECIPES = [
+
   {
     id: "chicken-rice",
     name: "Poulet & riz",
     emoji: "🍗",
-    kcal: 620,
-    protein: 52,
-    carbs: 72,
-    fat: 12,
 
     ingredients: [
       {
@@ -299,10 +444,6 @@ const RECIPES = [
     id: "tuna-pasta",
     name: "Pâtes au thon",
     emoji: "🍝",
-    kcal: 590,
-    protein: 45,
-    carbs: 78,
-    fat: 10,
 
     ingredients: [
       {
@@ -328,10 +469,6 @@ const RECIPES = [
     id: "beef-potatoes",
     name: "Bœuf & pommes de terre",
     emoji: "🥩",
-    kcal: 610,
-    protein: 48,
-    carbs: 58,
-    fat: 20,
 
     ingredients: [
       {
@@ -353,10 +490,6 @@ const RECIPES = [
     id: "oat-bowl",
     name: "Bowl avoine & banane",
     emoji: "🥣",
-    kcal: 480,
-    protein: 28,
-    carbs: 65,
-    fat: 12,
 
     ingredients: [
       {
@@ -382,10 +515,6 @@ const RECIPES = [
     id: "salmon-rice",
     name: "Saumon & riz",
     emoji: "🐟",
-    kcal: 650,
-    protein: 43,
-    carbs: 65,
-    fat: 22,
 
     ingredients: [
       {
@@ -401,16 +530,191 @@ const RECIPES = [
         grams: 150
       }
     ]
+  },
+
+  {
+    id: "turkey-pasta",
+    name: "Pâtes à la dinde",
+    emoji: "🍝",
+
+    ingredients: [
+      {
+        food: "turkey",
+        grams: 180
+      },
+      {
+        food: "pasta",
+        grams: 220
+      },
+      {
+        food: "tomato",
+        grams: 150
+      },
+      {
+        food: "olive_oil",
+        grams: 5
+      }
+    ]
+  },
+
+  {
+    id: "omelette",
+    name: "Omelette complète",
+    emoji: "🍳",
+
+    ingredients: [
+      {
+        food: "egg",
+        grams: 200
+      },
+      {
+        food: "bread",
+        grams: 80
+      },
+      {
+        food: "tomato",
+        grams: 150
+      }
+    ]
+  },
+
+  {
+    id: "lentil-bowl",
+    name: "Bowl lentilles & œufs",
+    emoji: "🫘",
+
+    ingredients: [
+      {
+        food: "lentils",
+        grams: 250
+      },
+      {
+        food: "egg",
+        grams: 150
+      },
+      {
+        food: "tomato",
+        grams: 150
+      }
+    ]
+  },
+
+  {
+    id: "chickpea-chicken",
+    name: "Poulet & pois chiches",
+    emoji: "🍗",
+
+    ingredients: [
+      {
+        food: "chicken",
+        grams: 170
+      },
+      {
+        food: "chickpeas",
+        grams: 180
+      },
+      {
+        food: "tomato",
+        grams: 150
+      }
+    ]
+  },
+
+  {
+    id: "skyr-banana",
+    name: "Skyr & banane",
+    emoji: "🥣",
+
+    ingredients: [
+      {
+        food: "greek_yogurt",
+        grams: 250
+      },
+      {
+        food: "banana",
+        grams: 120
+      },
+      {
+        food: "oats",
+        grams: 30
+      }
+    ]
+  },
+
+  {
+    id: "tuna-rice",
+    name: "Riz au thon",
+    emoji: "🐟",
+
+    ingredients: [
+      {
+        food: "rice",
+        grams: 250
+      },
+      {
+        food: "tuna",
+        grams: 150
+      },
+      {
+        food: "corn",
+        grams: 80
+      },
+      {
+        food: "tomato",
+        grams: 100
+      }
+    ]
+  },
+
+  {
+    id: "beef-pasta",
+    name: "Pâtes au bœuf",
+    emoji: "🥩",
+
+    ingredients: [
+      {
+        food: "beef",
+        grams: 180
+      },
+      {
+        food: "pasta",
+        grams: 220
+      },
+      {
+        food: "tomato",
+        grams: 150
+      }
+    ]
   }
+
 ];
 
 
+/* =========================================================
+   COURSES
+========================================================= */
+
 const SHOPPING_ITEMS = [
+
   {
     id: "chicken",
     name: "Poulet",
     quantity: "1 kg",
     price: 8
+  },
+
+  {
+    id: "turkey",
+    name: "Escalopes de dinde",
+    quantity: "500 g",
+    price: 5
+  },
+
+  {
+    id: "beef",
+    name: "Bœuf haché 5%",
+    quantity: "500 g",
+    price: 6
   },
 
   {
@@ -463,6 +767,13 @@ const SHOPPING_ITEMS = [
   },
 
   {
+    id: "apple",
+    name: "Pommes",
+    quantity: "1 kg",
+    price: 2.5
+  },
+
+  {
     id: "broccoli",
     name: "Brocoli",
     quantity: "500 g",
@@ -477,6 +788,27 @@ const SHOPPING_ITEMS = [
   },
 
   {
+    id: "carrot",
+    name: "Carottes",
+    quantity: "1 kg",
+    price: 1.5
+  },
+
+  {
+    id: "lentils",
+    name: "Lentilles",
+    quantity: "500 g",
+    price: 1.5
+  },
+
+  {
+    id: "chickpeas",
+    name: "Pois chiches",
+    quantity: "500 g",
+    price: 1.5
+  },
+
+  {
     id: "milk",
     name: "Lait",
     quantity: "1 L",
@@ -488,11 +820,45 @@ const SHOPPING_ITEMS = [
     name: "Skyr",
     quantity: "4 pots",
     price: 3.5
+  },
+
+  {
+    id: "cottage_cheese",
+    name: "Fromage blanc 0%",
+    quantity: "500 g",
+    price: 2
+  },
+
+  {
+    id: "bread",
+    name: "Pain",
+    quantity: "500 g",
+    price: 1.5
+  },
+
+  {
+    id: "olive_oil",
+    name: "Huile d’olive",
+    quantity: "500 ml",
+    price: 5
+  },
+
+  {
+    id: "avocado",
+    name: "Avocats",
+    quantity: "2",
+    price: 3
   }
+
 ];
 
 
+/* =========================================================
+   JOURS
+========================================================= */
+
 const DAYS = [
+
   "Lundi",
   "Mardi",
   "Mercredi",
@@ -500,4 +866,5 @@ const DAYS = [
   "Vendredi",
   "Samedi",
   "Dimanche"
+
 ];
