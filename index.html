@@ -3,315 +3,324 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>BudgetCook</title>
 
 <style>
 
-:root {
-    --background: #f4f5ef;
-    --card: #ffffff;
-    --dark: #171a17;
-    --grey: #747970;
-    --green: #b8e34b;
-    --light-green: #eaf6c9;
-    --border: #e2e5dc;
+:root{
+--bg:#f3f4ee;
+--card:#ffffff;
+--dark:#171a17;
+--grey:#747970;
+--green:#b8e34b;
+--light:#eaf6c9;
+--border:#e1e4db;
 }
 
-* {
-    box-sizing: border-box;
+*{
+box-sizing:border-box;
 }
 
-body {
-    margin: 0;
-    background: var(--background);
-    color: var(--dark);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+body{
+margin:0;
+background:var(--bg);
+color:var(--dark);
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
 }
 
-.app {
-    max-width: 430px;
-    margin: auto;
-    min-height: 100vh;
-    padding: 20px 17px 100px;
+.app{
+max-width:430px;
+margin:auto;
+min-height:100vh;
+padding:20px 17px 100px;
 }
 
-/* LOGO */
+/* HEADER */
 
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+header{
+display:flex;
+justify-content:space-between;
+align-items:center;
 }
 
-.logo {
-    font-size: 24px;
-    font-weight: 900;
-    letter-spacing: -1px;
+.logo{
+font-size:24px;
+font-weight:900;
+letter-spacing:-1px;
 }
 
-.avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: var(--dark);
-    color: white;
-    display: grid;
-    place-items: center;
-    font-weight: 800;
+.avatar{
+width:40px;
+height:40px;
+border-radius:50%;
+background:var(--dark);
+color:white;
+display:grid;
+place-items:center;
+font-weight:800;
 }
 
-/* TITRE */
+/* PAGES */
 
-.eyebrow {
-    margin-top: 25px;
-    color: var(--grey);
-    font-size: 13px;
-    font-weight: 700;
+.page{
+display:none;
 }
 
-.title {
-    font-size: 31px;
-    line-height: 1.05;
-    letter-spacing: -1.2px;
-    margin: 5px 0 0;
+.page.active{
+display:block;
 }
 
-/* CALORIES */
+/* TITRES */
 
-.hero {
-    margin-top: 20px;
-    padding: 21px;
-    background: var(--dark);
-    color: white;
-    border-radius: 25px;
-    position: relative;
-    overflow: hidden;
+.eyebrow{
+margin-top:25px;
+color:var(--grey);
+font-size:13px;
+font-weight:700;
 }
 
-.hero::after {
-    content: "";
-    position: absolute;
-    width: 170px;
-    height: 170px;
-    border-radius: 50%;
-    background: var(--green);
-    right: -85px;
-    top: -85px;
+.title{
+font-size:31px;
+line-height:1.05;
+letter-spacing:-1.2px;
+margin:5px 0 0;
 }
 
-.hero small {
-    color: #c7ccc3;
+/* HERO */
+
+.hero{
+margin-top:20px;
+padding:21px;
+background:var(--dark);
+color:white;
+border-radius:25px;
 }
 
-.calories {
-    font-size: 38px;
-    font-weight: 900;
-    margin-top: 8px;
+.hero small{
+color:#c7ccc3;
 }
 
-.calories span {
-    font-size: 16px;
+.calories{
+font-size:38px;
+font-weight:900;
+margin-top:8px;
 }
 
-.hero-info {
-    font-size: 13px;
-    color: #c7ccc3;
+.calories span{
+font-size:16px;
 }
 
-.progress {
-    height: 9px;
-    background: #3d423b;
-    border-radius: 20px;
-    margin-top: 17px;
-    overflow: hidden;
+.hero-info{
+font-size:13px;
+color:#c7ccc3;
 }
 
-.progress-bar {
-    width: 48%;
-    height: 100%;
-    background: var(--green);
-    border-radius: 20px;
+.progress{
+height:9px;
+background:#3d423b;
+border-radius:20px;
+margin-top:17px;
+overflow:hidden;
+}
+
+.progress-bar{
+height:100%;
+width:48%;
+background:var(--green);
+border-radius:20px;
 }
 
 /* MACROS */
 
-.macros {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 9px;
-    margin-top: 12px;
+.macros{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:9px;
+margin-top:12px;
 }
 
-.macro {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 18px;
-    padding: 13px 10px;
+.macro{
+background:white;
+border:1px solid var(--border);
+border-radius:18px;
+padding:13px 10px;
 }
 
-.macro-icon {
-    font-size: 19px;
+.macro-value{
+font-size:20px;
+font-weight:900;
+margin-top:5px;
 }
 
-.macro-value {
-    font-size: 20px;
-    font-weight: 900;
-    margin-top: 5px;
-}
-
-.macro-text {
-    color: var(--grey);
-    font-size: 11px;
-    line-height: 1.3;
+.macro-text{
+color:var(--grey);
+font-size:11px;
+line-height:1.3;
 }
 
 /* SECTIONS */
 
-.section {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 26px 2px 11px;
+.section{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin:26px 2px 11px;
 }
 
-.section h2 {
-    margin: 0;
-    font-size: 19px;
+.section h2{
+margin:0;
+font-size:19px;
 }
 
-.section span {
-    color: var(--grey);
-    font-size: 12px;
-    font-weight: 800;
+/* MEALS */
+
+.meal{
+display:flex;
+gap:12px;
+background:white;
+border:1px solid var(--border);
+border-radius:20px;
+padding:12px;
+margin-bottom:10px;
 }
 
-/* REPAS */
-
-.meal {
-    display: flex;
-    gap: 12px;
-    background: white;
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 12px;
-    margin-bottom: 10px;
+.meal-image{
+width:68px;
+height:68px;
+border-radius:17px;
+display:grid;
+place-items:center;
+font-size:31px;
+background:linear-gradient(135deg,#dce9b9,#f3d5a6);
 }
 
-.meal-image {
-    width: 68px;
-    height: 68px;
-    border-radius: 17px;
-    display: grid;
-    place-items: center;
-    font-size: 31px;
-    background: linear-gradient(135deg, #dce9b9, #f3d5a6);
+.meal-type{
+color:var(--grey);
+font-size:10px;
+font-weight:900;
 }
 
-.meal-info {
-    flex: 1;
+.meal-title{
+font-size:15px;
+font-weight:800;
+margin:5px 0;
 }
 
-.meal-type {
-    color: var(--grey);
-    font-size: 10px;
-    font-weight: 900;
+.meal-stats{
+color:var(--grey);
+font-size:12px;
 }
 
-.meal-title {
-    font-size: 15px;
-    font-weight: 800;
-    margin: 5px 0;
+/* PROFILE */
+
+.profile-card{
+background:white;
+border:1px solid var(--border);
+border-radius:22px;
+padding:18px;
+margin-top:20px;
 }
 
-.meal-stats {
-    color: var(--grey);
-    font-size: 12px;
+label{
+display:block;
+font-size:13px;
+font-weight:800;
+margin-top:16px;
+margin-bottom:7px;
 }
 
-.meal-stats strong {
-    color: var(--dark);
+input,
+select{
+width:100%;
+padding:14px;
+border:1px solid var(--border);
+border-radius:13px;
+font-size:16px;
+background:#fafbf8;
+outline:none;
 }
 
-/* COURSES */
-
-.shopping {
-    background: white;
-    border: 1px solid var(--border);
-    border-radius: 22px;
-    padding: 15px;
+input:focus,
+select:focus{
+border-color:var(--dark);
 }
 
-.store {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 0;
-    border-bottom: 1px solid var(--border);
+.save{
+width:100%;
+margin-top:22px;
+padding:16px;
+border:0;
+border-radius:14px;
+background:var(--dark);
+color:white;
+font-size:16px;
+font-weight:900;
 }
 
-.store:last-of-type {
-    border-bottom: none;
+.success{
+display:none;
+background:var(--light);
+padding:13px;
+border-radius:13px;
+margin-top:13px;
+font-size:13px;
+font-weight:700;
 }
 
-.store-name {
-    font-weight: 800;
+/* BUDGET */
+
+.budget-card{
+margin-top:20px;
+background:white;
+border:1px solid var(--border);
+border-radius:20px;
+padding:18px;
 }
 
-.store-sub {
-    color: var(--grey);
-    font-size: 11px;
-    margin-top: 2px;
+.budget-number{
+font-size:32px;
+font-weight:900;
 }
 
-.store-price {
-    font-weight: 900;
-}
-
-.best-price {
-    margin-top: 10px;
-    background: var(--light-green);
-    border-radius: 14px;
-    padding: 11px;
-    font-size: 12px;
-}
-
-.best-price strong {
-    font-size: 14px;
+.budget-sub{
+color:var(--grey);
+font-size:13px;
 }
 
 /* NAVIGATION */
 
-.navigation {
-    position: fixed;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
-    max-width: 430px;
-    display: flex;
-    background: rgba(255,255,255,0.96);
-    backdrop-filter: blur(12px);
-    border-top: 1px solid var(--border);
-    padding: 8px 5px;
+.navigation{
+position:fixed;
+bottom:0;
+left:50%;
+transform:translateX(-50%);
+width:100%;
+max-width:430px;
+display:flex;
+background:rgba(255,255,255,.96);
+backdrop-filter:blur(12px);
+border-top:1px solid var(--border);
+padding:8px 5px;
 }
 
-.navigation button {
-    flex: 1;
-    border: none;
-    background: transparent;
-    color: #7c827a;
-    font-size: 10px;
-    font-weight: 800;
+.navigation button{
+flex:1;
+border:none;
+background:transparent;
+color:#7c827a;
+font-size:10px;
+font-weight:800;
 }
 
-.navigation button span {
-    display: block;
-    font-size: 20px;
-    margin-bottom: 3px;
+.navigation button span{
+display:block;
+font-size:20px;
+margin-bottom:3px;
 }
 
-.navigation button.active {
-    color: var(--dark);
+.navigation button.active{
+color:var(--dark);
 }
 
 </style>
@@ -327,14 +336,19 @@ header {
 🍝 BudgetCook
 </div>
 
-<div class="avatar">
+<div class="avatar" id="avatar">
 E
 </div>
 
 </header>
 
+
+<!-- ACCUEIL -->
+
+<section id="home" class="page active">
+
 <div class="eyebrow">
-JEUDI 20 AOÛT
+AUJOURD'HUI
 </div>
 
 <h1 class="title">
@@ -343,8 +357,6 @@ Voici ta journée.
 </h1>
 
 
-<!-- CALORIES -->
-
 <div class="hero">
 
 <small>
@@ -352,37 +364,41 @@ Calories restantes
 </small>
 
 <div class="calories">
-1 280 <span>kcal</span>
+<span id="calories">2450</span>
+<span>kcal</span>
 </div>
 
 <div class="hero-info">
-1 170 consommées · objectif 2 450
+Objectif quotidien
 </div>
 
 <div class="progress">
-<div class="progress-bar"></div>
+
+<div
+class="progress-bar"
+id="progressBar">
 </div>
 
 </div>
 
+</div>
 
-<!-- MACROS -->
 
 <div class="macros">
 
+
 <div class="macro">
 
-<div class="macro-icon">
 🥩
-</div>
 
-<div class="macro-value">
-96 g
+<div
+class="macro-value"
+id="protein">
+160 g
 </div>
 
 <div class="macro-text">
-Protéines<br>
-/ 160 g
+Protéines
 </div>
 
 </div>
@@ -390,17 +406,16 @@ Protéines<br>
 
 <div class="macro">
 
-<div class="macro-icon">
 🍚
-</div>
 
-<div class="macro-value">
-118 g
+<div
+class="macro-value"
+id="carbs">
+270 g
 </div>
 
 <div class="macro-text">
-Glucides<br>
-/ 270 g
+Glucides
 </div>
 
 </div>
@@ -408,35 +423,29 @@ Glucides<br>
 
 <div class="macro">
 
-<div class="macro-icon">
 🥑
-</div>
 
-<div class="macro-value">
-38 g
+<div
+class="macro-value"
+id="fats">
+82 g
 </div>
 
 <div class="macro-text">
-Lipides<br>
-/ 82 g
+Lipides
 </div>
 
 </div>
 
+
 </div>
 
-
-<!-- REPAS -->
 
 <div class="section">
 
 <h2>
 🍽️ Tes repas
 </h2>
-
-<span>
-Voir la journée →
-</span>
 
 </div>
 
@@ -447,7 +456,7 @@ Voir la journée →
 🥣
 </div>
 
-<div class="meal-info">
+<div>
 
 <div class="meal-type">
 PETIT-DÉJEUNER
@@ -458,7 +467,7 @@ Skyr, avoine & banane
 </div>
 
 <div class="meal-stats">
-420 kcal · <strong>31 g protéines</strong>
+420 kcal · 31 g protéines
 </div>
 
 </div>
@@ -472,7 +481,7 @@ Skyr, avoine & banane
 🍗
 </div>
 
-<div class="meal-info">
+<div>
 
 <div class="meal-type">
 DÉJEUNER
@@ -483,7 +492,7 @@ Poulet, riz & légumes
 </div>
 
 <div class="meal-stats">
-650 kcal · <strong>52 g protéines</strong>
+650 kcal · 52 g protéines
 </div>
 
 </div>
@@ -497,7 +506,7 @@ Poulet, riz & légumes
 🌯
 </div>
 
-<div class="meal-info">
+<div>
 
 <div class="meal-type">
 DÎNER
@@ -508,137 +517,639 @@ Wraps poulet & crudités
 </div>
 
 <div class="meal-stats">
-580 kcal · <strong>45 g protéines</strong>
+580 kcal · 45 g protéines
 </div>
 
 </div>
 
 </div>
 
-
-<!-- MAGASINS -->
 
 <div class="section">
 
 <h2>
-🛒 Ton panier
+💰 Ton budget
 </h2>
 
-<span>
-Cette semaine
-</span>
-
 </div>
 
 
-<div class="shopping">
+<div class="budget-card">
 
+<div class="budget-number">
 
-<div class="store">
+<span id="budget">
+50
+</span> €
 
-<div>
-
-<div class="store-name">
-🏆 Lidl
 </div>
 
-<div class="store-sub">
-Meilleur prix estimé
+<div class="budget-sub">
+Budget courses hebdomadaire
 </div>
 
 </div>
 
-<div class="store-price">
-49,20 €
+</section>
+
+
+
+<!-- PROFIL -->
+
+<section id="profile" class="page">
+
+<div class="eyebrow">
+TON PROFIL
 </div>
 
+<h1 class="title">
+Configure<br>
+ton objectif.
+</h1>
+
+
+<div class="profile-card">
+
+
+<label>
+Âge
+</label>
+
+<input
+id="age"
+type="number"
+placeholder="Ex : 20"
+>
+
+
+<label>
+Sexe
+</label>
+
+<select id="sex">
+
+<option value="male">
+Homme
+</option>
+
+<option value="female">
+Femme
+</option>
+
+</select>
+
+
+<label>
+Taille (cm)
+</label>
+
+<input
+id="height"
+type="number"
+placeholder="Ex : 180"
+>
+
+
+<label>
+Poids (kg)
+</label>
+
+<input
+id="weight"
+type="number"
+placeholder="Ex : 80"
+>
+
+
+<label>
+Activité
+</label>
+
+<select id="activity">
+
+<option value="1.2">
+Très peu actif
+</option>
+
+<option value="1.375">
+Légèrement actif
+</option>
+
+<option value="1.55">
+Modérément actif
+</option>
+
+<option value="1.725">
+Très actif
+</option>
+
+<option value="1.9">
+Extrêmement actif
+</option>
+
+</select>
+
+
+<label>
+Entraînements par semaine
+</label>
+
+<input
+id="training"
+type="number"
+min="0"
+max="14"
+placeholder="Ex : 4"
+>
+
+
+<label>
+Objectif
+</label>
+
+<select id="goal">
+
+<option value="cut">
+🔥 Perdre du gras
+</option>
+
+<option value="maintain">
+⚖️ Maintenir
+</option>
+
+<option value="bulk">
+💪 Prendre du muscle
+</option>
+
+</select>
+
+
+<label>
+Budget courses / semaine (€)
+</label>
+
+<input
+id="weeklyBudget"
+type="number"
+placeholder="Ex : 50"
+>
+
+
+<button
+class="save"
+onclick="saveProfile()"
+>
+Enregistrer mon profil
+</button>
+
+
+<div
+class="success"
+id="success"
+>
+✅ Profil enregistré !
 </div>
 
 
-<div class="store">
-
-<div class="store-name">
-ALDI
 </div>
 
-<div class="store-price">
-50,70 €
-</div>
+</section>
 
-</div>
-
-
-<div class="store">
-
-<div class="store-name">
-E.Leclerc
-</div>
-
-<div class="store-price">
-52,40 €
-</div>
-
-</div>
-
-
-<div class="store">
-
-<div class="store-name">
-Carrefour
-</div>
-
-<div class="store-price">
-57,40 €
-</div>
-
-</div>
-
-
-<div class="best-price">
-
-💰 <strong>Économie estimée : 8,20 €</strong>
-
-<br>
-
-Les prix sont indicatifs dans cette version.
-
-</div>
-
-</div>
 
 
 <!-- NAVIGATION -->
 
-<div class="navigation">
+<nav class="navigation">
 
-<button class="active">
-<span>⌂</span>
+
+<button
+id="homeButton"
+class="active"
+onclick="showPage('home')"
+>
+
+<span>
+⌂
+</span>
+
 Accueil
+
 </button>
 
-<button>
-<span>🍽️</span>
+
+<button
+onclick="alert('La section Repas arrive dans la prochaine version 🍽️')"
+>
+
+<span>
+🍽️
+</span>
+
 Repas
+
 </button>
 
-<button>
-<span>🛒</span>
+
+<button
+onclick="alert('La liste de courses arrive bientôt 🛒')"
+>
+
+<span>
+🛒
+</span>
+
 Courses
+
 </button>
 
-<button>
-<span>📊</span>
+
+<button
+onclick="alert('Le suivi des progrès arrive bientôt 📊')"
+>
+
+<span>
+📊
+</span>
+
 Progrès
+
 </button>
 
-<button>
-<span>👤</span>
+
+<button
+onclick="showPage('profile')"
+>
+
+<span>
+👤
+</span>
+
 Profil
+
 </button>
 
-</div>
+
+</nav>
+
 
 </div>
+
+
+<script>
+
+
+/* NAVIGATION */
+
+function showPage(page){
+
+document
+.querySelectorAll(".page")
+.forEach(function(element){
+
+element.classList.remove("active");
+
+});
+
+
+document
+.getElementById(page)
+.classList.add("active");
+
+
+document
+.querySelectorAll(".navigation button")
+.forEach(function(button){
+
+button.classList.remove("active");
+
+});
+
+
+if(page === "home"){
+
+document
+.getElementById("homeButton")
+.classList.add("active");
+
+}
+
+}
+
+
+/* CALCUL NUTRITION */
+
+function calculateNutrition(){
+
+let age =
+Number(document.getElementById("age").value);
+
+let height =
+Number(document.getElementById("height").value);
+
+let weight =
+Number(document.getElementById("weight").value);
+
+let sex =
+document.getElementById("sex").value;
+
+let activity =
+Number(document.getElementById("activity").value);
+
+let goal =
+document.getElementById("goal").value;
+
+
+if(!age || !height || !weight){
+
+return;
+
+}
+
+
+/*
+Mifflin-St Jeor
+*/
+
+let bmr;
+
+
+if(sex === "male"){
+
+bmr =
+10 * weight +
+6.25 * height -
+5 * age +
+5;
+
+}else{
+
+bmr =
+10 * weight +
+6.25 * height -
+5 * age -
+161;
+
+}
+
+
+let calories =
+bmr * activity;
+
+
+/*
+Objectif
+*/
+
+if(goal === "cut"){
+
+calories -= 400;
+
+}
+
+if(goal === "bulk"){
+
+calories += 250;
+
+}
+
+
+calories =
+Math.round(calories);
+
+
+/*
+Protéines
+*/
+
+let protein =
+Math.round(weight * 1.8);
+
+
+/*
+Lipides
+*/
+
+let fats =
+Math.round(weight * 0.8);
+
+
+/*
+Glucides
+*/
+
+let carbs =
+Math.round(
+(calories -
+protein * 4 -
+fats * 9) / 4
+);
+
+
+return {
+
+calories,
+protein,
+fats,
+carbs
+
+};
+
+}
+
+
+/* SAUVEGARDE */
+
+function saveProfile(){
+
+let result =
+calculateNutrition();
+
+
+if(!result){
+
+alert("Remplis ton âge, ta taille et ton poids.");
+
+return;
+
+}
+
+
+let budget =
+Number(
+document.getElementById("weeklyBudget").value
+);
+
+
+let profile = {
+
+age:
+document.getElementById("age").value,
+
+height:
+document.getElementById("height").value,
+
+weight:
+document.getElementById("weight").value,
+
+sex:
+document.getElementById("sex").value,
+
+activity:
+document.getElementById("activity").value,
+
+training:
+document.getElementById("training").value,
+
+goal:
+document.getElementById("goal").value,
+
+budget:
+budget,
+
+nutrition:
+result
+
+};
+
+
+localStorage.setItem(
+"budgetcookProfile",
+JSON.stringify(profile)
+);
+
+
+/*
+Dashboard
+*/
+
+document
+.getElementById("calories")
+.textContent =
+result.calories;
+
+document
+.getElementById("protein")
+.textContent =
+result.protein + " g";
+
+document
+.getElementById("carbs")
+.textContent =
+result.carbs + " g";
+
+document
+.getElementById("fats")
+.textContent =
+result.fats + " g";
+
+
+if(budget){
+
+document
+.getElementById("budget")
+.textContent =
+budget;
+
+}
+
+
+document
+.getElementById("success")
+.style.display =
+"block";
+
+
+setTimeout(function(){
+
+showPage("home");
+
+},800);
+
+}
+
+
+/* CHARGER PROFIL */
+
+function loadProfile(){
+
+let saved =
+localStorage.getItem(
+"budgetcookProfile"
+);
+
+
+if(!saved){
+
+return;
+
+}
+
+
+let profile =
+JSON.parse(saved);
+
+
+document.getElementById("age").value =
+profile.age;
+
+document.getElementById("height").value =
+profile.height;
+
+document.getElementById("weight").value =
+profile.weight;
+
+document.getElementById("sex").value =
+profile.sex;
+
+document.getElementById("activity").value =
+profile.activity;
+
+document.getElementById("training").value =
+profile.training;
+
+document.getElementById("goal").value =
+profile.goal;
+
+document.getElementById("weeklyBudget").value =
+profile.budget;
+
+
+if(profile.nutrition){
+
+document.getElementById("calories")
+.textContent =
+profile.nutrition.calories;
+
+document.getElementById("protein")
+.textContent =
+profile.nutrition.protein + " g";
+
+document.getElementById("carbs")
+.textContent =
+profile.nutrition.carbs + " g";
+
+document.getElementById("fats")
+.textContent =
+profile.nutrition.fats + " g";
+
+}
+
+
+if(profile.budget){
+
+document.getElementById("budget")
+.textContent =
+profile.budget;
+
+}
+
+}
+
+
+loadProfile();
+
+
+</script>
 
 </body>
 </html>
