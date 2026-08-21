@@ -1,6 +1,6 @@
 /* =========================================================
    BUDGETCOOK V4 — APP.JS
-   Version complète corrigée
+   Nutrition + calories + macros corrigés
 ========================================================= */
 
 const STORAGE_KEY = "budgetcook_v4";
@@ -76,20 +76,16 @@ function loadState() {
 
   try {
 
-    const saved =
-      localStorage.getItem(STORAGE_KEY);
+    const saved = localStorage.getItem(STORAGE_KEY);
 
     if (!saved) {
       return structuredClone(defaultState);
     }
 
-    const parsed =
-      JSON.parse(saved);
+    const parsed = JSON.parse(saved);
 
     return {
-
       ...structuredClone(defaultState),
-
       ...parsed,
 
       profile: {
@@ -102,20 +98,17 @@ function loadState() {
         ...(parsed.streak || {})
       },
 
-      journal:
-        Array.isArray(parsed.journal)
-          ? parsed.journal
-          : [],
+      journal: Array.isArray(parsed.journal)
+        ? parsed.journal
+        : [],
 
-      weights:
-        Array.isArray(parsed.weights)
-          ? parsed.weights
-          : [],
+      weights: Array.isArray(parsed.weights)
+        ? parsed.weights
+        : [],
 
-      pantry:
-        Array.isArray(parsed.pantry)
-          ? parsed.pantry
-          : [],
+      pantry: Array.isArray(parsed.pantry)
+        ? parsed.pantry
+        : [],
 
       shopping:
         parsed.shopping &&
@@ -133,14 +126,9 @@ function loadState() {
 
   } catch (error) {
 
-    console.error(
-      "Erreur chargement :",
-      error
-    );
+    console.error("Erreur chargement :", error);
 
-    return structuredClone(
-      defaultState
-    );
+    return structuredClone(defaultState);
 
   }
 
@@ -158,10 +146,7 @@ function saveState() {
 
   } catch (error) {
 
-    console.error(
-      "Erreur sauvegarde :",
-      error
-    );
+    console.error("Erreur sauvegarde :", error);
 
   }
 
@@ -179,12 +164,10 @@ function $(id) {
 
 function round(number, decimals = 0) {
 
-  const factor =
-    Math.pow(10, decimals);
+  const factor = Math.pow(10, decimals);
 
   return Math.round(
-    (Number(number) || 0) *
-    factor
+    (Number(number) || 0) * factor
   ) / factor;
 
 }
@@ -192,30 +175,19 @@ function round(number, decimals = 0) {
 
 function formatNumber(number) {
 
-  return Math.round(
-    Number(number) || 0
-  ).toLocaleString("fr-FR");
+  return Math.round(Number(number) || 0)
+    .toLocaleString("fr-FR");
 
 }
 
 
 function todayKey() {
 
-  const date =
-    new Date();
+  const date = new Date();
 
-  const y =
-    date.getFullYear();
-
-  const m =
-    String(
-      date.getMonth() + 1
-    ).padStart(2, "0");
-
-  const d =
-    String(
-      date.getDate()
-    ).padStart(2, "0");
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
 
   return `${y}-${m}-${d}`;
 
@@ -224,36 +196,27 @@ function todayKey() {
 
 function showToast(message) {
 
-  const toast =
-    $("toast");
+  const toast = $("toast");
 
   if (!toast) return;
 
-  toast.textContent =
-    message;
+  toast.textContent = message;
 
-  toast.classList.add(
-    "show"
-  );
+  toast.classList.add("show");
 
-  clearTimeout(
-    window.toastTimer
-  );
+  clearTimeout(window.toastTimer);
 
-  window.toastTimer =
-    setTimeout(() => {
+  window.toastTimer = setTimeout(() => {
 
-      toast.classList.remove(
-        "show"
-      );
+    toast.classList.remove("show");
 
-    }, 2200);
+  }, 2200);
 
 }
 
 
 /* =========================================================
-   NUTRITION — ALIMENT
+   NUTRITION DES ALIMENTS
 ========================================================= */
 
 function calculateFood(food, grams) {
@@ -264,20 +227,16 @@ function calculateFood(food, grams) {
   return {
 
     kcal:
-      Number(food.kcal || 0) *
-      ratio,
+      Number(food.kcal || 0) * ratio,
 
     protein:
-      Number(food.protein || 0) *
-      ratio,
+      Number(food.protein || 0) * ratio,
 
     carbs:
-      Number(food.carbs || 0) *
-      ratio,
+      Number(food.carbs || 0) * ratio,
 
     fat:
-      Number(food.fat || 0) *
-      ratio
+      Number(food.fat || 0) * ratio
 
   };
 
@@ -287,17 +246,13 @@ function calculateFood(food, grams) {
 function calculateDailyTotals() {
 
   const totals = {
-
     kcal: 0,
     protein: 0,
     carbs: 0,
     fat: 0
-
   };
 
-  const today =
-    todayKey();
-
+  const today = todayKey();
 
   state.journal.forEach(item => {
 
@@ -322,11 +277,9 @@ function calculateDailyTotals() {
 
   });
 
-
   return {
 
-    kcal:
-      round(totals.kcal),
+    kcal: round(totals.kcal),
 
     protein:
       round(totals.protein, 1),
@@ -348,8 +301,7 @@ function calculateDailyTotals() {
 
 function calculateBMR() {
 
-  const p =
-    state.profile;
+  const p = state.profile;
 
   const weight =
     Number(p.weight) || 0;
@@ -360,7 +312,6 @@ function calculateBMR() {
   const age =
     Number(p.age) || 0;
 
-
   if (
     !weight ||
     !height ||
@@ -369,14 +320,11 @@ function calculateBMR() {
     return 0;
   }
 
-
   /*
     Mifflin-St Jeor
   */
 
-  if (
-    p.sex === "female"
-  ) {
+  if (p.sex === "female") {
 
     return round(
       10 * weight +
@@ -386,7 +334,6 @@ function calculateBMR() {
     );
 
   }
-
 
   return round(
     10 * weight +
@@ -404,9 +351,7 @@ function calculateTDEE() {
     calculateBMR();
 
   const activity =
-    Number(
-      state.profile.activity
-    ) || 1.2;
+    Number(state.profile.activity) || 1.2;
 
   return round(
     bmr * activity
@@ -421,19 +366,12 @@ function calculateTargetCalories() {
     calculateTDEE();
 
   const adjustment =
-    Number(
-      state.profile.adjustment
-    ) || 0;
+    Number(state.profile.adjustment) || 0;
 
-
-  if (!tdee) {
-    return 0;
-  }
-
+  if (!tdee) return 0;
 
   if (
-    state.profile.goal ===
-    "bulk"
+    state.profile.goal === "bulk"
   ) {
 
     return Math.round(
@@ -442,22 +380,17 @@ function calculateTargetCalories() {
 
   }
 
-
   if (
-    state.profile.goal ===
-    "maintain"
+    state.profile.goal === "maintain"
   ) {
 
-    return Math.round(
-      tdee
-    );
+    return Math.round(tdee);
 
   }
 
-
   /*
-    CUT
-    Déficit calorique
+    Cut = déficit calorique
+    Minimum technique conservé à 1200 kcal
   */
 
   return Math.max(
@@ -471,44 +404,44 @@ function calculateTargetCalories() {
 
 
 /* =========================================================
-   MACROS — CALCUL CORRIGÉ
+   MACROS — NOUVEAU CALCUL
 ========================================================= */
 
 /*
-  BUDGETCOOK V4
+  RÈGLES BUDGETCOOK V4
 
   PROTÉINES
-  = 2 g / kg de poids
+  ----------------
+  Perte de gras : 2.0 g/kg
+  Maintien      : 1.8 g/kg
+  Prise muscle  : 2.0 g/kg
 
   LIPIDES
-  = 0,8 g / kg de poids
+  ----------------
+  0.8 g/kg
 
   GLUCIDES
-  = calories restantes
+  ----------------
+  Les glucides utilisent les calories restantes.
 
-  Énergie :
-
-  Protéines = 4 kcal / g
-  Glucides  = 4 kcal / g
-  Lipides   = 9 kcal / g
+  Calories :
+  protéines = 4 kcal/g
+  glucides  = 4 kcal/g
+  lipides   = 9 kcal/g
 
   Exemple pour 88 kg :
 
   Protéines :
   88 × 2 = 176 g
+  176 × 4 = 704 kcal
 
   Lipides :
-  88 × 0,8 = 70,4 g
+  88 × 0.8 = 70.4 g
+  70.4 × 9 = 633.6 kcal
 
-  Puis :
-
-  calories restantes =
-  calories objectif
-  - calories protéines
-  - calories lipides
-
-  glucides =
+  Glucides :
   calories restantes / 4
+
 */
 
 
@@ -518,10 +451,7 @@ function calculateMacroTargets() {
     calculateTargetCalories();
 
   const weight =
-    Number(
-      state.profile.weight
-    ) || 0;
-
+    Number(state.profile.weight) || 0;
 
   if (
     !calories ||
@@ -529,11 +459,13 @@ function calculateMacroTargets() {
   ) {
 
     return {
-
       protein: 0,
       carbs: 0,
-      fat: 0
-
+      fat: 0,
+      proteinCalories: 0,
+      carbsCalories: 0,
+      fatCalories: 0,
+      totalCalories: 0
     };
 
   }
@@ -543,73 +475,101 @@ function calculateMacroTargets() {
      PROTÉINES
   ========================= */
 
+  let proteinPerKg = 2.0;
+
+  if (
+    state.profile.goal === "maintain"
+  ) {
+
+    proteinPerKg = 1.8;
+
+  }
+
+  if (
+    state.profile.goal === "bulk"
+  ) {
+
+    proteinPerKg = 2.0;
+
+  }
+
+
   const protein =
-    weight * 2;
+    weight * proteinPerKg;
 
-
-  /* =========================
-     LIPIDES
-  ========================= */
-
-  const fat =
-    weight * 0.8;
-
-
-  /* =========================
-     CALORIES PROTÉINES
-  ========================= */
 
   const proteinCalories =
     protein * 4;
 
 
   /* =========================
-     CALORIES LIPIDES
+     LIPIDES
   ========================= */
+
+  const fatPerKg = 0.8;
+
+  const fat =
+    weight * fatPerKg;
+
 
   const fatCalories =
     fat * 9;
 
 
   /* =========================
-     CALORIES RESTANTES
+     GLUCIDES
   ========================= */
 
-  const remainingCalories =
+  let remainingCalories =
     calories -
     proteinCalories -
     fatCalories;
 
 
-  /* =========================
-     GLUCIDES
-  ========================= */
+  /*
+    Si les protéines + lipides
+    dépassent l'objectif calorique,
+    on évite d'avoir des glucides négatifs.
+  */
+
+  if (remainingCalories < 0) {
+    remainingCalories = 0;
+  }
+
 
   const carbs =
-    Math.max(
-      0,
-      remainingCalories / 4
-    );
+    remainingCalories / 4;
+
+
+  const carbsCalories =
+    carbs * 4;
 
 
   return {
 
     protein:
-      round(
-        protein,
-        1
-      ),
+      round(protein, 1),
 
     carbs:
-      round(
-        carbs,
-        1
-      ),
+      round(carbs, 1),
 
     fat:
+      round(fat, 1),
+
+    proteinCalories:
+      round(proteinCalories),
+
+    carbsCalories:
+      round(carbsCalories),
+
+    fatCalories:
+      round(fatCalories),
+
+    totalCalories:
       round(
-        fat,
-        1
+        proteinCalories +
+        carbsCalories +
+        fatCalories
       )
 
   };
@@ -619,24 +579,21 @@ function calculateMacroTargets() {
 
 function calculateProteinTarget() {
 
-  return calculateMacroTargets()
-    .protein;
+  return calculateMacroTargets().protein;
 
 }
 
 
 function calculateCarbsTarget() {
 
-  return calculateMacroTargets()
-    .carbs;
+  return calculateMacroTargets().carbs;
 
 }
 
 
 function calculateFatTarget() {
 
-  return calculateMacroTargets()
-    .fat;
+  return calculateMacroTargets().fat;
 
 }
 
@@ -648,9 +605,7 @@ function calculateFatTarget() {
 function setupNavigation() {
 
   document
-    .querySelectorAll(
-      "[data-page]"
-    )
+    .querySelectorAll("[data-page]")
     .forEach(button => {
 
       button.addEventListener(
@@ -672,9 +627,7 @@ function setupNavigation() {
       "click",
       () => {
 
-        openPage(
-          "profilePage"
-        );
+        openPage("profilePage");
 
       }
     );
@@ -705,7 +658,6 @@ function openPage(pageId) {
   const target =
     $(pageId);
 
-
   if (target) {
 
     target.classList.add(
@@ -716,26 +668,20 @@ function openPage(pageId) {
 
 
   document
-    .querySelectorAll(
-      ".nav-button"
-    )
+    .querySelectorAll(".nav-button")
     .forEach(button => {
 
       button.classList.toggle(
         "active",
-        button.dataset.page ===
-        pageId
+        button.dataset.page === pageId
       );
 
     });
 
 
   window.scrollTo({
-
     top: 0,
-
     behavior: "smooth"
-
   });
 
 }
@@ -763,51 +709,41 @@ function loadProfileInputs() {
   const p =
     state.profile;
 
-
   if ($("profileName"))
     $("profileName").value =
       p.name || "";
-
 
   if ($("profileAge"))
     $("profileAge").value =
       p.age || "";
 
-
   if ($("profileSex"))
     $("profileSex").value =
       p.sex || "male";
-
 
   if ($("profileHeight"))
     $("profileHeight").value =
       p.height || "";
 
-
   if ($("profileWeight"))
     $("profileWeight").value =
       p.weight || "";
-
 
   if ($("profileActivity"))
     $("profileActivity").value =
       p.activity || 1.5;
 
-
   if ($("profileTraining"))
     $("profileTraining").value =
       p.training || 0;
-
 
   if ($("profileGoal"))
     $("profileGoal").value =
       p.goal || "cut";
 
-
   if ($("profileAdjustment"))
     $("profileAdjustment").value =
       p.adjustment || 300;
-
 
   if ($("profileBudget"))
     $("profileBudget").value =
@@ -819,69 +755,48 @@ function loadProfileInputs() {
 function saveProfile() {
 
   state.profile.name =
-    $("profileName")
-      ?.value
-      .trim() || "";
-
+    $("profileName")?.value.trim() || "";
 
   state.profile.age =
     Number(
-      $("profileAge")
-        ?.value
+      $("profileAge")?.value
     ) || 0;
 
-
   state.profile.sex =
-    $("profileSex")
-      ?.value || "male";
-
+    $("profileSex")?.value || "male";
 
   state.profile.height =
     Number(
-      $("profileHeight")
-        ?.value
+      $("profileHeight")?.value
     ) || 0;
-
 
   state.profile.weight =
     Number(
-      $("profileWeight")
-        ?.value
+      $("profileWeight")?.value
     ) || 0;
-
 
   state.profile.activity =
     Number(
-      $("profileActivity")
-        ?.value
+      $("profileActivity")?.value
     ) || 1.2;
-
 
   state.profile.training =
     Number(
-      $("profileTraining")
-        ?.value
+      $("profileTraining")?.value
     ) || 0;
 
-
   state.profile.goal =
-    $("profileGoal")
-      ?.value || "cut";
-
+    $("profileGoal")?.value || "cut";
 
   state.profile.adjustment =
     Number(
-      $("profileAdjustment")
-        ?.value
+      $("profileAdjustment")?.value
     ) || 0;
-
 
   state.profile.budget =
     Number(
-      $("profileBudget")
-        ?.value
+      $("profileBudget")?.value
     ) || 0;
-
 
   saveState();
 
@@ -950,21 +865,15 @@ function setupFoodModal() {
 function openFoodModal() {
 
   $("foodModal")
-    ?.classList.add(
-      "open"
-    );
-
+    ?.classList.add("open");
 
   if ($("foodSearch")) {
 
-    $("foodSearch").value =
-      "";
+    $("foodSearch").value = "";
 
   }
 
-
   renderFoodResults("");
-
 
   setTimeout(() => {
 
@@ -979,29 +888,20 @@ function openFoodModal() {
 function closeFoodModal() {
 
   $("foodModal")
-    ?.classList.remove(
-      "open"
-    );
+    ?.classList.remove("open");
 
 }
 
 
-function renderFoodResults(
-  search = ""
-) {
+function renderFoodResults(search = "") {
 
   const container =
     $("foodResults");
 
-
-  if (!container) {
-    return;
-  }
-
+  if (!container) return;
 
   if (
-    typeof FOODS ===
-      "undefined" ||
+    typeof FOODS === "undefined" ||
     !Array.isArray(FOODS)
   ) {
 
@@ -1019,22 +919,18 @@ function renderFoodResults(
 
 
   const term =
-    search
-      .trim()
-      .toLowerCase();
+    search.trim().toLowerCase();
 
 
   const results =
-    FOODS.filter(
-      food =>
-        food.name
-          .toLowerCase()
-          .includes(term)
+    FOODS.filter(food =>
+      food.name
+        .toLowerCase()
+        .includes(term)
     );
 
 
-  container.innerHTML =
-    "";
+  container.innerHTML = "";
 
 
   if (!results.length) {
@@ -1055,10 +951,7 @@ function renderFoodResults(
   results.forEach(food => {
 
     const row =
-      document.createElement(
-        "div"
-      );
-
+      document.createElement("div");
 
     row.className =
       "food-result";
@@ -1069,8 +962,7 @@ function renderFoodResults(
       <div>
 
         <div class="food-name">
-          ${food.emoji}
-          ${food.name}
+          ${food.emoji} ${food.name}
         </div>
 
         <div class="food-info">
@@ -1095,14 +987,11 @@ function renderFoodResults(
       .querySelector("button")
       .addEventListener(
         "click",
-        () =>
-          askFoodGrams(food)
+        () => askFoodGrams(food)
       );
 
 
-    container.appendChild(
-      row
-    );
+    container.appendChild(row);
 
   });
 
@@ -1116,10 +1005,7 @@ function askFoodGrams(food) {
       `Quelle quantité de ${food.name} ?\n\nEntre le grammage exact.`
     );
 
-
-  if (grams === null) {
-    return;
-  }
+  if (grams === null) return;
 
 
   const numericGrams =
@@ -1224,15 +1110,9 @@ function renderJournal() {
   const container =
     $("journalList");
 
+  if (!container) return;
 
-  if (!container) {
-    return;
-  }
-
-
-  container.innerHTML =
-    "";
-
+  container.innerHTML = "";
 
   const today =
     todayKey();
@@ -1264,10 +1144,7 @@ function renderJournal() {
   items.forEach(item => {
 
     const row =
-      document.createElement(
-        "div"
-      );
-
+      document.createElement("div");
 
     row.className =
       "meal";
@@ -1292,8 +1169,7 @@ function renderJournal() {
         <div class="meal-meta">
           ${formatNumber(item.grams)} g •
           ${formatNumber(item.kcal)} kcal •
-          ${round(item.protein, 1)}
-          g protéines
+          ${round(item.protein, 1)} g protéines
         </div>
 
       </div>
@@ -1309,21 +1185,15 @@ function renderJournal() {
 
 
     row
-      .querySelector(
-        ".delete-button"
-      )
+      .querySelector(".delete-button")
       .addEventListener(
         "click",
         () =>
-          deleteJournalItem(
-            item.id
-          )
+          deleteJournalItem(item.id)
       );
 
 
-    container.appendChild(
-      row
-    );
+    container.appendChild(row);
 
   });
 
@@ -1337,7 +1207,6 @@ function deleteJournalItem(id) {
       item =>
         item.id != id
     );
-
 
   saveState();
 
@@ -1364,9 +1233,7 @@ function clearJournal() {
     );
 
 
-  if (!hasItems) {
-    return;
-  }
+  if (!hasItems) return;
 
 
   if (
@@ -1416,8 +1283,7 @@ function renderHome() {
   const remaining =
     Math.max(
       0,
-      target -
-      totals.kcal
+      target - totals.kcal
     );
 
 
@@ -1428,16 +1294,12 @@ function renderHome() {
 
   if ($("consumedCalories"))
     $("consumedCalories").textContent =
-      formatNumber(
-        totals.kcal
-      );
+      formatNumber(totals.kcal);
 
 
   if ($("remainingCalories"))
     $("remainingCalories").textContent =
-      formatNumber(
-        remaining
-      );
+      formatNumber(remaining);
 
 
   const progress =
@@ -1452,25 +1314,17 @@ function renderHome() {
 
 
   if ($("calorieProgress"))
-    $("calorieProgress")
-      .style.width =
+    $("calorieProgress").style.width =
       `${progress}%`;
 
 
   if ($("goalPill")) {
 
-    $("goalPill")
-      .textContent =
-      state.profile.goal ===
-      "cut"
-
+    $("goalPill").textContent =
+      state.profile.goal === "cut"
         ? "Déficit"
-
-        : state.profile.goal ===
-          "bulk"
-
+        : state.profile.goal === "bulk"
         ? "Surplus"
-
         : "Maintien";
 
   }
@@ -1478,23 +1332,22 @@ function renderHome() {
 
   /*
     IMPORTANT :
-
-    Affichage consommé / objectif
+    affichage ACTUEL / OBJECTIF
   */
 
   if ($("homeProtein"))
     $("homeProtein").textContent =
-      `${totals.protein} / ${macros.protein} g`;
+      `${round(totals.protein, 1)} / ${round(macros.protein, 1)} g`;
 
 
   if ($("homeCarbs"))
     $("homeCarbs").textContent =
-      `${totals.carbs} / ${macros.carbs} g`;
+      `${round(totals.carbs, 1)} / ${round(macros.carbs, 1)} g`;
 
 
   if ($("homeFat"))
     $("homeFat").textContent =
-      `${totals.fat} / ${macros.fat} g`;
+      `${round(totals.fat, 1)} / ${round(macros.fat, 1)} g`;
 
 
   renderHomeMeals();
@@ -1513,10 +1366,7 @@ function renderMacroDiagram() {
   const container =
     $("macroDiagram");
 
-
-  if (!container) {
-    return;
-  }
+  if (!container) return;
 
 
   const totals =
@@ -1568,9 +1418,7 @@ function renderMacroDiagram() {
         <div class="macro-circle-inner">
 
           <strong>
-            ${formatNumber(
-              totals.kcal
-            )}
+            ${formatNumber(totals.kcal)}
           </strong>
 
           <small>
@@ -1581,30 +1429,17 @@ function renderMacroDiagram() {
 
       </div>
 
-
       <div class="macro-bars">
 
         <div class="macro-line">
 
           <div class="macro-line-top">
-
-            <span>
-              🥩 Protéines
-            </span>
+            <span>🥩 Protéines</span>
 
             <strong>
-              ${round(
-                totals.protein,
-                1
-              )}
-              /
-              ${round(
-                targets.protein,
-                1
-              )}
-              g
+              ${round(totals.protein, 1)} /
+              ${round(targets.protein, 1)} g
             </strong>
-
           </div>
 
           <div class="macro-track">
@@ -1622,24 +1457,12 @@ function renderMacroDiagram() {
         <div class="macro-line">
 
           <div class="macro-line-top">
-
-            <span>
-              🍚 Glucides
-            </span>
+            <span>🍚 Glucides</span>
 
             <strong>
-              ${round(
-                totals.carbs,
-                1
-              )}
-              /
-              ${round(
-                targets.carbs,
-                1
-              )}
-              g
+              ${round(totals.carbs, 1)} /
+              ${round(targets.carbs, 1)} g
             </strong>
-
           </div>
 
           <div class="macro-track">
@@ -1657,24 +1480,12 @@ function renderMacroDiagram() {
         <div class="macro-line">
 
           <div class="macro-line-top">
-
-            <span>
-              🥑 Lipides
-            </span>
+            <span>🥑 Lipides</span>
 
             <strong>
-              ${round(
-                totals.fat,
-                1
-              )}
-              /
-              ${round(
-                targets.fat,
-                1
-              )}
-              g
+              ${round(totals.fat, 1)} /
+              ${round(targets.fat, 1)} g
             </strong>
-
           </div>
 
           <div class="macro-track">
@@ -1702,14 +1513,9 @@ function renderHomeMeals() {
   const container =
     $("homeMeals");
 
+  if (!container) return;
 
-  if (!container) {
-    return;
-  }
-
-
-  container.innerHTML =
-    "";
+  container.innerHTML = "";
 
 
   const today =
@@ -1744,10 +1550,7 @@ function renderHomeMeals() {
   recent.forEach(item => {
 
     const row =
-      document.createElement(
-        "div"
-      );
-
+      document.createElement("div");
 
     row.className =
       "meal";
@@ -1766,12 +1569,8 @@ function renderHomeMeals() {
         </div>
 
         <div class="meal-meta">
-          ${formatNumber(
-            item.grams
-          )} g •
-          ${formatNumber(
-            item.kcal
-          )} kcal
+          ${formatNumber(item.grams)} g •
+          ${formatNumber(item.kcal)} kcal
         </div>
 
       </div>
@@ -1779,9 +1578,7 @@ function renderHomeMeals() {
     `;
 
 
-    container.appendChild(
-      row
-    );
+    container.appendChild(row);
 
   });
 
@@ -1799,28 +1596,22 @@ function renderJournalStats() {
 
 
   if ($("journalCalories"))
-    $("journalCalories")
-      .textContent =
-      formatNumber(
-        totals.kcal
-      );
+    $("journalCalories").textContent =
+      formatNumber(totals.kcal);
 
 
   if ($("journalProtein"))
-    $("journalProtein")
-      .textContent =
+    $("journalProtein").textContent =
       `${totals.protein} g`;
 
 
   if ($("journalCarbs"))
-    $("journalCarbs")
-      .textContent =
+    $("journalCarbs").textContent =
       `${totals.carbs} g`;
 
 
   if ($("journalFat"))
-    $("journalFat")
-      .textContent =
+    $("journalFat").textContent =
       `${totals.fat} g`;
 
 }
@@ -1846,19 +1637,14 @@ function renderRecipes() {
   const container =
     $("recipeList");
 
-
-  if (!container) {
-    return;
-  }
+  if (!container) return;
 
 
-  container.innerHTML =
-    "";
+  container.innerHTML = "";
 
 
   if (
-    typeof RECIPES ===
-      "undefined" ||
+    typeof RECIPES === "undefined" ||
     !Array.isArray(RECIPES)
   ) {
 
@@ -1878,10 +1664,7 @@ function renderRecipes() {
   RECIPES.forEach(recipe => {
 
     const row =
-      document.createElement(
-        "div"
-      );
-
+      document.createElement("div");
 
     row.className =
       "meal";
@@ -1923,30 +1706,22 @@ function renderRecipes() {
       .addEventListener(
         "click",
         () =>
-          addRecipeToJournal(
-            recipe
-          )
+          addRecipeToJournal(recipe)
       );
 
 
-    container.appendChild(
-      row
-    );
+    container.appendChild(row);
 
   });
 
 }
 
 
-function addRecipeToJournal(
-  recipe
-) {
+function addRecipeToJournal(recipe) {
 
   if (
     !recipe ||
-    !Array.isArray(
-      recipe.ingredients
-    )
+    !Array.isArray(recipe.ingredients)
   ) {
 
     showToast(
@@ -1967,9 +1742,7 @@ function addRecipeToJournal(
     );
 
 
-  if (multiplier === null) {
-    return;
-  }
+  if (multiplier === null) return;
 
 
   const factor =
@@ -1993,8 +1766,7 @@ function addRecipeToJournal(
   }
 
 
-  let added =
-    false;
+  let added = false;
 
 
   recipe.ingredients.forEach(
@@ -2003,14 +1775,11 @@ function addRecipeToJournal(
       const food =
         FOODS.find(
           f =>
-            f.id ===
-            ingredient.food
+            f.id === ingredient.food
         );
 
 
-      if (!food) {
-        return;
-      }
+      if (!food) return;
 
 
       const grams =
@@ -2064,8 +1833,7 @@ function addRecipeToJournal(
       });
 
 
-      added =
-        true;
+      added = true;
 
     }
   );
@@ -2103,8 +1871,7 @@ function addRecipeToJournal(
 function suggestSmartMeal() {
 
   if (
-    typeof RECIPES ===
-      "undefined" ||
+    typeof RECIPES === "undefined" ||
     !RECIPES.length
   ) {
 
@@ -2127,8 +1894,7 @@ function suggestSmartMeal() {
   const remaining =
     Math.max(
       0,
-      target -
-      totals.kcal
+      target - totals.kcal
     );
 
 
@@ -2151,47 +1917,45 @@ function suggestSmartMeal() {
     Infinity;
 
 
-  RECIPES.forEach(
-    recipe => {
+  RECIPES.forEach(recipe => {
 
-      const calorieDifference =
-        Math.abs(
-          remaining -
-          Number(
-            recipe.kcal || 0
-          )
-        );
+    const calorieDifference =
+      Math.abs(
+        remaining -
+        Number(recipe.kcal || 0)
+      );
 
 
-      const proteinDifference =
-        Math.abs(
-          proteinRemaining -
-          Number(
-            recipe.protein || 0
-          )
-        );
+    const proteinDifference =
+      Math.abs(
+        proteinRemaining -
+        Number(recipe.protein || 0)
+      );
 
 
-      const score =
-        calorieDifference +
-        proteinDifference * 8;
+    /*
+      Les protéines ont plus de poids
+      dans le score.
+    */
+
+    const score =
+      calorieDifference +
+      proteinDifference * 8;
 
 
-      if (
-        score <
-        bestScore
-      ) {
+    if (
+      score < bestScore
+    ) {
 
-        bestScore =
-          score;
+      bestScore =
+        score;
 
-        best =
-          recipe;
-
-      }
+      best =
+        recipe;
 
     }
-  );
+
+  });
 
 
   const message =
@@ -2200,17 +1964,14 @@ function suggestSmartMeal() {
     `${best.protein} g protéines\n` +
     `${best.carbs} g glucides\n` +
     `${best.fat} g lipides\n\n` +
-    `Il te reste environ ${formatNumber(
-      remaining
-    )} kcal aujourd'hui.\n\n` +
+    `Il te reste environ ${formatNumber(remaining)} kcal aujourd'hui.\n` +
+    `Il te reste environ ${round(proteinRemaining, 1)} g de protéines.\n\n` +
     `Ajouter cette recette ?`;
 
 
   if (confirm(message)) {
 
-    addRecipeToJournal(
-      best
-    );
+    addRecipeToJournal(best);
 
   }
 
@@ -2258,11 +2019,9 @@ function setupPlanner() {
 function generatePlannerIfNeeded() {
 
   if (
-    typeof DAYS ===
-      "undefined" ||
+    typeof DAYS === "undefined" ||
     !Array.isArray(DAYS) ||
-    typeof RECIPES ===
-      "undefined" ||
+    typeof RECIPES === "undefined" ||
     !Array.isArray(RECIPES) ||
     !RECIPES.length
   ) {
@@ -2294,27 +2053,15 @@ function generatePlannerIfNeeded() {
         state.planner[index] = [
 
           {
-            meal:
-              "Déjeuner",
-
-            recipe:
-              first.name,
-
-            kcal:
-              first.kcal
-
+            meal: "Déjeuner",
+            recipe: first.name,
+            kcal: first.kcal
           },
 
           {
-            meal:
-              "Dîner",
-
-            recipe:
-              second.name,
-
-            kcal:
-              second.kcal
-
+            meal: "Dîner",
+            recipe: second.name,
+            kcal: second.kcal
           }
 
         ];
@@ -2332,41 +2079,32 @@ function renderDays() {
   const container =
     $("daysContainer");
 
-
-  if (!container) {
-    return;
-  }
+  if (!container) return;
 
 
   if (
-    typeof DAYS ===
-      "undefined" ||
+    typeof DAYS === "undefined" ||
     !Array.isArray(DAYS)
   ) {
     return;
   }
 
 
-  container.innerHTML =
-    "";
+  container.innerHTML = "";
 
 
   DAYS.forEach(
     (day, index) => {
 
       const button =
-        document.createElement(
-          "button"
-        );
-
+        document.createElement("button");
 
       button.className =
         "day-button";
 
 
       if (
-        index ===
-        selectedDay
+        index === selectedDay
       ) {
 
         button.classList.add(
@@ -2413,7 +2151,6 @@ function renderSelectedDay() {
   const container =
     $("dayMeals");
 
-
   if (
     !title ||
     !container
@@ -2423,8 +2160,7 @@ function renderSelectedDay() {
 
 
   if (
-    typeof DAYS ===
-      "undefined" ||
+    typeof DAYS === "undefined" ||
     !DAYS.length
   ) {
     return;
@@ -2435,14 +2171,12 @@ function renderSelectedDay() {
     DAYS[selectedDay];
 
 
-  container.innerHTML =
-    "";
+  container.innerHTML = "";
 
 
   const meals =
-    state.planner[
-      selectedDay
-    ] || [];
+    state.planner[selectedDay] ||
+    [];
 
 
   if (!meals.length) {
@@ -2458,46 +2192,39 @@ function renderSelectedDay() {
   }
 
 
-  meals.forEach(
-    item => {
+  meals.forEach(item => {
 
-      const row =
-        document.createElement(
-          "div"
-        );
+    const row =
+      document.createElement("div");
 
-
-      row.className =
-        "planner-meal";
+    row.className =
+      "planner-meal";
 
 
-      row.innerHTML = `
+    row.innerHTML = `
 
-        <div>
-
-          <strong>
-            ${item.meal}
-          </strong>
-
-          <small>
-            ${item.recipe}
-          </small>
-
-        </div>
+      <div>
 
         <strong>
-          ${item.kcal} kcal
+          ${item.meal}
         </strong>
 
-      `;
+        <small>
+          ${item.recipe}
+        </small>
+
+      </div>
+
+      <strong>
+        ${item.kcal} kcal
+      </strong>
+
+    `;
 
 
-      container.appendChild(
-        row
-      );
+    container.appendChild(row);
 
-    }
-  );
+  });
 
 }
 
@@ -2525,139 +2252,107 @@ function renderShopping() {
   const container =
     $("shoppingList");
 
-
-  if (!container) {
-    return;
-  }
+  if (!container) return;
 
 
   if (
-    typeof SHOPPING_ITEMS ===
-      "undefined" ||
-    !Array.isArray(
-      SHOPPING_ITEMS
-    )
+    typeof SHOPPING_ITEMS === "undefined" ||
+    !Array.isArray(SHOPPING_ITEMS)
   ) {
     return;
   }
 
 
-  container.innerHTML =
-    "";
+  container.innerHTML = "";
 
 
-  let total =
-    0;
+  let total = 0;
 
 
-  SHOPPING_ITEMS.forEach(
-    item => {
+  SHOPPING_ITEMS.forEach(item => {
 
-      total +=
-        Number(item.price) ||
-        0;
+    total +=
+      Number(item.price) || 0;
 
 
-      const checked =
-        Boolean(
-          state.shopping[
-            item.id
-          ]
-        );
-
-
-      const row =
-        document.createElement(
-          "div"
-        );
-
-
-      row.className =
-        "shopping-row";
-
-
-      row.innerHTML = `
-
-        <div class="shopping-left">
-
-          <button
-            class="check-button ${
-              checked
-                ? "checked"
-                : ""
-            }"
-            data-id="${item.id}"
-          >
-            ${
-              checked
-                ? "✓"
-                : ""
-            }
-          </button>
-
-          <span>
-
-            ${item.name}
-
-            <small>
-              (${item.quantity})
-            </small>
-
-          </span>
-
-        </div>
-
-        <strong>
-          ${Number(
-            item.price
-          ).toFixed(2)} €
-        </strong>
-
-      `;
-
-
-      row
-        .querySelector(
-          "button"
-        )
-        .addEventListener(
-          "click",
-          () => {
-
-            state.shopping[
-              item.id
-            ] =
-              !state.shopping[
-                item.id
-              ];
-
-            saveState();
-
-            renderShopping();
-
-          }
-        );
-
-
-      container.appendChild(
-        row
+    const checked =
+      Boolean(
+        state.shopping[item.id]
       );
 
-    }
-  );
+
+    const row =
+      document.createElement("div");
+
+    row.className =
+      "shopping-row";
+
+
+    row.innerHTML = `
+
+      <div class="shopping-left">
+
+        <button
+          class="check-button ${
+            checked
+              ? "checked"
+              : ""
+          }"
+          data-id="${item.id}"
+        >
+          ${checked ? "✓" : ""}
+        </button>
+
+        <span>
+
+          ${item.name}
+
+          <small>
+            (${item.quantity})
+          </small>
+
+        </span>
+
+      </div>
+
+      <strong>
+        ${Number(item.price).toFixed(2)} €
+      </strong>
+
+    `;
+
+
+    row
+      .querySelector("button")
+      .addEventListener(
+        "click",
+        () => {
+
+          state.shopping[item.id] =
+            !state.shopping[item.id];
+
+          saveState();
+
+          renderShopping();
+
+        }
+      );
+
+
+    container.appendChild(row);
+
+  });
 
 
   if ($("weeklyBudget"))
-    $("weeklyBudget")
-      .textContent =
+    $("weeklyBudget").textContent =
       Number(
         state.profile.budget
       ).toFixed(0);
 
 
   if ($("estimatedBasket"))
-    $("estimatedBasket")
-      .textContent =
+    $("estimatedBasket").textContent =
       total.toFixed(2);
 
 }
@@ -2666,8 +2361,7 @@ function renderShopping() {
 function checkAllShopping() {
 
   if (
-    typeof SHOPPING_ITEMS ===
-    "undefined"
+    typeof SHOPPING_ITEMS === "undefined"
   ) {
     return;
   }
@@ -2677,9 +2371,7 @@ function checkAllShopping() {
     SHOPPING_ITEMS.every(
       item =>
         Boolean(
-          state.shopping[
-            item.id
-          ]
+          state.shopping[item.id]
         )
     );
 
@@ -2687,9 +2379,7 @@ function checkAllShopping() {
   SHOPPING_ITEMS.forEach(
     item => {
 
-      state.shopping[
-        item.id
-      ] =
+      state.shopping[item.id] =
         !allChecked;
 
     }
@@ -2726,17 +2416,12 @@ function addWeight() {
   const input =
     $("newWeight");
 
-
-  if (!input) {
-    return;
-  }
+  if (!input) return;
 
 
   const weight =
     Number(
-      String(
-        input.value
-      )
+      String(input.value)
         .replace(",", ".")
     );
 
@@ -2770,8 +2455,7 @@ function addWeight() {
     weight;
 
 
-  input.value =
-    "";
+  input.value = "";
 
 
   saveState();
@@ -2793,14 +2477,10 @@ function renderWeightChart() {
   const container =
     $("weightChart");
 
-
-  if (!container) {
-    return;
-  }
+  if (!container) return;
 
 
-  container.innerHTML =
-    "";
+  container.innerHTML = "";
 
 
   if (!state.weights.length) {
@@ -2834,61 +2514,54 @@ function renderWeightChart() {
     Math.max(...values);
 
 
-  recent.forEach(
-    item => {
+  recent.forEach(item => {
 
-      const bar =
-        document.createElement(
-          "div"
-        );
+    const bar =
+      document.createElement("div");
 
-
-      bar.className =
-        "weight-bar";
+    bar.className =
+      "weight-bar";
 
 
-      let height =
-        25;
+    let height = 25;
 
 
-      if (
-        max !== min
-      ) {
+    if (
+      max !== min
+    ) {
 
-        height =
-          25 +
+      height =
+        25 +
+        (
           (
-            (
-              Number(item.weight) -
-              min
-            ) /
-            (
-              max -
-              min
-            )
-          ) *
-          65;
-
-      }
-
-
-      bar.style.height =
-        `${height}%`;
-
-
-      bar.innerHTML = `
-        <span>
-          ${item.weight}
-        </span>
-      `;
-
-
-      container.appendChild(
-        bar
-      );
+            Number(item.weight) -
+            min
+          ) /
+          (
+            max -
+            min
+          )
+        ) * 65;
 
     }
-  );
+
+
+    bar.style.height =
+      `${height}%`;
+
+
+    bar.innerHTML = `
+      <span>
+        ${item.weight}
+      </span>
+    `;
+
+
+    container.appendChild(
+      bar
+    );
+
+  });
 
 }
 
@@ -2912,8 +2585,7 @@ function setupPantry() {
       event => {
 
         if (
-          event.key ===
-          "Enter"
+          event.key === "Enter"
         ) {
 
           addPantryItem();
@@ -2934,19 +2606,14 @@ function addPantryItem() {
   const input =
     $("pantryInput");
 
-
-  if (!input) {
-    return;
-  }
+  if (!input) return;
 
 
   const value =
     input.value.trim();
 
 
-  if (!value) {
-    return;
-  }
+  if (!value) return;
 
 
   state.pantry.push({
@@ -2961,8 +2628,7 @@ function addPantryItem() {
   });
 
 
-  input.value =
-    "";
+  input.value = "";
 
 
   saveState();
@@ -2982,14 +2648,10 @@ function renderPantry() {
   const container =
     $("pantryList");
 
-
-  if (!container) {
-    return;
-  }
+  if (!container) return;
 
 
-  container.innerHTML =
-    "";
+  container.innerHTML = "";
 
 
   if (!state.pantry.length) {
@@ -3005,69 +2667,59 @@ function renderPantry() {
   }
 
 
-  state.pantry.forEach(
-    item => {
+  state.pantry.forEach(item => {
 
-      const row =
-        document.createElement(
-          "div"
-        );
+    const row =
+      document.createElement("div");
 
-
-      row.className =
-        "shopping-row";
+    row.className =
+      "shopping-row";
 
 
-      row.innerHTML = `
+    row.innerHTML = `
 
-        <div class="shopping-left">
+      <div class="shopping-left">
 
-          <span>
-            🥫 ${item.name}
-          </span>
+        <span>
+          🥫 ${item.name}
+        </span>
 
-        </div>
+      </div>
 
-        <button
-          class="delete-button"
-          data-id="${item.id}"
-        >
-          ✕
-        </button>
+      <button
+        class="delete-button"
+        data-id="${item.id}"
+      >
+        ✕
+      </button>
 
-      `;
-
-
-      row
-        .querySelector(
-          "button"
-        )
-        .addEventListener(
-          "click",
-          () => {
-
-            state.pantry =
-              state.pantry.filter(
-                pantryItem =>
-                  pantryItem.id !=
-                  item.id
-              );
+    `;
 
 
-            saveState();
+    row
+      .querySelector("button")
+      .addEventListener(
+        "click",
+        () => {
 
-            renderPantry();
+          state.pantry =
+            state.pantry.filter(
+              pantryItem =>
+                pantryItem.id != item.id
+            );
 
-          }
-        );
 
+          saveState();
 
-      container.appendChild(
-        row
+          renderPantry();
+
+        }
       );
 
-    }
-  );
+
+    container.appendChild(row);
+
+  });
 
 }
 
@@ -3091,8 +2743,7 @@ function setupCoach() {
       event => {
 
         if (
-          event.key ===
-          "Enter"
+          event.key === "Enter"
         ) {
 
           sendCoachMessage();
@@ -3104,9 +2755,7 @@ function setupCoach() {
 
 
   document
-    .querySelectorAll(
-      ".quick-button"
-    )
+    .querySelectorAll(".quick-button")
     .forEach(button => {
 
       button.addEventListener(
@@ -3135,19 +2784,14 @@ function sendCoachMessage() {
   const input =
     $("coachInput");
 
-
-  if (!input) {
-    return;
-  }
+  if (!input) return;
 
 
   const message =
     input.value.trim();
 
 
-  if (!message) {
-    return;
-  }
+  if (!message) return;
 
 
   addCoachMessage(
@@ -3156,23 +2800,19 @@ function sendCoachMessage() {
   );
 
 
-  input.value =
-    "";
+  input.value = "";
 
 
-  setTimeout(
-    () => {
+  setTimeout(() => {
 
-      addCoachMessage(
-        generateCoachResponse(
-          message
-        ),
-        false
-      );
+    addCoachMessage(
+      generateCoachResponse(
+        message
+      ),
+      false
+    );
 
-    },
-    350
-  );
+  }, 350);
 
 }
 
@@ -3185,23 +2825,16 @@ function addCoachMessage(
   const container =
     $("coachMessages");
 
-
-  if (!container) {
-    return;
-  }
+  if (!container) return;
 
 
   const div =
-    document.createElement(
-      "div"
-    );
+    document.createElement("div");
 
 
   div.className =
     `coach-message ${
-      user
-        ? "user"
-        : ""
+      user ? "user" : ""
     }`;
 
 
@@ -3220,9 +2853,7 @@ function addCoachMessage(
 }
 
 
-function generateCoachResponse(
-  message
-) {
+function generateCoachResponse(message) {
 
   const lower =
     message.toLowerCase();
@@ -3271,12 +2902,8 @@ function generateCoachResponse(
 
 
   if (
-    lower.includes(
-      "protéine"
-    ) ||
-    lower.includes(
-      "protein"
-    )
+    lower.includes("protéine") ||
+    lower.includes("protein")
   ) {
 
     return (
@@ -3284,19 +2911,17 @@ function generateCoachResponse(
       `${round(
         proteinRemaining,
         1
-      )} g de protéines aujourd'hui. 💪`
+      )} g de protéines aujourd'hui.\n\n` +
+      `Objectif : ${round(macros.protein, 1)} g\n` +
+      `Consommé : ${round(totals.protein, 1)} g 💪`
     );
 
   }
 
 
   if (
-    lower.includes(
-      "glucide"
-    ) ||
-    lower.includes(
-      "carb"
-    )
+    lower.includes("glucide") ||
+    lower.includes("carb")
   ) {
 
     return (
@@ -3304,19 +2929,17 @@ function generateCoachResponse(
       `${round(
         carbsRemaining,
         1
-      )} g de glucides aujourd'hui. 🍚`
+      )} g de glucides aujourd'hui.\n\n` +
+      `Objectif : ${round(macros.carbs, 1)} g\n` +
+      `Consommé : ${round(totals.carbs, 1)} g 🍚`
     );
 
   }
 
 
   if (
-    lower.includes(
-      "lipide"
-    ) ||
-    lower.includes(
-      "gras"
-    )
+    lower.includes("lipide") ||
+    lower.includes("gras")
   ) {
 
     return (
@@ -3324,19 +2947,17 @@ function generateCoachResponse(
       `${round(
         fatRemaining,
         1
-      )} g de lipides aujourd'hui. 🥑`
+      )} g de lipides aujourd'hui.\n\n` +
+      `Objectif : ${round(macros.fat, 1)} g\n` +
+      `Consommé : ${round(totals.fat, 1)} g 🥑`
     );
 
   }
 
 
   if (
-    lower.includes(
-      "calorie"
-    ) ||
-    lower.includes(
-      "kcal"
-    )
+    lower.includes("calorie") ||
+    lower.includes("kcal")
   ) {
 
     return (
@@ -3353,17 +2974,12 @@ function generateCoachResponse(
 
 
   if (
-    lower.includes(
-      "soir"
-    ) ||
-    lower.includes(
-      "manger"
-    )
+    lower.includes("soir") ||
+    lower.includes("manger")
   ) {
 
     if (
-      typeof RECIPES ===
-        "undefined" ||
+      typeof RECIPES === "undefined" ||
       !RECIPES.length
     ) {
 
@@ -3401,12 +3017,8 @@ function generateCoachResponse(
 
 
   if (
-    lower.includes(
-      "économ"
-    ) ||
-    lower.includes(
-      "budget"
-    )
+    lower.includes("économ") ||
+    lower.includes("budget")
   ) {
 
     return (
@@ -3420,16 +3032,15 @@ function generateCoachResponse(
 
   return (
     `Aujourd'hui : ` +
-    `${formatNumber(
-      totals.kcal
-    )} kcal, ` +
+    `${formatNumber(totals.kcal)} kcal, ` +
     `${totals.protein} g protéines, ` +
     `${totals.carbs} g glucides et ` +
     `${totals.fat} g lipides.\n\n` +
-    `Objectif : ` +
-    `${formatNumber(
-      target
-    )} kcal. 💪`
+    `Objectifs :\n` +
+    `🥩 ${macros.protein} g protéines\n` +
+    `🍚 ${macros.carbs} g glucides\n` +
+    `🥑 ${macros.fat} g lipides\n\n` +
+    `Calories : ${formatNumber(target)} kcal. 💪`
   );
 
 }
@@ -3461,8 +3072,7 @@ function updateStreak() {
     !state.streak.lastDate
   ) {
 
-    state.streak.count =
-      1;
+    state.streak.count = 1;
 
   } else {
 
@@ -3499,15 +3109,13 @@ function updateStreak() {
       difference === 1
     ) {
 
-      state.streak.count +=
-        1;
+      state.streak.count += 1;
 
     } else if (
       difference > 1
     ) {
 
-      state.streak.count =
-        1;
+      state.streak.count = 1;
 
     }
 
@@ -3566,13 +3174,12 @@ function setupDarkMode() {
 
 function applyDarkMode() {
 
-  document.body
-    .classList.toggle(
-      "dark",
-      Boolean(
-        state.darkMode
-      )
-    );
+  document.body.classList.toggle(
+    "dark",
+    Boolean(
+      state.darkMode
+    )
+  );
 
 }
 
@@ -3595,47 +3202,47 @@ function updateEverything() {
   const macros =
     calculateMacroTargets();
 
+  const totals =
+    calculateDailyTotals();
+
 
   if ($("currentWeight"))
-    $("currentWeight")
-      .textContent =
-      state.profile.weight ||
-      0;
+    $("currentWeight").textContent =
+      state.profile.weight || 0;
 
 
   if ($("maintenanceCalories"))
-    $("maintenanceCalories")
-      .textContent =
+    $("maintenanceCalories").textContent =
       formatNumber(tdee);
 
 
   if ($("progressCalories"))
-    $("progressCalories")
-      .textContent =
+    $("progressCalories").textContent =
       formatNumber(target);
 
 
+  /*
+    Progression :
+    ACTUEL / OBJECTIF
+  */
+
   if ($("progressProtein"))
-    $("progressProtein")
-      .textContent =
-      `${macros.protein} g`;
+    $("progressProtein").textContent =
+      `${round(totals.protein, 1)} / ${round(macros.protein, 1)} g`;
 
 
   if ($("profileBmr"))
-    $("profileBmr")
-      .textContent =
+    $("profileBmr").textContent =
       formatNumber(bmr);
 
 
   if ($("profileTdee"))
-    $("profileTdee")
-      .textContent =
+    $("profileTdee").textContent =
       formatNumber(tdee);
 
 
   if ($("profileTarget"))
-    $("profileTarget")
-      .textContent =
+    $("profileTarget").textContent =
       formatNumber(target);
 
 
@@ -3669,8 +3276,7 @@ function updateEverything() {
 function registerServiceWorker() {
 
   if (
-    "serviceWorker" in
-    navigator
+    "serviceWorker" in navigator
   ) {
 
     window.addEventListener(
@@ -3679,16 +3285,14 @@ function registerServiceWorker() {
 
         navigator.serviceWorker
           .register("sw.js")
-          .catch(
-            error => {
+          .catch(error => {
 
-              console.log(
-                "Service Worker non disponible :",
-                error
-              );
+            console.log(
+              "Service Worker non disponible :",
+              error
+            );
 
-            }
-          );
+          });
 
       }
     );
