@@ -1,6 +1,6 @@
 /* =========================================================
    BUDGETCOOK V4 — APP.JS
-   Version corrigée
+   Version corrigée — macros rigoureuses
 ========================================================= */
 
 const STORAGE_KEY = "budgetcook_v4";
@@ -396,14 +396,22 @@ function calculateTargetCalories() {
 
 /* =========================================================
    MACROS
+   CALCULS RIGOUREUX
 ========================================================= */
 
 function calculateMacroTargets() {
 
+  const weight =
+    Number(state.profile.weight) || 0;
+
   const calories =
     calculateTargetCalories();
 
-  if (!calories) {
+
+  if (
+    !weight ||
+    !calories
+  ) {
 
     return {
       protein: 0,
@@ -413,33 +421,74 @@ function calculateMacroTargets() {
 
   }
 
-  /*
-    Répartition :
 
-    Protéines : 30 %
-    Glucides  : 45 %
-    Lipides   : 25 %
-  */
+  /* -------------------------------------------------------
+     PROTÉINES
+     
+     2 g / kg de poids corporel
+
+     Exemple :
+     88 kg × 2 = 176 g
+
+     1 g protéines = 4 kcal
+  ------------------------------------------------------- */
+
+  const protein =
+    weight * 2;
+
+  const proteinCalories =
+    protein * 4;
+
+
+  /* -------------------------------------------------------
+     LIPIDES
+
+     0,8 g / kg de poids corporel
+
+     Exemple :
+     88 kg × 0,8 = 70,4 g
+
+     1 g lipides = 9 kcal
+  ------------------------------------------------------- */
+
+  const fat =
+    weight * 0.8;
+
+  const fatCalories =
+    fat * 9;
+
+
+  /* -------------------------------------------------------
+     GLUCIDES
+
+     Les glucides utilisent UNIQUEMENT
+     les calories restantes.
+
+     1 g glucides = 4 kcal
+  ------------------------------------------------------- */
+
+  const remainingCalories =
+    calories -
+    proteinCalories -
+    fatCalories;
+
+
+  const carbs =
+    remainingCalories > 0
+      ? remainingCalories / 4
+      : 0;
+
 
   return {
 
     protein:
-      round(
-        calories * 0.30 / 4,
-        1
-      ),
+      round(protein, 1),
 
     carbs:
-      round(
-        calories * 0.45 / 4,
-        1
-      ),
+      round(carbs, 1),
 
     fat:
-      round(
-        calories * 0.25 / 9,
-        1
-      )
+      round(fat, 1)
 
   };
 
@@ -447,17 +496,23 @@ function calculateMacroTargets() {
 
 
 function calculateProteinTarget() {
+
   return calculateMacroTargets().protein;
+
 }
 
 
 function calculateCarbsTarget() {
+
   return calculateMacroTargets().carbs;
+
 }
 
 
 function calculateFatTarget() {
+
   return calculateMacroTargets().fat;
+
 }
 
 
