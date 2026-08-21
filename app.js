@@ -1,47 +1,70 @@
 /* =========================================================
    BUDGETCOOK V4 — APP.JS
-   Version synchronisée avec index.html + data.js
+   Logique principale de l'application
 ========================================================= */
 
 "use strict";
 
 /* =========================================================
-   CONFIG
+   CONFIGURATION
 ========================================================= */
 
 const APP_KEY = "budgetcook_v4";
 
-const DEFAULT_APP_STATE = {
-  profile: {
-    firstName: "",
-    age: 20,
-    sex: "male",
-    height: 179,
-    weight: 88,
-    bodyFat: 0,
+const DEFAULT_PROFILE = {
+  age: 20,
+  sex: "male",
 
-    neck: 0,
-    waist: 0,
-    hips: 0,
-    chest: 0,
-    arm: 0,
-    thigh: 0,
+  height: 179,
+  weight: 88,
 
-    trainingDays: 5,
-    activity: "moderate",
+  neck: 0,
+  waist: 0,
+  hip: 0,
 
-    goal: "cut",
-    deficit: 300,
+  activity: 1.55,
+  trainingDays: 5,
 
-    targetWeight: 0,
-    targetBodyFat: 0,
+  goal: "cut",
+  deficit: 300,
+  surplus: 250,
 
-    proteinTarget: 0,
-    fatTarget: 0,
+  calorieTarget: 0,
 
-    budget: 50,
-    store: ""
-  },
+  /*
+    MACROS BUDGETCOOK V4
+
+    Les trois macros sont indépendantes.
+
+    Protéines :
+    poids × proteinPerKg
+
+    Lipides :
+    poids × fatPerKg
+
+    Glucides :
+    poids × carbsPerKg
+
+    IMPORTANT :
+    Les glucides ne sont PAS le reste calorique.
+  */
+
+  proteinPerKg: 2.0,
+  fatPerKg: 0.8,
+  carbsPerKg: 2.5,
+
+  budget: 50,
+
+  targetWeight: 0,
+  targetBodyFat: 0
+};
+
+
+const DEFAULT_STATE = {
+  profile: { ...DEFAULT_PROFILE },
+
+  selectedDate:
+    new Date().toISOString().split("T")[0],
 
   meals: {
     breakfast: [],
@@ -61,205 +84,263 @@ const DEFAULT_APP_STATE = {
   },
 
   shopping: [],
+
+  pantry: [],
+
   progress: [],
+
   favorites: [],
 
-  preferences: {
-    autoGenerate: false,
-    budgetOptimization: true,
-    highProtein: true
+  settings: {
+    darkMode: true,
+    currency: "€",
+    unitSystem: "metric"
   }
 };
 
-let state = loadState();
 
 /* =========================================================
-   HELPERS
+   ÉTAT GLOBAL
 ========================================================= */
 
-const $ = selector => document.querySelector(selector);
+let state = loadState();
 
-const $$ = selector =>
-  [...document.querySelectorAll(selector)];
 
-function clone(value) {
-  return JSON.parse(JSON.stringify(value));
+/* =========================================================
+   INITIALISATION
+========================================================= */
+
+document.addEventListener("DOMContentLoaded", () => {
+  initializeApp();
+});
+
+
+function initializeApp() {
+
+  calculateProfileTargets();
+
+  setupNavigation();
+  setupGlobalEvents();
+
+  renderProfile();
+  renderDashboard();
+  renderJournal();
+  renderRecipes();
+  renderPlanner();
+  renderShopping();
+  renderPantry();
+  renderProgress();
+  renderCoach();
+
+  applySettings();
 }
 
-function saveState() {
-  localStorage.setItem(APP_KEY, JSON.stringify(state));
-}
-
-function round(value, decimals = 1) {
-  const factor = 10 ** decimals;
-  return Math.round(Number(value || 0) * factor) / factor;
-}
-
-function number(value, fallback = 0) {
-  const n = Number(value);
-  return Number.isFinite(n) ? n : fallback;
-}
-
-function food(id) {
-  return FOODS.find(item => item.id === id);
-}
-
-function recipe(id) {
-  return RECIPES.find(item => item.id === id);
-}
-
-function euro(value) {
-  return `${round(value, 2).toFixed(2).replace(".", ",")} €`;
-}
-
-function setText(id, value) {
-  const el = $(id);
-  if (el) el.textContent = value;
-}
-
-function escapeHTML(value) {
-  return String(value ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-function toast(message) {
-  const container = $("#toastContainer");
-  if (!container) return;
-
-  const item = document.createElement("div");
-  item.className = "toast";
-  item.textContent = message;
-
-  container.appendChild(item);
-
-  setTimeout(() => {
-    item.remove();
-  }, 2600);
-}
 
 /* =========================================================
    LOCAL STORAGE
 ========================================================= */
 
 function loadState() {
+
   try {
-    const saved = localStorage.getItem(APP_KEY);
+
+    const saved =
+      localStorage.getItem(APP_KEY);
 
     if (!saved) {
-      return clone(DEFAULT_APP_STATE);
+      return structuredClone(DEFAULT_STATE);
     }
 
-    const parsed = JSON.parse(saved);
+    const parsed =
+      JSON.parse(saved);
 
-    const result = clone(DEFAULT_APP_STATE);
-
-    Object.assign(
-      result.profile,
-      parsed.profile || {}
+    return mergeDeep(
+      structuredClone(DEFAULT_STATE),
+      parsed
     );
-
-    Object.assign(
-      result.preferences,
-      parsed.preferences || {}
-    );
-
-    if (parsed.meals) {
-      result.meals = {
-        ...result.meals,
-        ...parsed.meals
-      };
-    }
-
-    if (parsed.planner) {
-      result.planner = {
-        ...result.planner,
-        ...parsed.planner
-      };
-    }
-
-    result.shopping = Array.isArray(parsed.shopping)
-      ? parsed.shopping
-      : [];
-
-    result.progress = Array.isArray(parsed.progress)
-      ? parsed.progress
-      : [];
-
-    result.favorites = Array.isArray(parsed.favorites)
-      ? parsed.favorites
-      : [];
-
-    return result;
 
   } catch (error) {
-    console.error(error);
-    return clone(DEFAULT_APP_STATE);
+
+    console.error(
+      "Erreur chargement données :",
+      error
+    );
+
+    return structuredClone(DEFAULT_STATE);
   }
 }
+
+
+function saveState() {
+
+  try {
+
+    localStorage.setItem(
+      APP_KEY,
+      JSON.stringify(state)
+    );
+
+  } catch (error) {
+
+    console.error(
+      "Erreur sauvegarde :",
+      error
+    );
+  }
+}
+
+
+function mergeDeep(target, source) {
+
+  if (
+    !source ||
+    typeof source !== "object"
+  ) {
+    return target;
+  }
+
+  Object.keys(source).forEach(key => {
+
+    if (
+      source[key] &&
+      typeof source[key] === "object" &&
+      !Array.isArray(source[key])
+    ) {
+
+      if (!target[key]) {
+        target[key] = {};
+      }
+
+      mergeDeep(
+        target[key],
+        source[key]
+      );
+
+    } else {
+
+      target[key] = source[key];
+
+    }
+
+  });
+
+  return target;
+}
+
 
 /* =========================================================
-   NAVIGATION
+   UTILITAIRES
 ========================================================= */
 
-function showPage(pageName) {
-
-  $$(".page").forEach(page => {
-    page.classList.toggle(
-      "active",
-      page.id === `page-${pageName}`
-    );
-  });
-
-  $$("[data-page]").forEach(button => {
-    button.classList.toggle(
-      "active",
-      button.dataset.page === pageName
-    );
-  });
-
-  const sidebar = $(".sidebar");
-
-  if (sidebar) {
-    sidebar.classList.remove("open");
-  }
-
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
+function $(selector) {
+  return document.querySelector(selector);
 }
 
-function setupNavigation() {
 
-  $$("[data-page]").forEach(button => {
+function $$(selector) {
+  return [
+    ...document.querySelectorAll(selector)
+  ];
+}
 
-    button.addEventListener("click", () => {
-      showPage(button.dataset.page);
-    });
 
-  });
+function getFood(foodId) {
 
-  $("#mobileMenuButton")?.addEventListener(
-    "click",
-    () => {
-      $(".sidebar")?.classList.toggle("open");
+  return FOODS.find(
+    food => food.id === foodId
+  );
+}
+
+
+function getRecipe(recipeId) {
+
+  return RECIPES.find(
+    recipe => recipe.id === recipeId
+  );
+}
+
+
+function round(
+  value,
+  decimals = 1
+) {
+
+  const factor =
+    Math.pow(10, decimals);
+
+  return (
+    Math.round(value * factor) /
+    factor
+  );
+}
+
+
+function clamp(
+  value,
+  min,
+  max
+) {
+
+  return Math.min(
+    Math.max(value, min),
+    max
+  );
+}
+
+
+function escapeHTML(value) {
+
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+
+function formatNumber(
+  value,
+  decimals = 0
+) {
+
+  return Number(
+    value || 0
+  ).toLocaleString(
+    "fr-FR",
+    {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals
     }
   );
 }
 
+
+function formatEuro(value) {
+
+  return `${formatNumber(value, 2)} €`;
+}
+
+
 /* =========================================================
-   NUTRITION
+   CALCUL NUTRITIONNEL DES ALIMENTS
 ========================================================= */
 
-function calculateFoodNutrition(foodId, grams) {
+/*
+  Toutes les valeurs de FOODS sont données
+  pour 100 g/ml.
+*/
 
-  const item = food(foodId);
+function calculateFoodNutrition(
+  foodId,
+  quantity
+) {
 
-  if (!item) {
+  const food =
+    getFood(foodId);
+
+  if (!food) {
+
     return {
       kcal: 0,
       protein: 0,
@@ -268,58 +349,74 @@ function calculateFoodNutrition(foodId, grams) {
     };
   }
 
-  const factor = number(grams) / 100;
+  const factor =
+    Number(quantity || 0) / 100;
 
   return {
-    kcal: item.kcal * factor,
-    protein: item.protein * factor,
-    carbs: item.carbs * factor,
-    fat: item.fat * factor
+
+    kcal:
+      food.kcal * factor,
+
+    protein:
+      food.protein * factor,
+
+    carbs:
+      food.carbs * factor,
+
+    fat:
+      food.fat * factor
+
   };
 }
 
-function calculateItemsNutrition(items = []) {
 
-  return items.reduce(
-    (total, item) => {
+function calculateMealNutrition(
+  items = []
+) {
 
-      const n = calculateFoodNutrition(
+  const totals = {
+    kcal: 0,
+    protein: 0,
+    carbs: 0,
+    fat: 0
+  };
+
+  items.forEach(item => {
+
+    const nutrition =
+      calculateFoodNutrition(
         item.food,
         item.grams
       );
 
-      total.kcal += n.kcal;
-      total.protein += n.protein;
-      total.carbs += n.carbs;
-      total.fat += n.fat;
+    totals.kcal +=
+      nutrition.kcal;
 
-      return total;
+    totals.protein +=
+      nutrition.protein;
 
-    },
-    {
-      kcal: 0,
-      protein: 0,
-      carbs: 0,
-      fat: 0
-    }
-  );
+    totals.carbs +=
+      nutrition.carbs;
+
+    totals.fat +=
+      nutrition.fat;
+
+  });
+
+  return totals;
 }
 
-function calculateDayNutrition() {
 
-  return calculateItemsNutrition([
-    ...state.meals.breakfast,
-    ...state.meals.lunch,
-    ...state.meals.snack,
-    ...state.meals.dinner
-  ]);
-}
+function calculateRecipeNutrition(
+  recipeId,
+  multiplier = 1
+) {
 
-function calculateRecipeNutrition(recipeId) {
+  const recipe =
+    getRecipe(recipeId);
 
-  const r = recipe(recipeId);
+  if (!recipe) {
 
-  if (!r) {
     return {
       kcal: 0,
       protein: 0,
@@ -328,39 +425,80 @@ function calculateRecipeNutrition(recipeId) {
     };
   }
 
-  return calculateItemsNutrition(
-    r.ingredients
+  const items =
+    recipe.ingredients.map(
+      ingredient => ({
+        food: ingredient.food,
+        grams:
+          ingredient.grams *
+          multiplier
+      })
+    );
+
+  return calculateMealNutrition(
+    items
   );
 }
 
+
 /* =========================================================
-   CALCULS PROFIL
+   CALCUL DES CALORIES DES MACROS
 ========================================================= */
 
-function activityMultiplier(value) {
+function calculateMacroCalories(
+  protein,
+  carbs,
+  fat
+) {
 
-  const map = {
-    sedentary: 1.2,
-    light: 1.375,
-    moderate: 1.55,
-    active: 1.725,
-    very_active: 1.9
-  };
-
-  return map[value] || 1.55;
+  return (
+    protein * 4 +
+    carbs * 4 +
+    fat * 9
+  );
 }
 
-function calculateBMR(profile = state.profile) {
 
-  const weight = number(profile.weight);
-  const height = number(profile.height);
-  const age = number(profile.age);
+function calculateMacroDifference(
+  kcal,
+  protein,
+  carbs,
+  fat
+) {
 
-  if (!weight || !height || !age) {
-    return 0;
-  }
+  const macroCalories =
+    calculateMacroCalories(
+      protein,
+      carbs,
+      fat
+    );
+
+  return (
+    kcal -
+    macroCalories
+  );
+}
+
+
+/* =========================================================
+   PROFIL / CALORIES
+========================================================= */
+
+function calculateBMR(
+  profile = state.profile
+) {
+
+  const weight =
+    Number(profile.weight) || 0;
+
+  const height =
+    Number(profile.height) || 0;
+
+  const age =
+    Number(profile.age) || 0;
 
   if (profile.sex === "female") {
+
     return (
       10 * weight +
       6.25 * height -
@@ -377,1073 +515,1800 @@ function calculateBMR(profile = state.profile) {
   );
 }
 
-function calculateTDEE(profile = state.profile) {
+
+function calculateTDEE(
+  profile = state.profile
+) {
+
+  const bmr =
+    calculateBMR(profile);
 
   return (
-    calculateBMR(profile) *
-    activityMultiplier(profile.activity)
+    bmr *
+    (
+      Number(profile.activity) ||
+      1.2
+    )
   );
 }
 
-function calculateCalorieTarget(profile = state.profile) {
 
-  const tdee = calculateTDEE(profile);
+function calculateCalorieTarget(
+  profile = state.profile
+) {
 
-  let adjustment = 0;
+  const tdee =
+    calculateTDEE(profile);
 
-  switch (profile.goal) {
+  let target =
+    tdee;
 
-    case "cut":
-      adjustment = -Math.abs(
-        number(profile.deficit, 300)
-      );
-      break;
+  if (
+    profile.goal === "cut"
+  ) {
 
-    case "recomp":
-    case "recomposition":
-      adjustment = -200;
-      break;
+    target -=
+      Number(profile.deficit) || 0;
+  }
 
-    case "bulk":
-      adjustment = 250;
-      break;
+  if (
+    profile.goal === "bulk"
+  ) {
 
-    case "maintain":
-      adjustment = 0;
-      break;
+    target +=
+      Number(profile.surplus) || 250;
+  }
+
+  if (
+    profile.goal === "maintain"
+  ) {
+
+    target =
+      tdee;
   }
 
   return Math.max(
     1200,
-    Math.round(tdee + adjustment)
+    Math.round(target)
   );
 }
 
+
+/* =========================================================
+   MACROS BUDGETCOOK V4
+========================================================= */
+
 /*
-  LOGIQUE BUDGETCOOK :
+  NOUVELLE LOGIQUE
 
-  protéines = poids × objectif protéines
-  lipides = poids × objectif lipides
-  glucides = calories restantes ÷ 4
+  Les protéines, lipides et glucides
+  sont trois objectifs indépendants.
 
-  4 kcal/g protéines
-  4 kcal/g glucides
-  9 kcal/g lipides
+  PROTÉINES :
+  poids × proteinPerKg
+
+  LIPIDES :
+  poids × fatPerKg
+
+  GLUCIDES :
+  poids × carbsPerKg
+
+  Les glucides ne sont donc PLUS
+  calculés comme les calories restantes.
 */
 
-function calculateMacros(profile = state.profile) {
+function calculateMacros(
+  profile = state.profile
+) {
 
-  const calories =
-    calculateCalorieTarget(profile);
+  const weight =
+    Number(profile.weight) || 0;
+
+
+  /* -----------------------------
+     PROTÉINES
+  ----------------------------- */
+
+  const proteinPerKg =
+    Number(
+      profile.proteinPerKg
+    ) || 2.0;
 
   const protein =
-    number(profile.proteinTarget) > 0
-      ? number(profile.proteinTarget)
-      : number(profile.weight) * 2;
+    weight *
+    proteinPerKg;
+
+
+  /* -----------------------------
+     LIPIDES
+  ----------------------------- */
+
+  const fatPerKg =
+    Number(
+      profile.fatPerKg
+    ) || 0.8;
 
   const fat =
-    number(profile.fatTarget) > 0
-      ? number(profile.fatTarget)
-      : number(profile.weight) * 0.8;
+    weight *
+    fatPerKg;
+
+
+  /* -----------------------------
+     GLUCIDES
+  ----------------------------- */
+
+  const carbsPerKg =
+    Number(
+      profile.carbsPerKg
+    ) || 2.5;
+
+  const carbs =
+    weight *
+    carbsPerKg;
+
+
+  /* -----------------------------
+     CALORIES PAR MACRO
+  ----------------------------- */
 
   const proteinCalories =
     protein * 4;
 
+  const carbCalories =
+    carbs * 4;
+
   const fatCalories =
     fat * 9;
 
-  const remainingCalories =
-    calories -
-    proteinCalories -
+
+  /* -----------------------------
+     TOTAL CALORIES DES MACROS
+  ----------------------------- */
+
+  const macroCalories =
+    proteinCalories +
+    carbCalories +
     fatCalories;
 
-  const carbs =
-    Math.max(
-      0,
-      remainingCalories / 4
+
+  /* -----------------------------
+     OBJECTIF CALORIQUE
+  ----------------------------- */
+
+  const calorieTarget =
+    calculateCalorieTarget(
+      profile
     );
+
+
+  /*
+    Différence entre l'objectif
+    calorique TDEE/déficit et les
+    calories réellement produites
+    par les macros.
+  */
+
+  const calorieDifference =
+    calorieTarget -
+    macroCalories;
+
 
   return {
-    calories,
-    protein: round(protein),
-    fat: round(fat),
-    carbs: round(carbs)
+
+    calories:
+      Math.round(
+        calorieTarget
+      ),
+
+    protein:
+      round(protein),
+
+    carbs:
+      round(carbs),
+
+    fat:
+      round(fat),
+
+    proteinCalories:
+      round(proteinCalories),
+
+    carbCalories:
+      round(carbCalories),
+
+    fatCalories:
+      round(fatCalories),
+
+    macroCalories:
+      round(macroCalories),
+
+    calorieDifference:
+      round(calorieDifference)
+
   };
 }
+
+
+function calculateProfileTargets() {
+
+  state.profile.calorieTarget =
+    calculateCalorieTarget(
+      state.profile
+    );
+
+  return calculateMacros(
+    state.profile
+  );
+}
+
 
 /* =========================================================
-   PROFILE
+   IMC
 ========================================================= */
 
-function readProfile() {
+function calculateBMI(
+  profile = state.profile
+) {
 
-  const p = state.profile;
+  const weight =
+    Number(profile.weight);
 
-  p.firstName =
-    $("#profileName")?.value ?? p.firstName;
+  const height =
+    Number(profile.height) / 100;
 
-  p.age =
-    number($("#profileAge")?.value, p.age);
-
-  p.sex =
-    $("#profileSex")?.value || p.sex;
-
-  p.height =
-    number($("#profileHeight")?.value, p.height);
-
-  p.weight =
-    number($("#profileWeight")?.value, p.weight);
-
-  p.bodyFat =
-    number($("#profileBodyFat")?.value, p.bodyFat);
-
-  p.chest =
-    number($("#profileChest")?.value, p.chest);
-
-  p.waist =
-    number($("#profileWaist")?.value, p.waist);
-
-  p.hips =
-    number($("#profileHips")?.value, p.hips);
-
-  p.arm =
-    number($("#profileArm")?.value, p.arm);
-
-  p.thigh =
-    number($("#profileThigh")?.value, p.thigh);
-
-  p.neck =
-    number($("#profileNeck")?.value, p.neck);
-
-  p.trainingDays =
-    number(
-      $("#profileTraining")?.value,
-      p.trainingDays
-    );
-
-  p.activity =
-    $("#profileActivity")?.value ||
-    p.activity;
-
-  const goal =
-    document.querySelector(
-      'input[name="profileGoal"]:checked'
-    );
-
-  if (goal) {
-    p.goal = goal.value;
+  if (
+    !weight ||
+    !height
+  ) {
+    return 0;
   }
 
-  p.targetWeight =
-    number(
-      $("#profileTargetWeight")?.value,
-      p.targetWeight
-    );
-
-  p.targetBodyFat =
-    number(
-      $("#profileTargetBodyFat")?.value,
-      p.targetBodyFat
-    );
-
-  p.deficit =
-    number(
-      $("#profileDeficit")?.value,
-      p.deficit
-    );
-
-  p.proteinTarget =
-    number(
-      $("#proteinTarget")?.value,
-      p.proteinTarget
-    );
-
-  p.fatTarget =
-    number(
-      $("#fatTarget")?.value,
-      p.fatTarget
-    );
-
-  p.budget =
-    number(
-      $("#profileBudget")?.value,
-      p.budget
-    );
-
-  p.store =
-    $("#profileStore")?.value ||
-    p.store;
-
-  return p;
+  return (
+    weight /
+    (height * height)
+  );
 }
 
-function renderProfile() {
 
-  const p = state.profile;
+function getBMICategory(
+  bmi
+) {
 
-  const values = {
-    profileName: p.firstName,
-    profileAge: p.age,
-    profileSex: p.sex,
-    profileHeight: p.height,
-    profileWeight: p.weight,
-    profileBodyFat: p.bodyFat || "",
-    profileChest: p.chest || "",
-    profileWaist: p.waist || "",
-    profileHips: p.hips || "",
-    profileArm: p.arm || "",
-    profileThigh: p.thigh || "",
-    profileNeck: p.neck || "",
-    profileTraining: p.trainingDays,
-    profileActivity: p.activity,
-    profileTargetWeight: p.targetWeight || "",
-    profileTargetBodyFat: p.targetBodyFat || "",
-    profileDeficit: p.deficit,
-    proteinTarget: p.proteinTarget || "",
-    fatTarget: p.fatTarget || "",
-    profileBudget: p.budget,
-    profileStore: p.store
-  };
+  if (bmi < 18.5)
+    return "Insuffisance pondérale";
 
-  Object.entries(values).forEach(
-    ([id, value]) => {
+  if (bmi < 25)
+    return "Corpulence normale";
 
-      const element = $(`#${id}`);
+  if (bmi < 30)
+    return "Surpoids";
 
-      if (element) {
-        element.value = value ?? "";
-      }
+  return "Obésité";
+}
 
+
+/* =========================================================
+   ESTIMATION MASSE GRASSE
+========================================================= */
+
+function calculateBodyFat(
+  profile = state.profile
+) {
+
+  const height =
+    Number(profile.height);
+
+  const neck =
+    Number(profile.neck);
+
+  const waist =
+    Number(profile.waist);
+
+  if (
+    !height ||
+    !neck ||
+    !waist
+  ) {
+    return null;
+  }
+
+  let bodyFat;
+
+
+  if (
+    profile.sex === "female"
+  ) {
+
+    const hip =
+      Number(profile.hip);
+
+    if (!hip) {
+      return null;
     }
-  );
 
-  const goal =
-    document.querySelector(
-      `input[name="profileGoal"][value="${p.goal}"]`
-    );
+    bodyFat =
+      495 /
+      (
+        1.29579 -
+        0.35004 *
+        Math.log10(
+          waist +
+          hip -
+          neck
+        ) +
+        0.22100 *
+        Math.log10(height)
+      ) -
+      450;
 
-  if (goal) {
-    goal.checked = true;
+  } else {
+
+    bodyFat =
+      495 /
+      (
+        1.0324 -
+        0.19077 *
+        Math.log10(
+          waist -
+          neck
+        ) +
+        0.15456 *
+        Math.log10(height)
+      ) -
+      450;
+
   }
 
-  renderProfileCalculations();
-}
-
-function renderProfileCalculations() {
-
-  const p = state.profile;
-
-  const macros = calculateMacros(p);
-  const bmr = calculateBMR(p);
-  const tdee = calculateTDEE(p);
-
-  setText(
-    "#profileCalculatedCalories",
-    `${macros.calories} kcal`
-  );
-
-  setText(
-    "#profileCalculatedProtein",
-    `${macros.protein} g`
-  );
-
-  setText(
-    "#profileCalculatedFat",
-    `${macros.fat} g`
-  );
-
-  setText(
-    "#profileCalculatedCarbs",
-    `${macros.carbs} g`
-  );
-
-  setText(
-    "#calculatedCarbs",
-    `${macros.carbs} g`
-  );
-
-  setText(
-    "#profileBMR",
-    `${Math.round(bmr)} kcal`
-  );
-
-  setText(
-    "#profileTDEE",
-    `${Math.round(tdee)} kcal`
-  );
-}
-
-function saveProfile() {
-
-  readProfile();
-  saveState();
-
-  renderProfile();
-  renderHome();
-  renderCoach();
-  renderProgress();
-
-  toast("Profil enregistré ✅");
-}
-
-/* =========================================================
-   HOME
-========================================================= */
-
-function setProgress(selector, value, target) {
-
-  const el = $(selector);
-
-  if (!el) return;
-
-  const percentage =
-    target > 0
-      ? Math.min(100, Math.max(0, value / target * 100))
-      : 0;
-
-  el.style.width = `${percentage}%`;
-}
-
-function renderHome() {
-
-  const macros =
-    calculateMacros(state.profile);
-
-  const totals =
-    calculateDayNutrition();
-
-  setText(
-    "#homeCaloriesConsumed",
-    Math.round(totals.kcal)
-  );
-
-  setText(
-    "#homeCaloriesTarget",
-    macros.calories
-  );
-
-  setText(
-    "#homeCaloriesRemaining",
-    `${Math.max(
-      0,
-      Math.round(macros.calories - totals.kcal)
-    )} kcal restantes`
-  );
-
-  setText(
-    "#homeProteinConsumed",
-    round(totals.protein)
-  );
-
-  setText(
-    "#homeProteinTarget",
-    macros.protein
-  );
-
-  setText(
-    "#homeCarbsConsumed",
-    round(totals.carbs)
-  );
-
-  setText(
-    "#homeCarbsTarget",
-    macros.carbs
-  );
-
-  setText(
-    "#homeFatConsumed",
-    round(totals.fat)
-  );
-
-  setText(
-    "#homeFatTarget",
-    macros.fat
-  );
-
-  setProgress(
-    "#homeCaloriesProgress",
-    totals.kcal,
-    macros.calories
-  );
-
-  setProgress(
-    "#homeProteinProgress",
-    totals.protein,
-    macros.protein
-  );
-
-  setProgress(
-    "#homeCarbsProgress",
-    totals.carbs,
-    macros.carbs
-  );
-
-  setProgress(
-    "#homeFatProgress",
-    totals.fat,
-    macros.fat
-  );
-
-  const percent =
-    macros.calories > 0
-      ? Math.round(
-          totals.kcal /
-          macros.calories *
-          100
-        )
-      : 0;
-
-  setText(
-    "#homeCaloriesPercent",
-    `${percent}%`
-  );
-
-  setText(
-    "#homeBudget",
-    `${number(state.profile.budget)} €`
-  );
-
-  setText(
-    "#homeWeight",
-    `${number(state.profile.weight)} kg`
-  );
-
-  renderTodayMeals();
-}
-
-/* =========================================================
-   TODAY MEALS
-========================================================= */
-
-function renderTodayMeals() {
-
-  const container = $("#todayMeals");
-
-  if (!container) return;
-
-  const all =
-    [
-      ["breakfast", "Petit-déjeuner", "🌅"],
-      ["lunch", "Déjeuner", "☀️"],
-      ["snack", "Collation", "🍎"],
-      ["dinner", "Dîner", "🌙"]
-    ];
-
-  const hasMeals =
-    all.some(([key]) =>
-      state.meals[key]?.length
-    );
-
-  if (!hasMeals) {
-
-    container.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-icon">🍽️</div>
-        <h3>Aucun repas ajouté</h3>
-        <p>Ajoute un repas ou génère automatiquement ta journée.</p>
-        <button
-          class="primary-button"
-          id="emptyGenerateButton"
-        >
-          ✨ Générer ma journée
-        </button>
-      </div>
-    `;
-
-    $("#emptyGenerateButton")
-      ?.addEventListener(
-        "click",
-        generateDay
-      );
-
-    return;
+  if (
+    !Number.isFinite(bodyFat)
+  ) {
+    return null;
   }
 
-  container.innerHTML =
-    all.map(([key,label,emoji]) => {
+  return clamp(
+    bodyFat,
+    2,
+    60
+  );
+}
 
-      const items =
-        state.meals[key] || [];
 
-      if (!items.length) return "";
+/* =========================================================
+   NAVIGATION
+========================================================= */
 
-      const n =
-        calculateItemsNutrition(items);
+function setupNavigation() {
 
-      return `
-        <div class="meal-section">
-          <div class="meal-section-header">
-            <div>
-              <span class="meal-emoji">${emoji}</span>
-              <div>
-                <h3>${label}</h3>
-                <span>${Math.round(n.kcal)} kcal</span>
-              </div>
-            </div>
-          </div>
+  const navButtons =
+    $$("[data-section]");
 
-          <div class="meal-items">
-            ${items.map((item,index) => {
-
-              const f = food(item.food);
-
-              if (!f) return "";
-
-              const nutrition =
-                calculateFoodNutrition(
-                  item.food,
-                  item.grams
-                );
-
-              return `
-                <div class="food-row">
-                  <div class="food-info">
-                    <span class="food-emoji">${f.emoji}</span>
-                    <div>
-                      <strong>${escapeHTML(f.name)}</strong>
-                      <small>${item.grams}${f.unit}</small>
-                    </div>
-                  </div>
-
-                  <div class="food-nutrition">
-                    ${Math.round(nutrition.kcal)} kcal
-                  </div>
-
-                  <button
-                    type="button"
-                    data-delete-meal="${key}"
-                    data-index="${index}"
-                  >
-                    ✕
-                  </button>
-                </div>
-              `;
-            }).join("")}
-          </div>
-        </div>
-      `;
-    }).join("");
-
-  $$("[data-delete-meal]")
-    .forEach(button => {
+  navButtons.forEach(
+    button => {
 
       button.addEventListener(
         "click",
         () => {
 
-          const meal =
-            button.dataset.deleteMeal;
+          const sectionName =
+            button.dataset.section;
 
-          const index =
-            number(button.dataset.index);
-
-          state.meals[meal].splice(
-            index,
-            1
+          showSection(
+            sectionName
           );
-
-          saveState();
-          renderHome();
-          renderJournal();
 
         }
       );
 
+    }
+  );
+}
+
+
+function showSection(
+  sectionName
+) {
+
+  $$("[data-page]")
+    .forEach(page => {
+
+      page.classList.remove(
+        "active"
+      );
+
+      if (
+        page.dataset.page ===
+        sectionName
+      ) {
+
+        page.classList.add(
+          "active"
+        );
+      }
+
+    });
+
+
+  $$("[data-section]")
+    .forEach(button => {
+
+      button.classList.toggle(
+        "active",
+        button.dataset.section ===
+        sectionName
+      );
+
     });
 }
+
+
+/* =========================================================
+   ÉVÉNEMENTS GLOBAUX
+========================================================= */
+
+function setupGlobalEvents() {
+
+  document.addEventListener(
+    "click",
+    handleGlobalClick
+  );
+
+  document.addEventListener(
+    "change",
+    handleGlobalChange
+  );
+}
+
+
+function handleGlobalClick(
+  event
+) {
+
+  const target =
+    event.target.closest(
+      "[data-action]"
+    );
+
+  if (!target) return;
+
+  const action =
+    target.dataset.action;
+
+  switch (action) {
+
+    case "save-profile":
+      saveProfileFromDOM();
+      break;
+
+    case "generate-day":
+      generateDay();
+      break;
+
+    case "clear-day":
+      clearCurrentDay();
+      break;
+
+    case "reset-app":
+      resetApp();
+      break;
+
+    case "toggle-dark":
+      toggleDarkMode();
+      break;
+
+    case "add-food":
+      openFoodModal();
+      break;
+
+    case "add-recipe":
+      addRecipeToCurrentMeal(
+        target.dataset.recipe,
+        target.dataset.meal ||
+        "lunch"
+      );
+      break;
+
+    case "delete-meal-item":
+      deleteMealItem(
+        target.dataset.meal,
+        Number(
+          target.dataset.index
+        )
+      );
+      break;
+
+    case "add-shopping":
+      addShoppingItemFromDOM();
+      break;
+
+    case "delete-shopping":
+      deleteShoppingItem(
+        Number(
+          target.dataset.index
+        )
+      );
+      break;
+
+    case "toggle-shopping":
+      toggleShoppingItem(
+        Number(
+          target.dataset.index
+        )
+      );
+      break;
+
+    case "add-pantry":
+      addPantryItemFromDOM();
+      break;
+
+    case "delete-pantry":
+      deletePantryItem(
+        Number(
+          target.dataset.index
+        )
+      );
+      break;
+
+    case "add-progress":
+      addProgressEntryFromDOM();
+      break;
+
+    case "favorite-recipe":
+      toggleFavorite(
+        target.dataset.recipe
+      );
+      break;
+
+  }
+}
+
+
+function handleGlobalChange(
+  event
+) {
+
+  const target =
+    event.target;
+
+  if (
+    target.matches(
+      "[data-profile]"
+    )
+  ) {
+
+    calculateProfilePreview();
+
+  }
+}
+
+
+/* =========================================================
+   PROFIL
+========================================================= */
+
+function renderProfile() {
+
+  const profile =
+    state.profile;
+
+  const mapping = {
+
+    age:
+      profile.age,
+
+    sex:
+      profile.sex,
+
+    height:
+      profile.height,
+
+    weight:
+      profile.weight,
+
+    neck:
+      profile.neck,
+
+    waist:
+      profile.waist,
+
+    hip:
+      profile.hip,
+
+    trainingDays:
+      profile.trainingDays,
+
+    activity:
+      profile.activity,
+
+    goal:
+      profile.goal,
+
+    deficit:
+      profile.deficit,
+
+    surplus:
+      profile.surplus,
+
+    proteinPerKg:
+      profile.proteinPerKg,
+
+    fatPerKg:
+      profile.fatPerKg,
+
+    carbsPerKg:
+      profile.carbsPerKg,
+
+    budget:
+      profile.budget,
+
+    targetWeight:
+      profile.targetWeight,
+
+    targetBodyFat:
+      profile.targetBodyFat
+
+  };
+
+
+  Object.entries(
+    mapping
+  ).forEach(
+    ([key, value]) => {
+
+      const input =
+        document.querySelector(
+          `[data-profile="${key}"]`
+        );
+
+      if (input) {
+
+        input.value =
+          value ?? "";
+
+      }
+
+    }
+  );
+
+
+  calculateProfilePreview();
+}
+
+
+function calculateProfilePreview() {
+
+  const profile =
+    getProfileFromDOM();
+
+  if (!profile) return;
+
+
+  const macros =
+    calculateMacros(
+      profile
+    );
+
+  const bmr =
+    calculateBMR(
+      profile
+    );
+
+  const tdee =
+    calculateTDEE(
+      profile
+    );
+
+  const bmi =
+    calculateBMI(
+      profile
+    );
+
+
+  setText(
+    "[data-profile-bmr]",
+    `${Math.round(bmr)} kcal`
+  );
+
+  setText(
+    "[data-profile-tdee]",
+    `${Math.round(tdee)} kcal`
+  );
+
+  setText(
+    "[data-profile-calories]",
+    `${macros.calories} kcal`
+  );
+
+  setText(
+    "[data-profile-protein]",
+    `${macros.protein} g`
+  );
+
+  setText(
+    "[data-profile-carbs]",
+    `${macros.carbs} g`
+  );
+
+  setText(
+    "[data-profile-fat]",
+    `${macros.fat} g`
+  );
+
+
+  setText(
+    "[data-profile-bmi]",
+    bmi
+      ? `${round(bmi, 1)} — ${getBMICategory(bmi)}`
+      : "—"
+  );
+}
+
+
+function getProfileFromDOM() {
+
+  const inputs =
+    $$("[data-profile]");
+
+  if (!inputs.length) {
+
+    return {
+      ...state.profile
+    };
+
+  }
+
+
+  const profile = {
+    ...state.profile
+  };
+
+
+  inputs.forEach(
+    input => {
+
+      const key =
+        input.dataset.profile;
+
+      let value =
+        input.value;
+
+
+      if (
+        input.type === "number" ||
+        input.type === "range"
+      ) {
+
+        value =
+          Number(value);
+
+      }
+
+
+      profile[key] =
+        value;
+
+    }
+  );
+
+
+  return profile;
+}
+
+
+function saveProfileFromDOM() {
+
+  const profile =
+    getProfileFromDOM();
+
+
+  state.profile = {
+    ...state.profile,
+    ...profile
+  };
+
+
+  calculateProfileTargets();
+
+  saveState();
+
+
+  renderProfile();
+  renderDashboard();
+  renderCoach();
+
+
+  notify(
+    "Profil enregistré ✅"
+  );
+}
+
+
+/* =========================================================
+   DASHBOARD
+========================================================= */
+
+function renderDashboard() {
+
+  const macros =
+    calculateMacros(
+      state.profile
+    );
+
+  const day =
+    getCurrentDay();
+
+  const totals =
+    calculateDayNutrition(
+      day
+    );
+
+
+  const remainingCalories =
+    Math.max(
+      0,
+      macros.calories -
+      totals.kcal
+    );
+
+  const remainingProtein =
+    Math.max(
+      0,
+      macros.protein -
+      totals.protein
+    );
+
+  const remainingCarbs =
+    Math.max(
+      0,
+      macros.carbs -
+      totals.carbs
+    );
+
+  const remainingFat =
+    Math.max(
+      0,
+      macros.fat -
+      totals.fat
+    );
+
+
+  setText(
+    "[data-total-kcal]",
+    `${Math.round(totals.kcal)} kcal`
+  );
+
+  setText(
+    "[data-target-kcal]",
+    `${macros.calories} kcal`
+  );
+
+
+  setText(
+    "[data-total-protein]",
+    `${round(totals.protein)} g`
+  );
+
+  setText(
+    "[data-target-protein]",
+    `${round(macros.protein)} g`
+  );
+
+
+  setText(
+    "[data-total-carbs]",
+    `${round(totals.carbs)} g`
+  );
+
+  setText(
+    "[data-target-carbs]",
+    `${round(macros.carbs)} g`
+  );
+
+
+  setText(
+    "[data-total-fat]",
+    `${round(totals.fat)} g`
+  );
+
+  setText(
+    "[data-target-fat]",
+    `${round(macros.fat)} g`
+  );
+
+
+  setText(
+    "[data-remaining-kcal]",
+    `${Math.round(
+      remainingCalories
+    )} kcal`
+  );
+
+  setText(
+    "[data-remaining-protein]",
+    `${round(
+      remainingProtein
+    )} g`
+  );
+
+  setText(
+    "[data-remaining-carbs]",
+    `${round(
+      remainingCarbs
+    )} g`
+  );
+
+  setText(
+    "[data-remaining-fat]",
+    `${round(
+      remainingFat
+    )} g`
+  );
+
+
+  updateProgressBar(
+    "[data-progress-kcal]",
+    totals.kcal,
+    macros.calories
+  );
+
+  updateProgressBar(
+    "[data-progress-protein]",
+    totals.protein,
+    macros.protein
+  );
+
+  updateProgressBar(
+    "[data-progress-carbs]",
+    totals.carbs,
+    macros.carbs
+  );
+
+  updateProgressBar(
+    "[data-progress-fat]",
+    totals.fat,
+    macros.fat
+  );
+}
+
 
 /* =========================================================
    JOURNAL
 ========================================================= */
 
-function renderJournal() {
+function getCurrentDay() {
 
-  const macros =
-    calculateMacros(state.profile);
+  return state.meals;
+}
 
-  const totals =
-    calculateDayNutrition();
 
-  setText(
-    "#journalCalories",
-    Math.round(totals.kcal)
-  );
+function calculateDayNutrition(
+  day
+) {
 
-  setText(
-    "#journalCaloriesTarget",
-    macros.calories
-  );
+  const allItems = [
 
-  setText(
-    "#journalProtein",
-    round(totals.protein)
-  );
+    ...(day.breakfast || []),
+    ...(day.lunch || []),
+    ...(day.snack || []),
+    ...(day.dinner || [])
 
-  setText(
-    "#journalProteinTarget",
-    macros.protein
-  );
-
-  setText(
-    "#journalCarbs",
-    round(totals.carbs)
-  );
-
-  setText(
-    "#journalCarbsTarget",
-    macros.carbs
-  );
-
-  setText(
-    "#journalFat",
-    round(totals.fat)
-  );
-
-  setText(
-    "#journalFatTarget",
-    macros.fat
-  );
-
-  const types = [
-    ["breakfast","breakfastItems","breakfastCalories"],
-    ["lunch","lunchItems","lunchCalories"],
-    ["snack","snackItems","snackCalories"],
-    ["dinner","dinnerItems","dinnerCalories"]
   ];
 
-  types.forEach(
-    ([meal,containerId,kcalId]) => {
 
-      const container =
-        $(`#${containerId}`);
-
-      if (!container) return;
-
-      const items =
-        state.meals[meal] || [];
-
-      const n =
-        calculateItemsNutrition(items);
-
-      setText(
-        `#${kcalId}`,
-        `${Math.round(n.kcal)} kcal`
-      );
-
-      container.innerHTML =
-        items.length
-          ? items.map((item,index) => {
-
-              const f = food(item.food);
-
-              return `
-                <div class="food-row">
-                  <div class="food-info">
-                    <span class="food-emoji">${f?.emoji || "🍽️"}</span>
-                    <div>
-                      <strong>${escapeHTML(f?.name || item.food)}</strong>
-                      <small>${item.grams} g</small>
-                    </div>
-                  </div>
-
-                  <div class="food-nutrition">
-                    ${Math.round(
-                      calculateFoodNutrition(
-                        item.food,
-                        item.grams
-                      ).kcal
-                    )} kcal
-                  </div>
-
-                  <button
-                    data-journal-delete="${meal}"
-                    data-index="${index}"
-                  >
-                    ✕
-                  </button>
-                </div>
-              `;
-
-            }).join("")
-          : `<div class="empty-state">Aucun aliment</div>`;
-    }
+  return calculateMealNutrition(
+    allItems
   );
-
-  $$("[data-journal-delete]")
-    .forEach(button => {
-
-      button.onclick = () => {
-
-        const meal =
-          button.dataset.journalDelete;
-
-        const index =
-          number(button.dataset.index);
-
-        state.meals[meal].splice(
-          index,
-          1
-        );
-
-        saveState();
-        renderJournal();
-        renderHome();
-
-      };
-
-    });
 }
 
-/* =========================================================
-   MODAL
-========================================================= */
 
-function openModal(content) {
+function renderJournal() {
 
-  const overlay = $("#modalOverlay");
-  const modal = $("#modalContent");
+  const container =
+    $("[data-journal-list]");
 
-  if (!overlay || !modal) return;
+  if (!container) return;
 
-  modal.innerHTML = content;
-  overlay.classList.remove("hidden");
-}
 
-function closeModal() {
-  $("#modalOverlay")
-    ?.classList.add("hidden");
-}
+  const meals = [
 
-function setupModal() {
+    [
+      "breakfast",
+      "Petit-déjeuner",
+      "🌅"
+    ],
 
-  $("#modalCloseButton")
-    ?.addEventListener(
-      "click",
-      closeModal
-    );
+    [
+      "lunch",
+      "Déjeuner",
+      "🍽️"
+    ],
 
-  $("#modalOverlay")
-    ?.addEventListener(
-      "click",
-      event => {
+    [
+      "snack",
+      "Collation",
+      "🍎"
+    ],
 
-        if (
-          event.target.id ===
-          "modalOverlay"
-        ) {
-          closeModal();
-        }
+    [
+      "dinner",
+      "Dîner",
+      "🌙"
+    ]
+
+  ];
+
+
+  container.innerHTML =
+    meals.map(
+      ([key, label, emoji]) => {
+
+        const items =
+          state.meals[key] || [];
+
+        const nutrition =
+          calculateMealNutrition(
+            items
+          );
+
+
+        return `
+
+          <div class="meal-card">
+
+            <div class="meal-header">
+
+              <div>
+                <span>${emoji}</span>
+                <strong>${label}</strong>
+              </div>
+
+              <span>
+                ${Math.round(
+                  nutrition.kcal
+                )} kcal
+              </span>
+
+            </div>
+
+            <div class="meal-macros">
+              P ${round(
+                nutrition.protein
+              )}g
+              · G ${round(
+                nutrition.carbs
+              )}g
+              · L ${round(
+                nutrition.fat
+              )}g
+            </div>
+
+            <div class="meal-items">
+
+              ${
+                items.length
+                  ? items.map(
+                      (item, index) =>
+                        renderMealItem(
+                          item,
+                          key,
+                          index
+                        )
+                    ).join("")
+                  : `
+                    <div class="empty-meal">
+                      Aucun aliment
+                    </div>
+                  `
+              }
+
+            </div>
+
+          </div>
+
+        `;
 
       }
-    );
+    ).join("");
 }
 
-function openFoodModal(defaultMeal = "lunch") {
 
-  openModal(`
-    <h2>Ajouter un aliment</h2>
+function renderMealItem(
+  item,
+  meal,
+  index
+) {
 
-    <div class="modal-form">
+  const food =
+    getFood(item.food);
+
+  if (!food) return "";
+
+
+  const nutrition =
+    calculateFoodNutrition(
+      item.food,
+      item.grams
+    );
+
+
+  return `
+
+    <div class="food-row">
+
+      <div class="food-info">
+
+        <span class="food-emoji">
+          ${food.emoji}
+        </span>
+
+        <div>
+
+          <strong>
+            ${escapeHTML(
+              food.name
+            )}
+          </strong>
+
+          <small>
+            ${item.grams}${food.unit}
+          </small>
+
+        </div>
+
+      </div>
+
+
+      <div class="food-nutrition">
+        ${Math.round(
+          nutrition.kcal
+        )} kcal
+      </div>
+
+
+      <button
+        type="button"
+        data-action="delete-meal-item"
+        data-meal="${meal}"
+        data-index="${index}"
+      >
+        ✕
+      </button>
+
+    </div>
+
+  `;
+}
+
+
+/* =========================================================
+   AJOUT ALIMENT
+========================================================= */
+
+function addFoodToMeal(
+  foodId,
+  grams,
+  meal = "lunch"
+) {
+
+  const food =
+    getFood(foodId);
+
+  if (!food) return;
+
+
+  grams =
+    Number(grams);
+
+
+  if (
+    !grams ||
+    grams <= 0
+  ) {
+
+    notify(
+      "Quantité invalide"
+    );
+
+    return;
+  }
+
+
+  if (!state.meals[meal]) {
+
+    state.meals[meal] =
+      [];
+
+  }
+
+
+  state.meals[meal].push({
+
+    food:
+      foodId,
+
+    grams:
+      grams
+
+  });
+
+
+  saveState();
+
+
+  renderJournal();
+  renderDashboard();
+
+
+  closeModal();
+}
+
+
+function deleteMealItem(
+  meal,
+  index
+) {
+
+  if (!state.meals[meal])
+    return;
+
+
+  state.meals[meal].splice(
+    index,
+    1
+  );
+
+
+  saveState();
+
+
+  renderJournal();
+  renderDashboard();
+}
+
+
+/* =========================================================
+   MODALE ALIMENT
+========================================================= */
+
+function openFoodModal() {
+
+  const existing =
+    $("#foodModal");
+
+
+  if (existing) {
+
+    existing.classList.add(
+      "active"
+    );
+
+    populateFoodModal();
+
+    return;
+  }
+
+
+  const modal =
+    document.createElement(
+      "div"
+    );
+
+
+  modal.id =
+    "foodModal";
+
+  modal.className =
+    "modal active";
+
+
+  modal.innerHTML = `
+
+    <div class="modal-content">
+
+      <button
+        class="modal-close"
+        type="button"
+        onclick="closeModal()"
+      >
+        ✕
+      </button>
+
+      <h2>
+        Ajouter un aliment
+      </h2>
+
 
       <label>
-        Repas
-        <select id="modalMeal">
-          <option value="breakfast">Petit-déjeuner</option>
-          <option value="lunch" ${defaultMeal === "lunch" ? "selected" : ""}>Déjeuner</option>
-          <option value="snack">Collation</option>
-          <option value="dinner">Dîner</option>
-        </select>
-      </label>
 
-      <label>
         Aliment
-        <select id="modalFood">
-          ${FOODS.map(f => `
-            <option value="${f.id}">
-              ${f.emoji} ${escapeHTML(f.name)}
-            </option>
-          `).join("")}
+
+        <select
+          id="modalFoodSelect"
+        >
+
+          ${FOODS.map(
+            food => `
+              <option
+                value="${food.id}"
+              >
+                ${food.emoji}
+                ${escapeHTML(
+                  food.name
+                )}
+              </option>
+            `
+          ).join("")}
+
         </select>
+
       </label>
 
+
       <label>
+
         Quantité
+
         <input
-          id="modalGrams"
+          id="modalFoodGrams"
           type="number"
           min="1"
           value="100"
-        >
+        />
+
       </label>
 
+
+      <label>
+
+        Repas
+
+        <select
+          id="modalFoodMeal"
+        >
+
+          <option value="breakfast">
+            Petit-déjeuner
+          </option>
+
+          <option value="lunch">
+            Déjeuner
+          </option>
+
+          <option value="snack">
+            Collation
+          </option>
+
+          <option value="dinner">
+            Dîner
+          </option>
+
+        </select>
+
+      </label>
+
+
       <button
-        id="modalAddFood"
-        class="primary-button"
+        type="button"
+        onclick="confirmAddFood()"
       >
         Ajouter
       </button>
 
     </div>
-  `);
 
-  $("#modalAddFood")
-    ?.addEventListener(
-      "click",
-      () => {
+  `;
 
-        const meal =
-          $("#modalMeal").value;
 
-        const foodId =
-          $("#modalFood").value;
-
-        const grams =
-          number($("#modalGrams").value);
-
-        if (!grams || grams <= 0) {
-          toast("Quantité invalide");
-          return;
-        }
-
-        state.meals[meal].push({
-          food: foodId,
-          grams
-        });
-
-        saveState();
-
-        closeModal();
-        renderJournal();
-        renderHome();
-
-        toast("Aliment ajouté ✅");
-      }
-    );
+  document.body.appendChild(
+    modal
+  );
 }
 
+
+function populateFoodModal() {
+
+  const select =
+    $("#modalFoodSelect");
+
+  if (!select) return;
+
+
+  select.innerHTML =
+    FOODS.map(
+      food => `
+        <option
+          value="${food.id}"
+        >
+          ${food.emoji}
+          ${escapeHTML(
+            food.name
+          )}
+        </option>
+      `
+    ).join("");
+}
+
+
+function confirmAddFood() {
+
+  const food =
+    $("#modalFoodSelect")
+      ?.value;
+
+  const grams =
+    Number(
+      $("#modalFoodGrams")
+        ?.value
+    );
+
+  const meal =
+    $("#modalFoodMeal")
+      ?.value ||
+    "lunch";
+
+
+  addFoodToMeal(
+    food,
+    grams,
+    meal
+  );
+}
+
+
+function closeModal() {
+
+  const modal =
+    $("#foodModal");
+
+  if (modal) {
+
+    modal.classList.remove(
+      "active"
+    );
+
+  }
+}
+
+
 /* =========================================================
-   RECIPES
+   RECETTES
 ========================================================= */
 
 function renderRecipes() {
 
-  const container = $("#recipesGrid");
+  const container =
+    $("[data-recipes-list]");
 
   if (!container) return;
 
-  const search =
-    ($("#recipeSearch")?.value || "")
-      .trim()
-      .toLowerCase();
-
-  const filter =
-    $("#recipeGoalFilter")?.value ||
-    "all";
-
-  let recipes =
-    RECIPES.filter(r =>
-      r.name.toLowerCase().includes(search)
-    );
-
-  recipes =
-    recipes.filter(r => {
-
-      if (filter === "all") return true;
-
-      const n =
-        calculateRecipeNutrition(r.id);
-
-      if (filter === "high-protein") {
-        return n.protein >= 30;
-      }
-
-      if (filter === "low-calorie") {
-        return n.kcal <= 600;
-      }
-
-      if (filter === "budget") {
-        return true;
-      }
-
-      return true;
-    });
 
   container.innerHTML =
-    recipes.map(r => {
+    RECIPES.map(
+      recipe => {
 
-      const n =
-        calculateRecipeNutrition(r.id);
+        const nutrition =
+          calculateRecipeNutrition(
+            recipe.id
+          );
 
-      const favorite =
-        state.favorites.includes(r.id);
 
-      return `
-        <article class="recipe-card">
+        const favorite =
+          state.favorites.includes(
+            recipe.id
+          );
 
-          <div class="recipe-image">
-            ${r.emoji}
-          </div>
 
-          <div class="recipe-content">
+        return `
 
-            <h3>${escapeHTML(r.name)}</h3>
+          <article
+            class="recipe-card"
+          >
 
-            <div class="recipe-macros">
+            <div
+              class="recipe-icon"
+            >
+              ${recipe.emoji}
+            </div>
 
-              <span class="recipe-macro">
-                ${Math.round(n.kcal)} kcal
-              </span>
 
-              <span class="recipe-macro">
-                P ${round(n.protein)}g
-              </span>
+            <div
+              class="recipe-content"
+            >
 
-              <span class="recipe-macro">
-                G ${round(n.carbs)}g
-              </span>
+              <h3>
+                ${escapeHTML(
+                  recipe.name
+                )}
+              </h3>
 
-              <span class="recipe-macro">
-                L ${round(n.fat)}g
-              </span>
+
+              <div
+                class="recipe-macros"
+              >
+
+                <span>
+                  ${Math.round(
+                    nutrition.kcal
+                  )} kcal
+                </span>
+
+                <span>
+                  P ${round(
+                    nutrition.protein
+                  )}g
+                </span>
+
+                <span>
+                  G ${round(
+                    nutrition.carbs
+                  )}g
+                </span>
+
+                <span>
+                  L ${round(
+                    nutrition.fat
+                  )}g
+                </span>
+
+              </div>
+
+
+              <div
+                class="recipe-actions"
+              >
+
+                <button
+                  type="button"
+                  data-action="add-recipe"
+                  data-recipe="${recipe.id}"
+                  data-meal="lunch"
+                >
+                  + Déjeuner
+                </button>
+
+
+                <button
+                  type="button"
+                  data-action="add-recipe"
+                  data-recipe="${recipe.id}"
+                  data-meal="dinner"
+                >
+                  + Dîner
+                </button>
+
+
+                <button
+                  type="button"
+                  data-action="favorite-recipe"
+                  data-recipe="${recipe.id}"
+                >
+                  ${
+                    favorite
+                      ? "❤️"
+                      : "♡"
+                  }
+                </button>
+
+              </div>
 
             </div>
 
-            <div class="recipe-actions">
+          </article>
 
-              <button
-                data-recipe-add="${r.id}"
-                data-meal="lunch"
-              >
-                + Déjeuner
-              </button>
+        `;
 
-              <button
-                data-recipe-add="${r.id}"
-                data-meal="dinner"
-              >
-                + Dîner
-              </button>
-
-              <button
-                data-favorite="${r.id}"
-              >
-                ${favorite ? "❤️" : "♡"}
-              </button>
-
-            </div>
-
-          </div>
-
-        </article>
-      `;
-    }).join("");
-
-  $$("[data-recipe-add]")
-    .forEach(button => {
-
-      button.onclick = () => {
-
-        addRecipe(
-          button.dataset.recipeAdd,
-          button.dataset.meal
-        );
-
-      };
-
-    });
-
-  $$("[data-favorite]")
-    .forEach(button => {
-
-      button.onclick = () => {
-
-        const id =
-          button.dataset.favorite;
-
-        if (state.favorites.includes(id)) {
-
-          state.favorites =
-            state.favorites.filter(
-              item => item !== id
-            );
-
-        } else {
-
-          state.favorites.push(id);
-
-        }
-
-        saveState();
-        renderRecipes();
-
-      };
-
-    });
+      }
+    ).join("");
 }
 
-function addRecipe(recipeId, meal) {
 
-  const r = recipe(recipeId);
+function addRecipeToCurrentMeal(
+  recipeId,
+  meal = "lunch"
+) {
 
-  if (!r) return;
+  const recipe =
+    getRecipe(recipeId);
 
-  state.meals[meal].push(
-    ...clone(r.ingredients)
-  );
+  if (!recipe) return;
 
-  saveState();
 
-  renderJournal();
-  renderHome();
+  if (!state.meals[meal]) {
 
-  toast(`${r.name} ajouté ✅`);
-}
+    state.meals[meal] =
+      [];
 
-/* =========================================================
-   GENERATE DAY
-========================================================= */
+  }
 
-function generateDay() {
 
-  const target =
-    calculateMacros(state.profile);
+  recipe.ingredients.forEach(
+    ingredient => {
 
-  state.meals = {
-    breakfast: [],
-    lunch: [],
-    snack: [],
-    dinner: []
-  };
+      state.meals[meal].push({
 
-  const presets = [
-    ["breakfast","oat-bowl"],
-    ["lunch","chicken-rice"],
-    ["snack","skyr-banana"],
-    ["dinner","tuna-pasta"]
-  ];
+        food:
+          ingredient.food,
 
-  presets.forEach(
-    ([meal,id]) => {
+        grams:
+          ingredient.grams
 
-      const r = recipe(id);
-
-      if (!r) return;
-
-      state.meals[meal].push(
-        ...clone(r.ingredients)
-      );
+      });
 
     }
   );
 
+
+  saveState();
+
+
+  renderJournal();
+  renderDashboard();
+
+
+  notify(
+    `${recipe.name} ajouté ✅`
+  );
+}
+
+
+function toggleFavorite(
+  recipeId
+) {
+
+  const index =
+    state.favorites.indexOf(
+      recipeId
+    );
+
+
+  if (index >= 0) {
+
+    state.favorites.splice(
+      index,
+      1
+    );
+
+  } else {
+
+    state.favorites.push(
+      recipeId
+    );
+
+  }
+
+
+  saveState();
+
+  renderRecipes();
+}
+
+
+/* =========================================================
+   GÉNÉRATION AUTOMATIQUE
+========================================================= */
+
+function generateDay() {
+
   /*
-    Ajustement simple des protéines.
-    On ajoute du poulet jusqu'à atteindre
-    approximativement l'objectif protéique.
+    La génération automatique
+    utilise maintenant les objectifs
+    indépendants de macros.
+  */
+
+  const target =
+    calculateMacros(
+      state.profile
+    );
+
+
+  clearCurrentDay(false);
+
+
+  const meals = {
+
+    breakfast: [
+
+      {
+        food: "oats",
+        grams: 60
+      },
+
+      {
+        food: "milk",
+        grams: 250
+      },
+
+      {
+        food: "greek_yogurt",
+        grams: 200
+      },
+
+      {
+        food: "banana",
+        grams: 100
+      }
+
+    ],
+
+
+    lunch: [
+
+      {
+        food: "chicken",
+        grams: 180
+      },
+
+      {
+        food: "rice",
+        grams: 250
+      },
+
+      {
+        food: "broccoli",
+        grams: 150
+      },
+
+      {
+        food: "olive_oil",
+        grams: 8
+      }
+
+    ],
+
+
+    snack: [
+
+      {
+        food: "cottage_cheese",
+        grams: 250
+      },
+
+      {
+        food: "apple",
+        grams: 150
+      }
+
+    ],
+
+
+    dinner: [
+
+      {
+        food: "tuna",
+        grams: 150
+      },
+
+      {
+        food: "pasta",
+        grams: 220
+      },
+
+      {
+        food: "tomato",
+        grams: 150
+      },
+
+      {
+        food: "olive_oil",
+        grams: 5
+      }
+
+    ]
+
+  };
+
+
+  state.meals =
+    meals;
+
+
+  /*
+    Ajustement protéines.
   */
 
   let totals =
-    calculateDayNutrition();
+    calculateDayNutrition(
+      state.meals
+    );
+
 
   if (
     totals.protein <
@@ -1454,26 +2319,93 @@ function generateDay() {
       target.protein -
       totals.protein;
 
-    const grams =
-      Math.ceil(
-        missing /
-        31 *
-        100
-      );
 
-    state.meals.dinner.push({
-      food: "chicken",
-      grams
-    });
+    /*
+      Valeur approximative de
+      protéines du poulet pour
+      l'ajustement automatique.
+    */
+
+    const chicken =
+      getFood("chicken");
+
+
+    if (chicken) {
+
+      const proteinPer100 =
+        chicken.protein;
+
+
+      if (
+        proteinPer100 > 0
+      ) {
+
+        const additionalChicken =
+          Math.ceil(
+            (
+              missing /
+              proteinPer100
+            ) * 100
+          );
+
+
+        state.meals.dinner.push({
+
+          food:
+            "chicken",
+
+          grams:
+            additionalChicken
+
+        });
+
+      }
+
+    }
+
   }
+
 
   saveState();
 
-  renderHome();
-  renderJournal();
 
-  toast("Journée générée 🍽️");
+  renderJournal();
+  renderDashboard();
+
+
+  notify(
+    "Journée générée 🍽️"
+  );
 }
+
+
+/* =========================================================
+   RESET JOURNÉE
+========================================================= */
+
+function clearCurrentDay(
+  save = true
+) {
+
+  state.meals = {
+
+    breakfast: [],
+    lunch: [],
+    snack: [],
+    dinner: []
+
+  };
+
+
+  if (save) {
+    saveState();
+  }
+
+
+  renderJournal();
+  renderDashboard();
+}
+
 
 /* =========================================================
    PLANNER
@@ -1481,475 +2413,770 @@ function generateDay() {
 
 function renderPlanner() {
 
-  const container = $("#weekPlanner");
+  const container =
+    $("[data-planner-list]");
 
   if (!container) return;
 
+
   container.innerHTML =
-    DAYS.map(day => {
+    DAYS.map(
+      day => {
 
-      const items =
-        state.planner[day] || [];
+        const items =
+          state.planner[day] ||
+          [];
 
-      const n =
-        calculateItemsNutrition(items);
 
-      return `
-        <div class="planner-day">
+        const nutrition =
+          calculateMealNutrition(
+            items
+          );
 
-          <h3>${day}</h3>
 
-          <div class="planner-kcal">
-            ${Math.round(n.kcal)} kcal
+        return `
+
+          <div
+            class="planner-day"
+          >
+
+            <div
+              class="planner-day-header"
+            >
+
+              <strong>
+                ${day}
+              </strong>
+
+              <span>
+                ${Math.round(
+                  nutrition.kcal
+                )} kcal
+              </span>
+
+            </div>
+
+
+            <div
+              class="planner-day-items"
+            >
+
+              ${
+                items.length
+                  ? items.map(
+                      item => {
+
+                        const food =
+                          getFood(
+                            item.food
+                          );
+
+
+                        return `
+
+                          <div>
+
+                            ${
+                              food?.emoji ||
+                              "🍽️"
+                            }
+
+                            ${
+                              escapeHTML(
+                                food?.name ||
+                                item.food
+                              )
+                            }
+
+                            —
+                            ${item.grams}g
+
+                          </div>
+
+                        `;
+
+                      }
+                    ).join("")
+                  : `
+                      <small>
+                        Aucun repas planifié
+                      </small>
+                    `
+              }
+
+            </div>
+
           </div>
 
-          <div>
-            ${
-              items.length
-                ? items.map(item => {
+        `;
 
-                    const f = food(item.food);
-
-                    return `
-                      <div class="planner-food">
-                        ${f?.emoji || "🍽️"}
-                        <span>
-                          ${escapeHTML(
-                            f?.name || item.food
-                          )}
-                          <br>
-                          ${item.grams} g
-                        </span>
-                      </div>
-                    `;
-
-                  }).join("")
-                : `
-                  <div class="empty-state">
-                    Aucun repas
-                  </div>
-                `
-            }
-          </div>
-
-        </div>
-      `;
-
-    }).join("");
-
-  const allItems =
-    DAYS.flatMap(
-      day => state.planner[day] || []
-    );
-
-  const total =
-    calculateItemsNutrition(allItems);
-
-  setText(
-    "#plannerAverageCalories",
-    `${Math.round(
-      total.kcal / 7
-    )} kcal`
-  );
-
-  setText(
-    "#plannerAverageProtein",
-    `${round(
-      total.protein / 7
-    )} g`
-  );
-
-  setText(
-    "#plannerBudget",
-    euro(calculateShoppingBudget())
-  );
+      }
+    ).join("");
 }
+
+
+function addDayToPlanner(
+  day,
+  meals
+) {
+
+  if (
+    !DAYS.includes(day)
+  ) {
+    return;
+  }
+
+
+  const items = [
+
+    ...(meals.breakfast || []),
+    ...(meals.lunch || []),
+    ...(meals.snack || []),
+    ...(meals.dinner || [])
+
+  ];
+
+
+  state.planner[day] =
+    structuredClone(items);
+
+
+  saveState();
+
+  renderPlanner();
+}
+
 
 /* =========================================================
-   SHOPPING
+   COURSES
 ========================================================= */
-
-function calculateShoppingBudget() {
-
-  return state.shopping.reduce(
-    (sum,item) =>
-      sum + number(item.price),
-    0
-  );
-}
 
 function renderShopping() {
 
   const container =
-    $("#shoppingList");
+    $("[data-shopping-list]");
 
   if (!container) return;
 
-  container.innerHTML =
+
+  const items =
     state.shopping.length
-      ? state.shopping.map((item,index) => `
+      ? state.shopping
+      : SHOPPING_ITEMS.map(
+          item => ({
+            ...item,
+            checked: false
+          })
+        );
 
-          <div class="shopping-item">
 
-            <input
-              type="checkbox"
-              ${item.checked ? "checked" : ""}
-              data-shopping-check="${index}"
-            >
+  container.innerHTML =
+    items.map(
+      (item, index) => `
 
-            <div class="shopping-info">
-              <strong>
-                ${escapeHTML(item.name)}
-              </strong>
+        <div
+          class="
+            shopping-item
+            ${
+              item.checked
+                ? "checked"
+                : ""
+            }
+          "
+        >
 
-              <small>
-                ${escapeHTML(item.quantity || "")}
-              </small>
-            </div>
+          <input
+            type="checkbox"
+            ${
+              item.checked
+                ? "checked"
+                : ""
+            }
+            onchange="
+              toggleShoppingItem(
+                ${index}
+              )
+            "
+          />
 
-            <span>
-              ${euro(item.price)}
-            </span>
 
-            <button
-              data-shopping-delete="${index}"
-            >
-              ✕
-            </button>
+          <div
+            class="shopping-info"
+          >
+
+            <strong>
+              ${escapeHTML(
+                item.name
+              )}
+            </strong>
+
+            <small>
+              ${escapeHTML(
+                item.quantity
+              )}
+            </small>
 
           </div>
 
-        `).join("")
-      : `
-        <div class="empty-state">
-          🛒
-          <h3>Liste vide</h3>
-          <p>Génère ta liste depuis ton planning.</p>
+
+          <span>
+            ${formatEuro(
+              item.price
+            )}
+          </span>
+
+
+          <button
+            type="button"
+            data-action="delete-shopping"
+            data-index="${index}"
+          >
+            ✕
+          </button>
+
         </div>
-      `;
 
-  setText(
-    "#shoppingBudget",
-    euro(calculateShoppingBudget())
-  );
+      `
+    ).join("");
 
-  setText(
-    "#shoppingBudgetLimit",
-    euro(state.profile.budget)
-  );
 
-  setText(
-    "#shoppingBudgetDifference",
-    euro(
-      state.profile.budget -
-      calculateShoppingBudget()
-    )
-  );
+  if (
+    !state.shopping.length
+  ) {
 
-  $$("[data-shopping-delete]")
-    .forEach(button => {
+    state.shopping =
+      items.map(
+        item => ({
+          ...item
+        })
+      );
 
-      button.onclick = () => {
+    saveState();
 
-        state.shopping.splice(
-          number(button.dataset.shoppingDelete),
-          1
-        );
+  }
 
-        saveState();
-        renderShopping();
 
-      };
-
-    });
-
-  $$("[data-shopping-check]")
-    .forEach(input => {
-
-      input.onchange = () => {
-
-        state.shopping[
-          number(input.dataset.shoppingCheck)
-        ].checked = input.checked;
-
-        saveState();
-
-      };
-
-    });
+  renderShoppingTotal();
 }
 
-function generateShopping() {
 
-  const totals = {};
+function renderShoppingTotal() {
 
-  DAYS.forEach(day => {
+  const total =
+    state.shopping.reduce(
+      (sum, item) =>
+        sum +
+        Number(
+          item.price || 0
+        ),
+      0
+    );
 
-    (state.planner[day] || [])
-      .forEach(item => {
 
-        totals[item.food] =
-          number(totals[item.food]) +
-          number(item.grams);
+  setText(
+    "[data-shopping-total]",
+    formatEuro(total)
+  );
+}
 
-      });
+
+function addShoppingItem(
+  item
+) {
+
+  state.shopping.push({
+
+    id:
+      item.id ||
+      `custom-${Date.now()}`,
+
+    name:
+      item.name,
+
+    quantity:
+      item.quantity || "1",
+
+    price:
+      Number(item.price) || 0,
+
+    checked:
+      false
 
   });
 
-  state.shopping =
-    Object.entries(totals)
-      .map(([id,grams]) => {
-
-        const f = food(id);
-
-        return {
-          id,
-          name: f?.name || id,
-          quantity: `${Math.ceil(grams)} g`,
-          price: 0,
-          checked: false
-        };
-
-      });
 
   saveState();
+
   renderShopping();
-
-  toast("Liste de courses générée 🛒");
 }
 
-/* =========================================================
-   PROGRESS
-========================================================= */
 
-function renderProgress() {
+function addShoppingItemFromDOM() {
 
-  const current =
-    state.progress.at(-1);
+  const name =
+    $("[data-shopping-name]")
+      ?.value;
 
-  const previous =
-    state.progress.at(-2);
 
-  setText(
-    "#progressCurrentWeight",
-    current
-      ? `${current.weight} kg`
-      : `${state.profile.weight} kg`
-  );
+  const quantity =
+    $("[data-shopping-quantity]")
+      ?.value;
 
-  setText(
-    "#progressWeightChange",
-    current && previous
-      ? `${round(
-          current.weight -
-          previous.weight
-        )} kg`
-      : "--"
-  );
 
-  setText(
-    "#progressBodyFat",
-    current?.bodyFat
-      ? `${current.bodyFat} %`
-      : state.profile.bodyFat
-        ? `${state.profile.bodyFat} %`
-        : "-- %"
-  );
+  const price =
+    Number(
+      $("[data-shopping-price]")
+        ?.value
+    );
 
-  setText(
-    "#progressBodyFatGoal",
-    state.profile.targetBodyFat
-      ? `${state.profile.targetBodyFat} %`
-      : "--"
-  );
 
-  setText(
-    "#progressWaist",
-    current?.waist
-      ? `${current.waist} cm`
-      : state.profile.waist
-        ? `${state.profile.waist} cm`
-        : "-- cm"
-  );
+  if (!name) {
 
-  setText(
-    "#progressWaistGoal",
-    "--"
-  );
-
-  setText(
-    "#progressGoal",
-    goalName(state.profile.goal)
-  );
-
-  renderWeightChart();
-}
-
-function goalName(goal) {
-
-  const names = {
-    cut: "Perte de graisse",
-    recomp: "Recomposition",
-    maintain: "Maintien",
-    bulk: "Prise de masse"
-  };
-
-  return names[goal] || goal;
-}
-
-function renderWeightChart() {
-
-  const container = $("#weightChart");
-
-  if (!container) return;
-
-  const entries =
-    state.progress.slice(-30);
-
-  if (!entries.length) {
-
-    container.innerHTML = `
-      <div class="empty-state">
-        Pas encore assez de mesures.
-      </div>
-    `;
+    notify(
+      "Indique un aliment"
+    );
 
     return;
   }
 
-  const weights =
-    entries.map(x => number(x.weight));
 
-  const min =
-    Math.min(...weights);
+  addShoppingItem({
 
-  const max =
-    Math.max(...weights);
+    name,
+    quantity,
+    price
 
-  const range =
-    Math.max(1, max - min);
+  });
+}
+
+
+function deleteShoppingItem(
+  index
+) {
+
+  state.shopping.splice(
+    index,
+    1
+  );
+
+
+  saveState();
+
+  renderShopping();
+}
+
+
+function toggleShoppingItem(
+  index
+) {
+
+  if (
+    !state.shopping[index]
+  ) {
+    return;
+  }
+
+
+  state.shopping[index].checked =
+    !state.shopping[index].checked;
+
+
+  saveState();
+
+  renderShopping();
+}
+
+
+/* =========================================================
+   GÉNÉRATION COURSES
+========================================================= */
+
+function generateShoppingFromPlanner() {
+
+  const totals = {};
+
+
+  DAYS.forEach(
+    day => {
+
+      const items =
+        state.planner[day] ||
+        [];
+
+
+      items.forEach(
+        item => {
+
+          if (
+            !totals[item.food]
+          ) {
+
+            totals[item.food] =
+              0;
+
+          }
+
+
+          totals[item.food] +=
+            Number(
+              item.grams
+            ) || 0;
+
+        }
+      );
+
+    }
+  );
+
+
+  const shopping = [];
+
+
+  Object.entries(
+    totals
+  ).forEach(
+    ([foodId, grams]) => {
+
+      const food =
+        getFood(foodId);
+
+      if (!food) return;
+
+
+      shopping.push({
+
+        id:
+          foodId,
+
+        name:
+          food.name,
+
+        quantity:
+          `${Math.ceil(
+            grams
+          )} g`,
+
+        price:
+          0,
+
+        checked:
+          false
+
+      });
+
+    }
+  );
+
+
+  state.shopping =
+    shopping;
+
+
+  saveState();
+
+  renderShopping();
+}
+
+
+/* =========================================================
+   PANTRY
+========================================================= */
+
+function renderPantry() {
+
+  const container =
+    $("[data-pantry-list]");
+
+  if (!container) return;
+
 
   container.innerHTML =
-    entries.map(entry => {
+    state.pantry.length
 
-      const height =
-        20 +
-        (
-          (number(entry.weight) - min) /
-          range
-        ) * 75;
+      ? state.pantry.map(
+          (item, index) => `
 
-      return `
-        <div
-          class="chart-bar"
-          style="height:${height}%"
-          title="${entry.date} — ${entry.weight} kg"
-        ></div>
-      `;
+            <div
+              class="pantry-item"
+            >
 
-    }).join("");
+              <span>
+                ${escapeHTML(
+                  item.name
+                )}
+              </span>
+
+              <span>
+                ${escapeHTML(
+                  item.quantity
+                )}
+              </span>
+
+              <button
+                type="button"
+                data-action="delete-pantry"
+                data-index="${index}"
+              >
+                ✕
+              </button>
+
+            </div>
+
+          `
+        ).join("")
+
+      : `
+
+          <div
+            class="empty-state"
+          >
+            Garde-manger vide
+          </div>
+
+        `;
 }
 
-function addProgress() {
 
-  openModal(`
-    <h2>Nouvelle mesure</h2>
+function addPantryItem(
+  item
+) {
 
-    <div class="modal-form">
+  state.pantry.push({
 
-      <label>
-        Poids
-        <input
-          id="progressWeightInput"
-          type="number"
-          step="0.1"
-          value="${state.profile.weight}"
-        >
-      </label>
+    id:
+      item.id ||
+      `pantry-${Date.now()}`,
 
-      <label>
-        Masse grasse
-        <input
-          id="progressFatInput"
-          type="number"
-          step="0.1"
-        >
-      </label>
+    name:
+      item.name,
 
-      <label>
-        Tour de taille
-        <input
-          id="progressWaistInput"
-          type="number"
-          step="0.1"
-        >
-      </label>
+    quantity:
+      item.quantity || "1",
 
-      <button
-        id="saveProgressModal"
-        class="primary-button"
-      >
-        Enregistrer
-      </button>
+    expiration:
+      item.expiration || ""
 
-    </div>
-  `);
+  });
 
-  $("#saveProgressModal")
-    ?.addEventListener(
-      "click",
-      () => {
 
-        const entry = {
-          date:
-            new Date()
-              .toISOString()
-              .split("T")[0],
+  saveState();
 
-          weight:
-            number(
-              $("#progressWeightInput").value
-            ),
+  renderPantry();
+}
 
-          bodyFat:
-            number(
-              $("#progressFatInput").value
-            ),
 
-          waist:
-            number(
-              $("#progressWaistInput").value
-            )
-        };
+function addPantryItemFromDOM() {
 
-        state.progress.push(entry);
+  const name =
+    $("[data-pantry-name]")
+      ?.value;
 
-        state.profile.weight =
-          entry.weight;
 
-        if (entry.bodyFat) {
-          state.profile.bodyFat =
-            entry.bodyFat;
-        }
+  const quantity =
+    $("[data-pantry-quantity]")
+      ?.value;
 
-        if (entry.waist) {
-          state.profile.waist =
-            entry.waist;
-        }
 
-        saveState();
+  if (!name) {
 
-        closeModal();
-
-        renderProfile();
-        renderHome();
-        renderProgress();
-        renderCoach();
-
-        toast("Mesure enregistrée 📈");
-      }
+    notify(
+      "Indique un aliment"
     );
+
+    return;
+  }
+
+
+  addPantryItem({
+
+    name,
+    quantity
+
+  });
 }
+
+
+function deletePantryItem(
+  index
+) {
+
+  state.pantry.splice(
+    index,
+    1
+  );
+
+
+  saveState();
+
+  renderPantry();
+}
+
+
+/* =========================================================
+   PROGRESSION
+========================================================= */
+
+function renderProgress() {
+
+  const container =
+    $("[data-progress-list]");
+
+  if (!container) return;
+
+
+  const entries =
+    [
+      ...state.progress
+    ].reverse();
+
+
+  container.innerHTML =
+    entries.length
+
+      ? entries.map(
+          entry => `
+
+            <div
+              class="progress-entry"
+            >
+
+              <strong>
+                ${escapeHTML(
+                  entry.date
+                )}
+              </strong>
+
+              <span>
+                ${entry.weight} kg
+              </span>
+
+              ${
+                entry.bodyFat
+                  ? `
+                      <span>
+                        ${entry.bodyFat}%
+                        MG
+                      </span>
+                    `
+                  : ""
+              }
+
+              ${
+                entry.waist
+                  ? `
+                      <span>
+                        ${entry.waist}
+                        cm tour de taille
+                      </span>
+                    `
+                  : ""
+              }
+
+            </div>
+
+          `
+        ).join("")
+
+      : `
+
+          <div
+            class="empty-state"
+          >
+            Aucune mesure enregistrée
+          </div>
+
+        `;
+}
+
+
+function addProgressEntry(
+  entry
+) {
+
+  state.progress.push({
+
+    date:
+      entry.date ||
+      new Date()
+        .toISOString()
+        .split("T")[0],
+
+    weight:
+      Number(entry.weight) ||
+      0,
+
+    bodyFat:
+      Number(entry.bodyFat) ||
+      0,
+
+    waist:
+      Number(entry.waist) ||
+      0,
+
+    neck:
+      Number(entry.neck) ||
+      0,
+
+    hip:
+      Number(entry.hip) ||
+      0
+
+  });
+
+
+  saveState();
+
+  renderProgress();
+}
+
+
+function addProgressEntryFromDOM() {
+
+  const weight =
+    Number(
+      $("[data-progress-weight]")
+        ?.value
+    );
+
+
+  const bodyFat =
+    Number(
+      $("[data-progress-bodyfat]")
+        ?.value
+    );
+
+
+  const waist =
+    Number(
+      $("[data-progress-waist]")
+        ?.value
+    );
+
+
+  if (!weight) {
+
+    notify(
+      "Indique ton poids"
+    );
+
+    return;
+  }
+
+
+  addProgressEntry({
+
+    weight,
+    bodyFat,
+    waist
+
+  });
+
+
+  notify(
+    "Mesure enregistrée 📈"
+  );
+}
+
 
 /* =========================================================
    COACH
@@ -1957,303 +3184,685 @@ function addProgress() {
 
 function renderCoach() {
 
-  const p = state.profile;
-  const m = calculateMacros(p);
-
-  const totals =
-    calculateDayNutrition();
-
-  setText(
-    "#coachCaloriesText",
-    `${m.calories} kcal/jour`
-  );
-
-  setText(
-    "#coachProteinText",
-    `${m.protein} g/jour`
-  );
-
-  setText(
-    "#coachBudgetText",
-    `${p.budget} €/semaine`
-  );
-
-  setText(
-    "#coachFoodQualityText",
-    totals.protein >= m.protein * .8
-      ? "Très bon apport protéique aujourd'hui."
-      : "Essaie d'augmenter les sources de protéines."
-  );
-
-  setText(
-    "#coachDailyAnalysis",
-    `Objectif : ${goalName(p.goal)}. ` +
-    `Ton besoin estimé est de ${m.calories} kcal/jour.`
-  );
-
-  const recommendations = [];
-
-  if (totals.protein < m.protein) {
-    recommendations.push(
-      `Il te manque environ ${round(
-        m.protein - totals.protein
-      )} g de protéines aujourd'hui.`
-    );
-  }
-
-  if (totals.kcal > m.calories) {
-    recommendations.push(
-      "Tu dépasses actuellement ton objectif calorique."
-    );
-  }
-
-  if (!recommendations.length) {
-    recommendations.push(
-      "Tes objectifs du jour sont bien suivis. Continue comme ça."
-    );
-  }
-
   const container =
-    $("#coachRecommendations");
+    $("[data-coach-content]");
 
-  if (container) {
-    container.innerHTML =
-      recommendations.map(text => `
-        <div class="recommendation">
-          ${escapeHTML(text)}
-        </div>
-      `).join("");
+  if (!container) return;
+
+
+  const profile =
+    state.profile;
+
+
+  const macros =
+    calculateMacros(
+      profile
+    );
+
+
+  const bmi =
+    calculateBMI(
+      profile
+    );
+
+
+  const bodyFat =
+    calculateBodyFat(
+      profile
+    );
+
+
+  const currentWeight =
+    Number(
+      profile.weight
+    ) || 0;
+
+
+  const targetWeight =
+    Number(
+      profile.targetWeight
+    ) || 0;
+
+
+  let advice = [];
+
+
+  if (
+    profile.goal === "cut"
+  ) {
+
+    advice.push(
+      `Objectif déficit : ${profile.deficit} kcal/jour.`
+    );
+
   }
-}
 
-/* =========================================================
-   EVENTS
-========================================================= */
 
-function setupEvents() {
+  if (
+    profile.goal === "bulk"
+  ) {
 
-  $("#saveProfileButton")
-    ?.addEventListener(
-      "click",
-      saveProfile
+    advice.push(
+      "Objectif : surplus calorique contrôlé."
     );
 
-  $("#generateDayButton")
-    ?.addEventListener(
-      "click",
-      generateDay
+  }
+
+
+  if (
+    profile.goal === "maintain"
+  ) {
+
+    advice.push(
+      "Objectif : maintien du poids."
     );
 
-  $("#emptyGenerateButton")
-    ?.addEventListener(
-      "click",
-      generateDay
+  }
+
+
+  advice.push(
+    `Protéines : ${round(
+      macros.protein
+    )} g/jour.`
+  );
+
+
+  advice.push(
+    `Lipides : ${round(
+      macros.fat
+    )} g/jour.`
+  );
+
+
+  advice.push(
+    `Glucides : ${round(
+      macros.carbs
+    )} g/jour.`
+  );
+
+
+  advice.push(
+    `Calories des macros : ${round(
+      macros.macroCalories
+    )} kcal.`
+  );
+
+
+  if (bmi) {
+
+    advice.push(
+      `IMC calculé : ${round(
+        bmi,
+        1
+      )} (${getBMICategory(
+        bmi
+      )}).`
     );
 
-  $("#quickAddButton")
-    ?.addEventListener(
-      "click",
-      () => openFoodModal("lunch")
+  }
+
+
+  if (
+    bodyFat !== null
+  ) {
+
+    advice.push(
+      `Masse grasse estimée : ${round(
+        bodyFat,
+        1
+      )} %.`
     );
 
-  $("#journalAddButton")
-    ?.addEventListener(
-      "click",
-      () => openFoodModal("lunch")
-    );
+  }
 
-  $("#addMealButton")
-    ?.addEventListener(
-      "click",
-      () => openFoodModal("lunch")
-    );
 
-  $("#addProgressButton")
-    ?.addEventListener(
-      "click",
-      addProgress
-    );
+  if (
+    targetWeight &&
+    currentWeight
+  ) {
 
-  $("#generateShoppingButton")
-    ?.addEventListener(
-      "click",
-      generateShopping
-    );
+    const difference =
+      currentWeight -
+      targetWeight;
 
-  $("#addShoppingItemButton")
-    ?.addEventListener(
-      "click",
-      () => {
 
-        openModal(`
-          <h2>Ajouter aux courses</h2>
+    if (
+      difference > 0
+    ) {
 
-          <div class="modal-form">
-
-            <label>
-              Aliment
-              <input id="customShoppingName">
-            </label>
-
-            <label>
-              Quantité
-              <input
-                id="customShoppingQuantity"
-                value="1"
-              >
-            </label>
-
-            <label>
-              Prix
-              <input
-                id="customShoppingPrice"
-                type="number"
-                step="0.01"
-                value="0"
-              >
-            </label>
-
-            <button
-              id="saveShoppingItem"
-              class="primary-button"
-            >
-              Ajouter
-            </button>
-
-          </div>
-        `);
-
-        $("#saveShoppingItem")
-          ?.addEventListener(
-            "click",
-            () => {
-
-              const name =
-                $("#customShoppingName").value.trim();
-
-              if (!name) {
-                toast("Indique un aliment");
-                return;
-              }
-
-              state.shopping.push({
-                id: `custom-${Date.now()}`,
-                name,
-                quantity:
-                  $("#customShoppingQuantity").value,
-                price:
-                  number(
-                    $("#customShoppingPrice").value
-                  ),
-                checked: false
-              });
-
-              saveState();
-              closeModal();
-              renderShopping();
-
-              toast("Ajouté aux courses ✅");
-            }
-          );
-      }
-    );
-
-  $("#recipeSearch")
-    ?.addEventListener(
-      "input",
-      renderRecipes
-    );
-
-  $("#recipeGoalFilter")
-    ?.addEventListener(
-      "change",
-      renderRecipes
-    );
-
-  [
-    "#profileAge",
-    "#profileSex",
-    "#profileHeight",
-    "#profileWeight",
-    "#profileBodyFat",
-    "#profileTraining",
-    "#profileActivity",
-    "#profileTargetWeight",
-    "#profileTargetBodyFat",
-    "#profileDeficit",
-    "#proteinTarget",
-    "#fatTarget"
-  ].forEach(selector => {
-
-    $(selector)?.addEventListener(
-      "input",
-      () => {
-
-        readProfile();
-        renderProfileCalculations();
-
-      }
-    );
-
-    $(selector)?.addEventListener(
-      "change",
-      () => {
-
-        readProfile();
-        renderProfileCalculations();
-
-      }
-    );
-
-  });
-
-  $$('input[name="profileGoal"]')
-    .forEach(input => {
-
-      input.addEventListener(
-        "change",
-        () => {
-
-          state.profile.goal =
-            input.value;
-
-          renderProfileCalculations();
-
-        }
+      advice.push(
+        `Il reste environ ${round(
+          difference,
+          1
+        )} kg jusqu'au poids cible.`
       );
 
-    });
+    }
+
+  }
+
+
+  container.innerHTML = `
+
+    <div
+      class="coach-card"
+    >
+
+      <h3>
+        Coach BudgetCook 🧠
+      </h3>
+
+      ${
+        advice.map(
+          text => `
+            <p>
+              ${escapeHTML(text)}
+            </p>
+          `
+        ).join("")
+      }
+
+    </div>
+
+  `;
 }
 
+
 /* =========================================================
-   INIT
+   PARAMÈTRES
 ========================================================= */
 
-function initializeApp() {
+function applySettings() {
 
-  setupNavigation();
-  setupModal();
-  setupEvents();
-
-  renderProfile();
-  renderHome();
-  renderJournal();
-  renderRecipes();
-  renderPlanner();
-  renderShopping();
-  renderProgress();
-  renderCoach();
-
-  showPage("home");
+  document.body.classList.toggle(
+    "dark-mode",
+    state.settings.darkMode
+  );
 }
 
-document.addEventListener(
-  "DOMContentLoaded",
-  initializeApp
-);
+
+function toggleDarkMode() {
+
+  state.settings.darkMode =
+    !state.settings.darkMode;
+
+
+  saveState();
+
+  applySettings();
+}
+
+
+function resetApp() {
+
+  const confirmed =
+    confirm(
+      "Supprimer toutes les données BudgetCook ?"
+    );
+
+
+  if (!confirmed) return;
+
+
+  state =
+    structuredClone(
+      DEFAULT_STATE
+    );
+
+
+  saveState();
+
+  location.reload();
+}
+
 
 /* =========================================================
-   PUBLIC API
+   UI HELPERS
+========================================================= */
+
+function setText(
+  selector,
+  value
+) {
+
+  const element =
+    $(selector);
+
+
+  if (element) {
+
+    element.textContent =
+      value;
+
+  }
+}
+
+
+function updateProgressBar(
+  selector,
+  current,
+  target
+) {
+
+  const element =
+    $(selector);
+
+  if (!element) return;
+
+
+  const percentage =
+    target > 0
+
+      ? clamp(
+          (
+            current /
+            target
+          ) * 100,
+          0,
+          100
+        )
+
+      : 0;
+
+
+  element.style.width =
+    `${percentage}%`;
+}
+
+
+function notify(
+  message
+) {
+
+  let notification =
+    $("#budgetcookNotification");
+
+
+  if (!notification) {
+
+    notification =
+      document.createElement(
+        "div"
+      );
+
+
+    notification.id =
+      "budgetcookNotification";
+
+
+    notification.className =
+      "budgetcook-notification";
+
+
+    document.body.appendChild(
+      notification
+    );
+
+  }
+
+
+  notification.textContent =
+    message;
+
+
+  notification.classList.add(
+    "show"
+  );
+
+
+  clearTimeout(
+    notification._timer
+  );
+
+
+  notification._timer =
+    setTimeout(
+      () => {
+
+        notification.classList.remove(
+          "show"
+        );
+
+      },
+      2500
+    );
+}
+
+
+/* =========================================================
+   OUTILS NUTRITIONNELS
+========================================================= */
+
+function getFoodPer100g(
+  foodId
+) {
+
+  const food =
+    getFood(foodId);
+
+  if (!food) return null;
+
+
+  return {
+
+    kcal:
+      food.kcal,
+
+    protein:
+      food.protein,
+
+    carbs:
+      food.carbs,
+
+    fat:
+      food.fat
+
+  };
+}
+
+
+function getDailyMacroPercentages() {
+
+  const macros =
+    calculateMacros(
+      state.profile
+    );
+
+
+  const proteinCalories =
+    macros.protein * 4;
+
+  const carbsCalories =
+    macros.carbs * 4;
+
+  const fatCalories =
+    macros.fat * 9;
+
+
+  const totalCalories =
+    proteinCalories +
+    carbsCalories +
+    fatCalories;
+
+
+  if (!totalCalories) {
+
+    return {
+
+      protein: 0,
+      carbs: 0,
+      fat: 0
+
+    };
+
+  }
+
+
+  return {
+
+    protein:
+      round(
+        proteinCalories /
+        totalCalories *
+        100
+      ),
+
+    carbs:
+      round(
+        carbsCalories /
+        totalCalories *
+        100
+      ),
+
+    fat:
+      round(
+        fatCalories /
+        totalCalories *
+        100
+      )
+
+  };
+}
+
+
+/* =========================================================
+   ANALYSE REPAS
+========================================================= */
+
+function analyzeMeal(
+  items
+) {
+
+  const nutrition =
+    calculateMealNutrition(
+      items
+    );
+
+
+  const caloriesFromMacros =
+    calculateMacroCalories(
+      nutrition.protein,
+      nutrition.carbs,
+      nutrition.fat
+    );
+
+
+  return {
+
+    ...nutrition,
+
+    caloriesFromMacros:
+      round(
+        caloriesFromMacros
+      ),
+
+    calorieDifference:
+      round(
+        nutrition.kcal -
+        caloriesFromMacros
+      )
+
+  };
+}
+
+
+/* =========================================================
+   RECHERCHE
+========================================================= */
+
+function searchFoods(
+  query
+) {
+
+  const q =
+    String(query || "")
+      .trim()
+      .toLowerCase();
+
+
+  if (!q) {
+    return FOODS;
+  }
+
+
+  return FOODS.filter(
+    food =>
+      food.name
+        .toLowerCase()
+        .includes(q)
+  );
+}
+
+
+function searchRecipes(
+  query
+) {
+
+  const q =
+    String(query || "")
+      .trim()
+      .toLowerCase();
+
+
+  if (!q) {
+    return RECIPES;
+  }
+
+
+  return RECIPES.filter(
+    recipe =>
+      recipe.name
+        .toLowerCase()
+        .includes(q)
+  );
+}
+
+
+/* =========================================================
+   BUDGET
+========================================================= */
+
+function calculateShoppingBudget() {
+
+  return state.shopping.reduce(
+    (total, item) =>
+      total +
+      Number(
+        item.price || 0
+      ),
+    0
+  );
+}
+
+
+function getRemainingBudget() {
+
+  const budget =
+    Number(
+      state.profile.budget
+    ) || 0;
+
+
+  return Math.max(
+    0,
+    budget -
+    calculateShoppingBudget()
+  );
+}
+
+
+/* =========================================================
+   EXPORT / IMPORT
+========================================================= */
+
+function exportData() {
+
+  const data =
+    JSON.stringify(
+      state,
+      null,
+      2
+    );
+
+
+  const blob =
+    new Blob(
+      [data],
+      {
+        type:
+          "application/json"
+      }
+    );
+
+
+  const url =
+    URL.createObjectURL(
+      blob
+    );
+
+
+  const link =
+    document.createElement(
+      "a"
+    );
+
+
+  link.href =
+    url;
+
+
+  link.download =
+    "budgetcook-backup.json";
+
+
+  link.click();
+
+
+  URL.revokeObjectURL(
+    url
+  );
+}
+
+
+function importData(
+  file
+) {
+
+  if (!file) return;
+
+
+  const reader =
+    new FileReader();
+
+
+  reader.onload =
+    event => {
+
+      try {
+
+        const imported =
+          JSON.parse(
+            event.target.result
+          );
+
+
+        state =
+          mergeDeep(
+            structuredClone(
+              DEFAULT_STATE
+            ),
+            imported
+          );
+
+
+        saveState();
+
+        location.reload();
+
+      } catch (error) {
+
+        console.error(
+          error
+        );
+
+
+        notify(
+          "Fichier invalide ❌"
+        );
+
+      }
+
+    };
+
+
+  reader.readAsText(
+    file
+  );
+}
+
+
+/* =========================================================
+   EXPOSITION GLOBALE
 ========================================================= */
 
 window.BudgetCook = {
@@ -2261,30 +3870,122 @@ window.BudgetCook = {
   state,
 
   FOODS,
+
   RECIPES,
+
+  SHOPPING_ITEMS,
+
   DAYS,
 
+
   calculateFoodNutrition,
-  calculateItemsNutrition,
-  calculateDayNutrition,
+
+  calculateMealNutrition,
+
   calculateRecipeNutrition,
 
+
   calculateBMR,
+
   calculateTDEE,
+
   calculateCalorieTarget,
+
   calculateMacros,
 
+
+  calculateBMI,
+
+  calculateBodyFat,
+
+
+  calculateDayNutrition,
+
+
+  addFoodToMeal,
+
+  addRecipeToCurrentMeal,
+
+
   generateDay,
-  generateShopping,
 
-  saveProfile,
 
-  saveState,
-  renderHome,
-  renderJournal,
-  renderRecipes,
-  renderPlanner,
-  renderShopping,
-  renderProgress,
-  renderCoach
+  generateShoppingFromPlanner,
+
+
+  addShoppingItem,
+
+  addPantryItem,
+
+  addProgressEntry,
+
+
+  searchFoods,
+
+  searchRecipes,
+
+
+  exportData,
+
+  importData,
+
+
+  saveState
+
 };
+
+
+/* =========================================================
+   COMPATIBILITÉ HTML
+========================================================= */
+
+window.saveProfileFromDOM =
+  saveProfileFromDOM;
+
+window.generateDay =
+  generateDay;
+
+window.clearCurrentDay =
+  clearCurrentDay;
+
+window.addFoodToMeal =
+  addFoodToMeal;
+
+window.confirmAddFood =
+  confirmAddFood;
+
+window.closeModal =
+  closeModal;
+
+window.toggleShoppingItem =
+  toggleShoppingItem;
+
+window.deleteShoppingItem =
+  deleteShoppingItem;
+
+window.addShoppingItemFromDOM =
+  addShoppingItemFromDOM;
+
+window.addPantryItemFromDOM =
+  addPantryItemFromDOM;
+
+window.deletePantryItem =
+  deletePantryItem;
+
+window.addProgressEntryFromDOM =
+  addProgressEntryFromDOM;
+
+window.toggleFavorite =
+  toggleFavorite;
+
+window.toggleDarkMode =
+  toggleDarkMode;
+
+window.resetApp =
+  resetApp;
+
+window.exportData =
+  exportData;
+
+window.importData =
+  importData;
