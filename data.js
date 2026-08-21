@@ -1,43 +1,60 @@
 /* =========================================================
    BUDGETCOOK V4 — DATA.JS
-   DATA CENTRAL COMPLÈTE
-   ---------------------------------------------------------
-   Profil • Mensurations • Objectifs • Calories • Macros
-   Aliments • Recettes • Courses • Budget • Jours
-   Garde-manger • Progression • Coach • Streaks
-   Paramètres • Historique • Magasins
-========================================================= */
+   VERSION COMPLÈTE
+   =========================================================
+   Aliments
+   Nutrition
+   Recettes
+   Repas
+   Planning
+   Courses
+   Budget
+   Garde-manger
+   Profil
+   Mensurations
+   Objectifs
+   Progression
+   Coach
+   Streaks
+   Préférences
+   Magasins
+   Premium
+   ========================================================= */
 
 
 /* =========================================================
-   VERSION / CONFIG
+   APP CONFIG
 ========================================================= */
 
-const APP_DATA = {
-  version: "4.0.0",
-  appName: "BudgetCook V4",
-  currency: "EUR",
-  language: "fr-FR",
+const APP_CONFIG = {
+
+  name: "BudgetCook",
+  version: "V4",
+
+  currency: "€",
+
+  defaultLanguage: "fr",
+
+  defaultCountry: "Portugal",
 
   nutrition: {
     proteinCaloriesPerGram: 4,
     carbsCaloriesPerGram: 4,
-    fatCaloriesPerGram: 9,
-
-    defaultProteinPerKg: 2.0,
-    defaultFatPerKg: 0.8,
-
-    minProteinPerKg: 1.6,
-    maxProteinPerKg: 2.4,
-
-    minFatPerKg: 0.6,
-    maxFatPerKg: 1.2
+    fatCaloriesPerGram: 9
   },
 
   planning: {
     daysPerWeek: 7,
     mealsPerDay: 4
-  }
+  },
+
+  goals: [
+    "cut",
+    "maintain",
+    "bulk",
+    "recomposition"
+  ]
+
 };
 
 
@@ -45,251 +62,219 @@ const APP_DATA = {
    PROFIL UTILISATEUR
 ========================================================= */
 
-const USER_PROFILE = {
+const DEFAULT_PROFILE = {
 
-  firstName: "",
-  age: 20,
-  sex: "male",
+  personal: {
 
-  heightCm: 179,
-  weightKg: 88,
+    firstName: "",
 
-  /* Activité */
-  activityLevel: "active",
-  trainingDaysPerWeek: 5,
+    age: 20,
 
-  /* Objectif */
-  goal: "cut",
+    sex: "male",
 
-  /* Déficit / surplus */
-  calorieAdjustment: -300,
+    heightCm: 179,
 
-  /* Budget */
-  weeklyBudget: 50,
-  monthlyBudget: 220,
+    weightKg: 88
 
-  /* Préférences */
-  diet: "omnivore",
-  mealsPerDay: 4,
+  },
 
-  /* Aliments */
-  excludedFoods: [],
-  allergies: [],
-  favoriteFoods: [],
 
-  /* Unités */
-  weightUnit: "kg",
-  heightUnit: "cm",
+  bodyMeasurements: {
 
-  /* Données calculées */
-  calculated: {
-    bmi: null,
-    bmr: null,
-    tdee: null,
-    targetCalories: null,
+    neckCm: null,
 
-    proteinGrams: null,
-    fatGrams: null,
-    carbsGrams: null,
+    shouldersCm: null,
 
-    proteinCalories: null,
-    fatCalories: null,
-    carbsCalories: null
+    chestCm: null,
+
+    waistCm: null,
+
+    abdomenCm: null,
+
+    hipsCm: null,
+
+    leftArmCm: null,
+
+    rightArmCm: null,
+
+    leftThighCm: null,
+
+    rightThighCm: null,
+
+    leftCalfCm: null,
+
+    rightCalfCm: null
+
+  },
+
+
+  bodyComposition: {
+
+    bodyFatPercent: null,
+
+    muscleMassKg: null,
+
+    fatMassKg: null,
+
+    leanMassKg: null
+
+  },
+
+
+  activity: {
+
+    trainingDaysPerWeek: 5,
+
+    activityLevel: "moderately_active",
+
+    dailySteps: 8000
+
+  },
+
+
+  goal: {
+
+    type: "recomposition",
+
+    targetWeightKg: null,
+
+    targetBodyFatPercent: null,
+
+    weeklyWeightChangeKg: -0.4
+
+  },
+
+
+  nutrition: {
+
+    calorieTarget: 2000,
+
+    proteinTarget: null,
+
+    fatTarget: null,
+
+    carbsTarget: null
+
+  },
+
+
+  budget: {
+
+    weeklyBudget: 50,
+
+    monthlyBudget: 220
+
+  },
+
+
+  preferences: {
+
+    mealsPerDay: 4,
+
+    breakfast: true,
+
+    snacks: true,
+
+    vegetarian: false,
+
+    vegan: false,
+
+    lactoseFree: false,
+
+    glutenFree: false,
+
+    allergies: [],
+
+    dislikedFoods: []
+
   }
+
 };
 
 
 /* =========================================================
-   MENSURATIONS
+   ACTIVITY LEVELS
 ========================================================= */
 
-const BODY_MEASUREMENTS = {
+const ACTIVITY_LEVELS = [
 
-  date: null,
+  {
+    id: "sedentary",
+    name: "Sédentaire",
+    multiplier: 1.2
+  },
 
-  weightKg: 88,
+  {
+    id: "lightly_active",
+    name: "Légèrement actif",
+    multiplier: 1.375
+  },
 
-  waistCm: null,
-  abdomenCm: null,
-  hipsCm: null,
+  {
+    id: "moderately_active",
+    name: "Modérément actif",
+    multiplier: 1.55
+  },
 
-  chestCm: null,
-  shouldersCm: null,
+  {
+    id: "very_active",
+    name: "Très actif",
+    multiplier: 1.725
+  },
 
-  leftArmCm: null,
-  rightArmCm: null,
+  {
+    id: "extremely_active",
+    name: "Extrêmement actif",
+    multiplier: 1.9
+  }
 
-  leftThighCm: null,
-  rightThighCm: null,
-
-  leftCalfCm: null,
-  rightCalfCm: null,
-
-  neckCm: null,
-
-  bodyFatPercent: null,
-
-  notes: ""
-};
-
-
-/* =========================================================
-   HISTORIQUE DES MENSURATIONS
-========================================================= */
-
-const MEASUREMENTS_HISTORY = [];
+];
 
 
 /* =========================================================
    OBJECTIFS
 ========================================================= */
 
-const GOALS = {
+const GOALS = [
 
-  primary: "fat_loss",
-
-  targetWeightKg: null,
-  targetBodyFatPercent: null,
-
-  targetWaistCm: null,
-
-  weeklyWeightLossKg: 0.5,
-
-  dailyCaloriesAdjustment: -300,
-
-  targetDate: null,
-
-  muscleGain: true,
-  preserveMuscle: true,
-
-  stepsPerDay: 8000,
-
-  waterLitersPerDay: 2.5,
-
-  sleepHoursPerNight: 8
-};
-
-
-/* =========================================================
-   CALCULATEUR NUTRITION
-========================================================= */
-
-const CALORIE_CALCULATOR = {
-
-  formula: "Mifflin-St Jeor",
-
-  activityMultipliers: {
-    sedentary: 1.2,
-    lightly_active: 1.375,
-    moderately_active: 1.55,
-    active: 1.725,
-    very_active: 1.9
+  {
+    id: "cut",
+    name: "Perte de graisse",
+    emoji: "🔥",
+    description: "Réduire le poids et le taux de masse grasse.",
+    calorieAdjustment: -300
   },
 
-  calculateBMR(profile) {
-
-    if (!profile) return 0;
-
-    const weight = Number(profile.weightKg) || 0;
-    const height = Number(profile.heightCm) || 0;
-    const age = Number(profile.age) || 0;
-
-    if (profile.sex === "female") {
-      return (10 * weight) + (6.25 * height) - (5 * age) - 161;
-    }
-
-    return (10 * weight) + (6.25 * height) - (5 * age) + 5;
+  {
+    id: "maintain",
+    name: "Maintien",
+    emoji: "⚖️",
+    description: "Maintenir le poids actuel.",
+    calorieAdjustment: 0
   },
 
-  calculateTDEE(profile) {
-
-    const bmr = this.calculateBMR(profile);
-
-    const multiplier =
-      this.activityMultipliers[profile.activityLevel] || 1.55;
-
-    return bmr * multiplier;
+  {
+    id: "bulk",
+    name: "Prise de masse",
+    emoji: "💪",
+    description: "Augmenter le poids et favoriser la prise musculaire.",
+    calorieAdjustment: 250
   },
 
-  calculateTargetCalories(profile) {
-
-    const tdee = this.calculateTDEE(profile);
-
-    const adjustment =
-      Number(profile.calorieAdjustment) || 0;
-
-    return Math.max(1200, tdee + adjustment);
-  },
-
-  calculateMacros(profile) {
-
-    const calories = this.calculateTargetCalories(profile);
-
-    const weight = Number(profile.weightKg) || 0;
-
-    /* Protéines */
-    const proteinPerKg =
-      APP_DATA.nutrition.defaultProteinPerKg;
-
-    const protein =
-      weight * proteinPerKg;
-
-    /* Lipides */
-    const fatPerKg =
-      APP_DATA.nutrition.defaultFatPerKg;
-
-    const fat =
-      weight * fatPerKg;
-
-    /*
-      Calories utilisées par protéines + lipides
-    */
-
-    const proteinCalories =
-      protein * APP_DATA.nutrition.proteinCaloriesPerGram;
-
-    const fatCalories =
-      fat * APP_DATA.nutrition.fatCaloriesPerGram;
-
-    /*
-      Glucides = calories restantes
-    */
-
-    const remainingCalories =
-      calories - proteinCalories - fatCalories;
-
-    const carbs =
-      Math.max(
-        0,
-        remainingCalories /
-        APP_DATA.nutrition.carbsCaloriesPerGram
-      );
-
-    return {
-
-      calories: Math.round(calories),
-
-      protein: Math.round(protein),
-
-      fat: Math.round(fat),
-
-      carbs: Math.round(carbs),
-
-      proteinCalories:
-        Math.round(proteinCalories),
-
-      fatCalories:
-        Math.round(fatCalories),
-
-      carbsCalories:
-        Math.round(carbs * 4)
-    };
+  {
+    id: "recomposition",
+    name: "Recomposition",
+    emoji: "🔄",
+    description: "Perdre du gras tout en favorisant le maintien ou le gain musculaire.",
+    calorieAdjustment: -200
   }
-};
+
+];
 
 
 /* =========================================================
    ALIMENTS
+   Valeurs nutritionnelles pour 100 g/ml
 ========================================================= */
 
 const FOODS = [
@@ -303,9 +288,7 @@ const FOODS = [
     kcal: 165,
     protein: 31,
     carbs: 0,
-    fat: 3.6,
-    fiber: 0,
-    pricePerKg: 8
+    fat: 3.6
   },
 
   {
@@ -317,9 +300,7 @@ const FOODS = [
     kcal: 114,
     protein: 24,
     carbs: 0,
-    fat: 1.5,
-    fiber: 0,
-    pricePerKg: 10
+    fat: 1.5
   },
 
   {
@@ -331,9 +312,7 @@ const FOODS = [
     kcal: 137,
     protein: 21,
     carbs: 0,
-    fat: 5,
-    fiber: 0,
-    pricePerKg: 12
+    fat: 5
   },
 
   {
@@ -345,23 +324,7 @@ const FOODS = [
     kcal: 116,
     protein: 20,
     carbs: 1.5,
-    fat: 3,
-    fiber: 0,
-    pricePerKg: 12
-  },
-
-  {
-    id: "salmon",
-    name: "Saumon",
-    category: "Poissons",
-    emoji: "🐟",
-    unit: "g",
-    kcal: 208,
-    protein: 20,
-    carbs: 0,
-    fat: 13,
-    fiber: 0,
-    pricePerKg: 20
+    fat: 3
   },
 
   {
@@ -373,9 +336,19 @@ const FOODS = [
     kcal: 116,
     protein: 26,
     carbs: 0,
-    fat: 1,
-    fiber: 0,
-    pricePerKg: 12
+    fat: 1
+  },
+
+  {
+    id: "salmon",
+    name: "Saumon",
+    category: "Poissons",
+    emoji: "🐟",
+    unit: "g",
+    kcal: 208,
+    protein: 20,
+    carbs: 0,
+    fat: 13
   },
 
   {
@@ -387,9 +360,7 @@ const FOODS = [
     kcal: 143,
     protein: 12.6,
     carbs: 0.7,
-    fat: 9.5,
-    fiber: 0,
-    pricePerKg: 5
+    fat: 9.5
   },
 
   {
@@ -401,9 +372,7 @@ const FOODS = [
     kcal: 130,
     protein: 2.7,
     carbs: 28,
-    fat: 0.3,
-    fiber: 0.4,
-    pricePerKg: 2
+    fat: 0.3
   },
 
   {
@@ -415,9 +384,7 @@ const FOODS = [
     kcal: 158,
     protein: 5.8,
     carbs: 30.9,
-    fat: 0.9,
-    fiber: 1.8,
-    pricePerKg: 2
+    fat: 0.9
   },
 
   {
@@ -429,9 +396,7 @@ const FOODS = [
     kcal: 77,
     protein: 2,
     carbs: 17,
-    fat: 0.1,
-    fiber: 2.2,
-    pricePerKg: 1.5
+    fat: 0.1
   },
 
   {
@@ -443,9 +408,7 @@ const FOODS = [
     kcal: 389,
     protein: 16.9,
     carbs: 66.3,
-    fat: 6.9,
-    fiber: 10.6,
-    pricePerKg: 4
+    fat: 6.9
   },
 
   {
@@ -457,289 +420,7 @@ const FOODS = [
     kcal: 265,
     protein: 9,
     carbs: 49,
-    fat: 3.2,
-    fiber: 2.7,
-    pricePerKg: 3
-  },
-
-  {
-    id: "banana",
-    name: "Banane",
-    category: "Fruits",
-    emoji: "🍌",
-    unit: "g",
-    kcal: 89,
-    protein: 1.1,
-    carbs: 22.8,
-    fat: 0.3,
-    fiber: 2.6,
-    pricePerKg: 2
-  },
-
-  {
-    id: "apple",
-    name: "Pomme",
-    category: "Fruits",
-    emoji: "🍎",
-    unit: "g",
-    kcal: 52,
-    protein: 0.3,
-    carbs: 13.8,
-    fat: 0.2,
-    fiber: 2.4,
-    pricePerKg: 2.5
-  },
-
-  {
-    id: "orange",
-    name: "Orange",
-    category: "Fruits",
-    emoji: "🍊",
-    unit: "g",
-    kcal: 47,
-    protein: 0.9,
-    carbs: 11.8,
-    fat: 0.1,
-    fiber: 2.4,
-    pricePerKg: 2.2
-  },
-
-  {
-    id: "strawberry",
-    name: "Fraises",
-    category: "Fruits",
-    emoji: "🍓",
-    unit: "g",
-    kcal: 32,
-    protein: 0.7,
-    carbs: 7.7,
-    fat: 0.3,
-    fiber: 2,
-    pricePerKg: 5
-  },
-
-  {
-    id: "avocado",
-    name: "Avocat",
-    category: "Fruits",
-    emoji: "🥑",
-    unit: "g",
-    kcal: 160,
-    protein: 2,
-    carbs: 8.5,
-    fat: 14.7,
-    fiber: 6.7,
-    pricePerKg: 6
-  },
-
-  {
-    id: "milk",
-    name: "Lait demi-écrémé",
-    category: "Produits laitiers",
-    emoji: "🥛",
-    unit: "ml",
-    kcal: 46,
-    protein: 3.2,
-    carbs: 4.8,
-    fat: 1.6,
-    fiber: 0,
-    pricePerLiter: 1.5
-  },
-
-  {
-    id: "yogurt",
-    name: "Yaourt nature",
-    category: "Produits laitiers",
-    emoji: "🥛",
-    unit: "g",
-    kcal: 61,
-    protein: 3.5,
-    carbs: 4.7,
-    fat: 3.3,
-    fiber: 0,
-    pricePerKg: 4
-  },
-
-  {
-    id: "greek_yogurt",
-    name: "Skyr",
-    category: "Produits laitiers",
-    emoji: "🥣",
-    unit: "g",
-    kcal: 63,
-    protein: 10.6,
-    carbs: 3.9,
-    fat: 0.2,
-    fiber: 0,
-    pricePerKg: 7
-  },
-
-  {
-    id: "cottage_cheese",
-    name: "Fromage blanc 0%",
-    category: "Produits laitiers",
-    emoji: "🥛",
-    unit: "g",
-    kcal: 48,
-    protein: 8,
-    carbs: 4,
-    fat: 0.2,
-    fiber: 0,
-    pricePerKg: 4
-  },
-
-  {
-    id: "cheese",
-    name: "Emmental",
-    category: "Produits laitiers",
-    emoji: "🧀",
-    unit: "g",
-    kcal: 380,
-    protein: 28,
-    carbs: 0.5,
-    fat: 29,
-    fiber: 0,
-    pricePerKg: 12
-  },
-
-  {
-    id: "peanut_butter",
-    name: "Beurre de cacahuète",
-    category: "Oléagineux",
-    emoji: "🥜",
-    unit: "g",
-    kcal: 588,
-    protein: 25,
-    carbs: 20,
-    fat: 50,
-    fiber: 6,
-    pricePerKg: 8
-  },
-
-  {
-    id: "olive_oil",
-    name: "Huile d’olive",
-    category: "Matières grasses",
-    emoji: "🫒",
-    unit: "g",
-    kcal: 884,
-    protein: 0,
-    carbs: 0,
-    fat: 100,
-    fiber: 0,
-    pricePerKg: 10
-  },
-
-  {
-    id: "tomato",
-    name: "Tomate",
-    category: "Légumes",
-    emoji: "🍅",
-    unit: "g",
-    kcal: 18,
-    protein: 0.9,
-    carbs: 3.9,
-    fat: 0.2,
-    fiber: 1.2,
-    pricePerKg: 3
-  },
-
-  {
-    id: "broccoli",
-    name: "Brocoli",
-    category: "Légumes",
-    emoji: "🥦",
-    unit: "g",
-    kcal: 34,
-    protein: 2.8,
-    carbs: 7,
-    fat: 0.4,
-    fiber: 2.6,
-    pricePerKg: 4
-  },
-
-  {
-    id: "carrot",
-    name: "Carotte",
-    category: "Légumes",
-    emoji: "🥕",
-    unit: "g",
-    kcal: 41,
-    protein: 0.9,
-    carbs: 9.6,
-    fat: 0.2,
-    fiber: 2.8,
-    pricePerKg: 1.5
-  },
-
-  {
-    id: "cucumber",
-    name: "Concombre",
-    category: "Légumes",
-    emoji: "🥒",
-    unit: "g",
-    kcal: 15,
-    protein: 0.7,
-    carbs: 3.6,
-    fat: 0.1,
-    fiber: 0.5,
-    pricePerKg: 2
-  },
-
-  {
-    id: "onion",
-    name: "Oignon",
-    category: "Légumes",
-    emoji: "🧅",
-    unit: "g",
-    kcal: 40,
-    protein: 1.1,
-    carbs: 9.3,
-    fat: 0.1,
-    fiber: 1.7,
-    pricePerKg: 1.5
-  },
-
-  {
-    id: "green_beans",
-    name: "Haricots verts",
-    category: "Légumes",
-    emoji: "🫛",
-    unit: "g",
-    kcal: 31,
-    protein: 1.8,
-    carbs: 7,
-    fat: 0.2,
-    fiber: 3.4,
-    pricePerKg: 4
-  },
-
-  {
-    id: "spinach",
-    name: "Épinards",
-    category: "Légumes",
-    emoji: "🥬",
-    unit: "g",
-    kcal: 23,
-    protein: 2.9,
-    carbs: 3.6,
-    fat: 0.4,
-    fiber: 2.2,
-    pricePerKg: 5
-  },
-
-  {
-    id: "corn",
-    name: "Maïs",
-    category: "Légumes",
-    emoji: "🌽",
-    unit: "g",
-    kcal: 86,
-    protein: 3.2,
-    carbs: 19,
-    fat: 1.2,
-    fiber: 2.7,
-    pricePerKg: 3
+    fat: 3.2
   },
 
   {
@@ -751,9 +432,7 @@ const FOODS = [
     kcal: 116,
     protein: 9,
     carbs: 20,
-    fat: 0.4,
-    fiber: 7.9,
-    pricePerKg: 3
+    fat: 0.4
   },
 
   {
@@ -765,9 +444,7 @@ const FOODS = [
     kcal: 127,
     protein: 8.7,
     carbs: 22.8,
-    fat: 0.5,
-    fiber: 6.4,
-    pricePerKg: 3
+    fat: 0.5
   },
 
   {
@@ -779,24 +456,261 @@ const FOODS = [
     kcal: 164,
     protein: 8.9,
     carbs: 27.4,
-    fat: 2.6,
-    fiber: 7.6,
-    pricePerKg: 3
+    fat: 2.6
+  },
+
+  {
+    id: "banana",
+    name: "Banane",
+    category: "Fruits",
+    emoji: "🍌",
+    unit: "g",
+    kcal: 89,
+    protein: 1.1,
+    carbs: 22.8,
+    fat: 0.3
+  },
+
+  {
+    id: "apple",
+    name: "Pomme",
+    category: "Fruits",
+    emoji: "🍎",
+    unit: "g",
+    kcal: 52,
+    protein: 0.3,
+    carbs: 13.8,
+    fat: 0.2
+  },
+
+  {
+    id: "orange",
+    name: "Orange",
+    category: "Fruits",
+    emoji: "🍊",
+    unit: "g",
+    kcal: 47,
+    protein: 0.9,
+    carbs: 11.8,
+    fat: 0.1
+  },
+
+  {
+    id: "strawberry",
+    name: "Fraises",
+    category: "Fruits",
+    emoji: "🍓",
+    unit: "g",
+    kcal: 32,
+    protein: 0.7,
+    carbs: 7.7,
+    fat: 0.3
+  },
+
+  {
+    id: "avocado",
+    name: "Avocat",
+    category: "Fruits",
+    emoji: "🥑",
+    unit: "g",
+    kcal: 160,
+    protein: 2,
+    carbs: 8.5,
+    fat: 14.7
+  },
+
+  {
+    id: "tomato",
+    name: "Tomate",
+    category: "Légumes",
+    emoji: "🍅",
+    unit: "g",
+    kcal: 18,
+    protein: 0.9,
+    carbs: 3.9,
+    fat: 0.2
+  },
+
+  {
+    id: "broccoli",
+    name: "Brocoli",
+    category: "Légumes",
+    emoji: "🥦",
+    unit: "g",
+    kcal: 34,
+    protein: 2.8,
+    carbs: 7,
+    fat: 0.4
+  },
+
+  {
+    id: "carrot",
+    name: "Carotte",
+    category: "Légumes",
+    emoji: "🥕",
+    unit: "g",
+    kcal: 41,
+    protein: 0.9,
+    carbs: 9.6,
+    fat: 0.2
+  },
+
+  {
+    id: "cucumber",
+    name: "Concombre",
+    category: "Légumes",
+    emoji: "🥒",
+    unit: "g",
+    kcal: 15,
+    protein: 0.7,
+    carbs: 3.6,
+    fat: 0.1
+  },
+
+  {
+    id: "onion",
+    name: "Oignon",
+    category: "Légumes",
+    emoji: "🧅",
+    unit: "g",
+    kcal: 40,
+    protein: 1.1,
+    carbs: 9.3,
+    fat: 0.1
+  },
+
+  {
+    id: "green_beans",
+    name: "Haricots verts",
+    category: "Légumes",
+    emoji: "🫛",
+    unit: "g",
+    kcal: 31,
+    protein: 1.8,
+    carbs: 7,
+    fat: 0.2
+  },
+
+  {
+    id: "spinach",
+    name: "Épinards",
+    category: "Légumes",
+    emoji: "🥬",
+    unit: "g",
+    kcal: 23,
+    protein: 2.9,
+    carbs: 3.6,
+    fat: 0.4
+  },
+
+  {
+    id: "corn",
+    name: "Maïs",
+    category: "Légumes",
+    emoji: "🌽",
+    unit: "g",
+    kcal: 86,
+    protein: 3.2,
+    carbs: 19,
+    fat: 1.2
+  },
+
+  {
+    id: "milk",
+    name: "Lait demi-écrémé",
+    category: "Produits laitiers",
+    emoji: "🥛",
+    unit: "ml",
+    kcal: 46,
+    protein: 3.2,
+    carbs: 4.8,
+    fat: 1.6
+  },
+
+  {
+    id: "yogurt",
+    name: "Yaourt nature",
+    category: "Produits laitiers",
+    emoji: "🥛",
+    unit: "g",
+    kcal: 61,
+    protein: 3.5,
+    carbs: 4.7,
+    fat: 3.3
+  },
+
+  {
+    id: "greek_yogurt",
+    name: "Skyr",
+    category: "Produits laitiers",
+    emoji: "🥣",
+    unit: "g",
+    kcal: 63,
+    protein: 10.6,
+    carbs: 3.9,
+    fat: 0.2
+  },
+
+  {
+    id: "cottage_cheese",
+    name: "Fromage blanc 0%",
+    category: "Produits laitiers",
+    emoji: "🥛",
+    unit: "g",
+    kcal: 48,
+    protein: 8,
+    carbs: 4,
+    fat: 0.2
+  },
+
+  {
+    id: "cheese",
+    name: "Emmental",
+    category: "Produits laitiers",
+    emoji: "🧀",
+    unit: "g",
+    kcal: 380,
+    protein: 28,
+    carbs: 0.5,
+    fat: 29
+  },
+
+  {
+    id: "peanut_butter",
+    name: "Beurre de cacahuète",
+    category: "Oléagineux",
+    emoji: "🥜",
+    unit: "g",
+    kcal: 588,
+    protein: 25,
+    carbs: 20,
+    fat: 50
+  },
+
+  {
+    id: "olive_oil",
+    name: "Huile d’olive",
+    category: "Matières grasses",
+    emoji: "🫒",
+    unit: "g",
+    kcal: 884,
+    protein: 0,
+    carbs: 0,
+    fat: 100
   },
 
   {
     id: "protein_powder",
     name: "Protéine en poudre",
-    category: "Suppléments",
+    category: "Compléments",
     emoji: "🥤",
     unit: "g",
     kcal: 400,
     protein: 80,
     carbs: 8,
-    fat: 6,
-    fiber: 0,
-    pricePerKg: 25
+    fat: 6
   }
+
 ];
 
 
@@ -811,10 +725,10 @@ const RECIPES = [
     name: "Poulet & riz",
     emoji: "🍗",
     category: "Déjeuner",
-    prepTime: 20,
-    difficulty: "facile",
+    prepTime: 15,
+    cookTime: 20,
     servings: 1,
-
+    difficulty: "facile",
     ingredients: [
       { food: "chicken", grams: 180 },
       { food: "rice", grams: 250 },
@@ -828,10 +742,10 @@ const RECIPES = [
     name: "Pâtes au thon",
     emoji: "🍝",
     category: "Déjeuner",
-    prepTime: 15,
-    difficulty: "facile",
+    prepTime: 10,
+    cookTime: 15,
     servings: 1,
-
+    difficulty: "facile",
     ingredients: [
       { food: "pasta", grams: 250 },
       { food: "tuna", grams: 120 },
@@ -845,10 +759,10 @@ const RECIPES = [
     name: "Bœuf & pommes de terre",
     emoji: "🥩",
     category: "Déjeuner",
-    prepTime: 25,
-    difficulty: "facile",
+    prepTime: 10,
+    cookTime: 25,
     servings: 1,
-
+    difficulty: "facile",
     ingredients: [
       { food: "beef", grams: 180 },
       { food: "potato", grams: 300 },
@@ -862,9 +776,9 @@ const RECIPES = [
     emoji: "🥣",
     category: "Petit-déjeuner",
     prepTime: 5,
-    difficulty: "facile",
+    cookTime: 0,
     servings: 1,
-
+    difficulty: "très facile",
     ingredients: [
       { food: "oats", grams: 60 },
       { food: "milk", grams: 200 },
@@ -877,11 +791,11 @@ const RECIPES = [
     id: "salmon-rice",
     name: "Saumon & riz",
     emoji: "🐟",
-    category: "Dîner",
-    prepTime: 25,
-    difficulty: "facile",
+    category: "Déjeuner",
+    prepTime: 10,
+    cookTime: 20,
     servings: 1,
-
+    difficulty: "facile",
     ingredients: [
       { food: "salmon", grams: 160 },
       { food: "rice", grams: 250 },
@@ -894,10 +808,10 @@ const RECIPES = [
     name: "Pâtes à la dinde",
     emoji: "🍝",
     category: "Déjeuner",
-    prepTime: 20,
-    difficulty: "facile",
+    prepTime: 10,
+    cookTime: 15,
     servings: 1,
-
+    difficulty: "facile",
     ingredients: [
       { food: "turkey", grams: 180 },
       { food: "pasta", grams: 220 },
@@ -911,10 +825,10 @@ const RECIPES = [
     name: "Omelette complète",
     emoji: "🍳",
     category: "Petit-déjeuner",
-    prepTime: 10,
-    difficulty: "facile",
+    prepTime: 5,
+    cookTime: 10,
     servings: 1,
-
+    difficulty: "facile",
     ingredients: [
       { food: "egg", grams: 200 },
       { food: "bread", grams: 80 },
@@ -927,10 +841,10 @@ const RECIPES = [
     name: "Bowl lentilles & œufs",
     emoji: "🫘",
     category: "Déjeuner",
-    prepTime: 15,
-    difficulty: "facile",
+    prepTime: 10,
+    cookTime: 10,
     servings: 1,
-
+    difficulty: "facile",
     ingredients: [
       { food: "lentils", grams: 250 },
       { food: "egg", grams: 150 },
@@ -943,10 +857,10 @@ const RECIPES = [
     name: "Poulet & pois chiches",
     emoji: "🍗",
     category: "Déjeuner",
-    prepTime: 20,
-    difficulty: "facile",
+    prepTime: 10,
+    cookTime: 15,
     servings: 1,
-
+    difficulty: "facile",
     ingredients: [
       { food: "chicken", grams: 170 },
       { food: "chickpeas", grams: 180 },
@@ -960,9 +874,9 @@ const RECIPES = [
     emoji: "🥣",
     category: "Collation",
     prepTime: 3,
-    difficulty: "facile",
+    cookTime: 0,
     servings: 1,
-
+    difficulty: "très facile",
     ingredients: [
       { food: "greek_yogurt", grams: 250 },
       { food: "banana", grams: 120 },
@@ -975,10 +889,10 @@ const RECIPES = [
     name: "Riz au thon",
     emoji: "🐟",
     category: "Déjeuner",
-    prepTime: 10,
-    difficulty: "facile",
+    prepTime: 5,
+    cookTime: 10,
     servings: 1,
-
+    difficulty: "très facile",
     ingredients: [
       { food: "rice", grams: 250 },
       { food: "tuna", grams: 150 },
@@ -992,276 +906,23 @@ const RECIPES = [
     name: "Pâtes au bœuf",
     emoji: "🥩",
     category: "Déjeuner",
-    prepTime: 20,
-    difficulty: "facile",
+    prepTime: 10,
+    cookTime: 15,
     servings: 1,
-
+    difficulty: "facile",
     ingredients: [
       { food: "beef", grams: 180 },
       { food: "pasta", grams: 220 },
       { food: "tomato", grams: 150 }
     ]
   }
+
 ];
 
 
 /* =========================================================
-   COURSES
+   TYPES DE REPAS
 ========================================================= */
-
-const SHOPPING_ITEMS = [
-
-  {
-    id: "chicken",
-    name: "Poulet",
-    category: "Viandes",
-    quantity: "1 kg",
-    price: 8
-  },
-
-  {
-    id: "turkey",
-    name: "Escalopes de dinde",
-    category: "Viandes",
-    quantity: "500 g",
-    price: 5
-  },
-
-  {
-    id: "beef",
-    name: "Bœuf haché 5%",
-    category: "Viandes",
-    quantity: "500 g",
-    price: 6
-  },
-
-  {
-    id: "rice",
-    name: "Riz",
-    category: "Féculents",
-    quantity: "1 kg",
-    price: 2
-  },
-
-  {
-    id: "pasta",
-    name: "Pâtes",
-    category: "Féculents",
-    quantity: "1 kg",
-    price: 2
-  },
-
-  {
-    id: "tuna",
-    name: "Thon",
-    category: "Poissons",
-    quantity: "4 boîtes",
-    price: 5
-  },
-
-  {
-    id: "egg",
-    name: "Œufs",
-    category: "Œufs",
-    quantity: "12",
-    price: 3
-  },
-
-  {
-    id: "potato",
-    name: "Pommes de terre",
-    category: "Féculents",
-    quantity: "2 kg",
-    price: 3
-  },
-
-  {
-    id: "oats",
-    name: "Flocons d’avoine",
-    category: "Petit-déjeuner",
-    quantity: "500 g",
-    price: 2
-  },
-
-  {
-    id: "banana",
-    name: "Bananes",
-    category: "Fruits",
-    quantity: "1 kg",
-    price: 2
-  },
-
-  {
-    id: "apple",
-    name: "Pommes",
-    category: "Fruits",
-    quantity: "1 kg",
-    price: 2.5
-  },
-
-  {
-    id: "broccoli",
-    name: "Brocoli",
-    category: "Légumes",
-    quantity: "500 g",
-    price: 2
-  },
-
-  {
-    id: "tomato",
-    name: "Tomates",
-    category: "Légumes",
-    quantity: "1 kg",
-    price: 3
-  },
-
-  {
-    id: "carrot",
-    name: "Carottes",
-    category: "Légumes",
-    quantity: "1 kg",
-    price: 1.5
-  },
-
-  {
-    id: "lentils",
-    name: "Lentilles",
-    category: "Légumineuses",
-    quantity: "500 g",
-    price: 1.5
-  },
-
-  {
-    id: "chickpeas",
-    name: "Pois chiches",
-    category: "Légumineuses",
-    quantity: "500 g",
-    price: 1.5
-  },
-
-  {
-    id: "milk",
-    name: "Lait",
-    category: "Produits laitiers",
-    quantity: "1 L",
-    price: 1.5
-  },
-
-  {
-    id: "greek_yogurt",
-    name: "Skyr",
-    category: "Produits laitiers",
-    quantity: "4 pots",
-    price: 3.5
-  },
-
-  {
-    id: "cottage_cheese",
-    name: "Fromage blanc 0%",
-    category: "Produits laitiers",
-    quantity: "500 g",
-    price: 2
-  },
-
-  {
-    id: "bread",
-    name: "Pain",
-    category: "Féculents",
-    quantity: "500 g",
-    price: 1.5
-  },
-
-  {
-    id: "olive_oil",
-    name: "Huile d’olive",
-    category: "Matières grasses",
-    quantity: "500 ml",
-    price: 5
-  },
-
-  {
-    id: "avocado",
-    name: "Avocats",
-    category: "Fruits",
-    quantity: "2",
-    price: 3
-  }
-];
-
-
-/* =========================================================
-   MAGASINS
-========================================================= */
-
-const STORES = [
-
-  {
-    id: "generic",
-    name: "Prix moyen",
-    location: "Portugal",
-    currency: "EUR"
-  },
-
-  {
-    id: "continente",
-    name: "Continente",
-    location: "Portugal",
-    currency: "EUR"
-  },
-
-  {
-    id: "pingo-doce",
-    name: "Pingo Doce",
-    location: "Portugal",
-    currency: "EUR"
-  },
-
-  {
-    id: "lidl",
-    name: "Lidl",
-    location: "Portugal",
-    currency: "EUR"
-  },
-
-  {
-    id: "aldi",
-    name: "Aldi",
-    location: "Portugal",
-    currency: "EUR"
-  },
-
-  {
-    id: "mercadona",
-    name: "Mercadona",
-    location: "Portugal",
-    currency: "EUR"
-  }
-];
-
-
-/* =========================================================
-   GARDE-MANGER
-========================================================= */
-
-const PANTRY = [];
-
-
-/* =========================================================
-   PLANIFICATION DES REPAS
-========================================================= */
-
-const DAYS = [
-
-  "Lundi",
-  "Mardi",
-  "Mercredi",
-  "Jeudi",
-  "Vendredi",
-  "Samedi",
-  "Dimanche"
-
-];
-
 
 const MEAL_TYPES = [
 
@@ -1288,857 +949,634 @@ const MEAL_TYPES = [
     name: "Dîner",
     emoji: "🌙"
   }
+
 ];
 
 
-const WEEK_PLAN = {
+/* =========================================================
+   PLANNING HEBDOMADAIRE
+========================================================= */
 
-  weekStart: null,
+const DAYS = [
 
-  days: DAYS.map(day => ({
+  "Lundi",
+  "Mardi",
+  "Mercredi",
+  "Jeudi",
+  "Vendredi",
+  "Samedi",
+  "Dimanche"
 
-    day,
+];
 
-    meals: {
-      breakfast: null,
-      lunch: null,
-      snack: null,
-      dinner: null
-    },
 
-    totals: {
-      calories: 0,
-      protein: 0,
-      carbs: 0,
-      fat: 0
-    }
+const DEFAULT_WEEK_PLAN = {
 
-  }))
+  Lundi: {
+    breakfast: null,
+    lunch: null,
+    snack: null,
+    dinner: null
+  },
+
+  Mardi: {
+    breakfast: null,
+    lunch: null,
+    snack: null,
+    dinner: null
+  },
+
+  Mercredi: {
+    breakfast: null,
+    lunch: null,
+    snack: null,
+    dinner: null
+  },
+
+  Jeudi: {
+    breakfast: null,
+    lunch: null,
+    snack: null,
+    dinner: null
+  },
+
+  Vendredi: {
+    breakfast: null,
+    lunch: null,
+    snack: null,
+    dinner: null
+  },
+
+  Samedi: {
+    breakfast: null,
+    lunch: null,
+    snack: null,
+    dinner: null
+  },
+
+  Dimanche: {
+    breakfast: null,
+    lunch: null,
+    snack: null,
+    dinner: null
+  }
+
 };
 
 
 /* =========================================================
-   JOURNAL ALIMENTAIRE
+   COURSES
 ========================================================= */
 
-const FOOD_LOG = [];
+const SHOPPING_ITEMS = [
+
+  {
+    id: "chicken",
+    name: "Poulet",
+    quantity: "1 kg",
+    price: 8,
+    category: "Viandes"
+  },
+
+  {
+    id: "turkey",
+    name: "Escalopes de dinde",
+    quantity: "500 g",
+    price: 5,
+    category: "Viandes"
+  },
+
+  {
+    id: "beef",
+    name: "Bœuf haché 5%",
+    quantity: "500 g",
+    price: 6,
+    category: "Viandes"
+  },
+
+  {
+    id: "rice",
+    name: "Riz",
+    quantity: "1 kg",
+    price: 2,
+    category: "Féculents"
+  },
+
+  {
+    id: "pasta",
+    name: "Pâtes",
+    quantity: "1 kg",
+    price: 2,
+    category: "Féculents"
+  },
+
+  {
+    id: "tuna",
+    name: "Thon",
+    quantity: "4 boîtes",
+    price: 5,
+    category: "Poissons"
+  },
+
+  {
+    id: "egg",
+    name: "Œufs",
+    quantity: "12",
+    price: 3,
+    category: "Œufs"
+  },
+
+  {
+    id: "potato",
+    name: "Pommes de terre",
+    quantity: "2 kg",
+    price: 3,
+    category: "Féculents"
+  },
+
+  {
+    id: "oats",
+    name: "Flocons d’avoine",
+    quantity: "500 g",
+    price: 2,
+    category: "Petit-déjeuner"
+  },
+
+  {
+    id: "banana",
+    name: "Bananes",
+    quantity: "1 kg",
+    price: 2,
+    category: "Fruits"
+  },
+
+  {
+    id: "apple",
+    name: "Pommes",
+    quantity: "1 kg",
+    price: 2.5,
+    category: "Fruits"
+  },
+
+  {
+    id: "broccoli",
+    name: "Brocoli",
+    quantity: "500 g",
+    price: 2,
+    category: "Légumes"
+  },
+
+  {
+    id: "tomato",
+    name: "Tomates",
+    quantity: "1 kg",
+    price: 3,
+    category: "Légumes"
+  },
+
+  {
+    id: "carrot",
+    name: "Carottes",
+    quantity: "1 kg",
+    price: 1.5,
+    category: "Légumes"
+  },
+
+  {
+    id: "lentils",
+    name: "Lentilles",
+    quantity: "500 g",
+    price: 1.5,
+    category: "Légumineuses"
+  },
+
+  {
+    id: "chickpeas",
+    name: "Pois chiches",
+    quantity: "500 g",
+    price: 1.5,
+    category: "Légumineuses"
+  },
+
+  {
+    id: "milk",
+    name: "Lait",
+    quantity: "1 L",
+    price: 1.5,
+    category: "Produits laitiers"
+  },
+
+  {
+    id: "greek_yogurt",
+    name: "Skyr",
+    quantity: "4 pots",
+    price: 3.5,
+    category: "Produits laitiers"
+  },
+
+  {
+    id: "cottage_cheese",
+    name: "Fromage blanc 0%",
+    quantity: "500 g",
+    price: 2,
+    category: "Produits laitiers"
+  },
+
+  {
+    id: "bread",
+    name: "Pain",
+    quantity: "500 g",
+    price: 1.5,
+    category: "Féculents"
+  },
+
+  {
+    id: "olive_oil",
+    name: "Huile d’olive",
+    quantity: "500 ml",
+    price: 5,
+    category: "Matières grasses"
+  },
+
+  {
+    id: "avocado",
+    name: "Avocats",
+    quantity: "2",
+    price: 3,
+    category: "Fruits"
+  }
+
+];
 
 
 /* =========================================================
-   HISTORIQUE CALORIES / MACROS
+   GARDE-MANGER
 ========================================================= */
 
-const NUTRITION_HISTORY = [];
+const DEFAULT_PANTRY = [];
+
+
+/* =========================================================
+   MAGASINS
+========================================================= */
+
+const STORES = [
+
+  {
+    id: "generic",
+    name: "Magasin préféré",
+    country: "Portugal",
+    currency: "€"
+  },
+
+  {
+    id: "continente",
+    name: "Continente",
+    country: "Portugal",
+    currency: "€"
+  },
+
+  {
+    id: "pingo-doce",
+    name: "Pingo Doce",
+    country: "Portugal",
+    currency: "€"
+  },
+
+  {
+    id: "lidl",
+    name: "Lidl",
+    country: "Portugal",
+    currency: "€"
+  },
+
+  {
+    id: "aldi",
+    name: "ALDI",
+    country: "Portugal",
+    currency: "€"
+  }
+
+];
 
 
 /* =========================================================
    PROGRESSION
 ========================================================= */
 
-const PROGRESS = {
+const DEFAULT_PROGRESS = {
 
-  currentWeight: null,
-  startingWeight: null,
+  weightHistory: [],
 
-  lowestWeight: null,
-  highestWeight: null,
+  bodyFatHistory: [],
 
-  weightLost: 0,
+  measurementsHistory: [],
 
-  bodyFat: null,
+  photos: [],
 
-  waist: null,
+  strengthHistory: [],
 
-  streak: 0,
-  bestStreak: 0,
+  calorieHistory: [],
 
-  totalDaysTracked: 0,
+  proteinHistory: [],
 
-  caloriesAverage: 0,
-  proteinAverage: 0,
+  weeklySummary: []
 
-  lastUpdated: null
 };
 
 
 /* =========================================================
-   STREAKS / OBJECTIFS QUOTIDIENS
+   STREAKS
 ========================================================= */
 
-const STREAKS = {
+const DEFAULT_STREAKS = {
 
   current: 0,
+
   best: 0,
+
+  totalDays: 0,
 
   objectives: {
 
-    calories: false,
-    protein: false,
-    water: false,
-    steps: false,
-    workout: false,
-    foodLogging: false
+    calorieTarget: false,
+
+    proteinTarget: false,
+
+    waterTarget: false,
+
+    stepsTarget: false,
+
+    workoutCompleted: false,
+
+    mealPlanCompleted: false
+
   }
+
 };
 
 
 /* =========================================================
-   EAU
+   OBJECTIFS QUOTIDIENS
 ========================================================= */
 
-const WATER_TRACKER = {
+const DAILY_TARGETS = {
 
-  dailyTargetLiters: 2.5,
+  waterLiters: 2.5,
 
-  currentLiters: 0,
+  steps: 8000,
 
-  glasses: 0,
+  caloriesTolerance: 100,
 
-  glassSizeMl: 250
+  proteinTolerance: 10,
+
+  vegetablesPortions: 3,
+
+  fruitPortions: 2
+
 };
-
-
-/* =========================================================
-   ACTIVITÉ
-========================================================= */
-
-const ACTIVITY_TRACKER = {
-
-  dailyStepGoal: 8000,
-
-  currentSteps: 0,
-
-  workoutsThisWeek: 0,
-
-  workoutGoalPerWeek: 5,
-
-  caloriesBurned: 0
-};
-
-
-/* =========================================================
-   ENTRAÎNEMENTS
-========================================================= */
-
-const WORKOUT_HISTORY = [];
-
-
-/* =========================================================
-   BUDGET
-========================================================= */
-
-const BUDGET = {
-
-  weeklyLimit: 50,
-
-  monthlyLimit: 220,
-
-  currentWeekSpent: 0,
-
-  currentMonthSpent: 0,
-
-  currency: "EUR",
-
-  alerts: {
-
-    enabled: true,
-
-    thresholdPercent: 80
-  }
-};
-
-
-/* =========================================================
-   HISTORIQUE DES DÉPENSES
-========================================================= */
-
-const EXPENSE_HISTORY = [];
 
 
 /* =========================================================
    COACH
 ========================================================= */
 
-const COACH = {
+const COACH_MESSAGES = {
 
-  enabled: true,
+  lowProtein: [
 
-  personality: "friendly",
+    "Ta journée manque un peu de protéines.",
 
-  messages: [],
+    "Ajoute une source de protéines maigres à ton prochain repas.",
 
-  recommendations: [],
+    "Un skyr, du poulet, du thon ou des œufs peuvent facilement compléter ta journée."
 
-  dailyTips: [
+  ],
 
-    "Pense à boire régulièrement dans la journée 💧",
+  caloriesLow: [
 
-    "Une source de protéines à chaque repas peut faciliter l’atteinte de ton objectif 💪",
+    "Tu es assez loin de ton objectif calorique aujourd’hui.",
 
-    "Les légumes permettent d’augmenter le volume des repas sans exploser les calories 🥦",
+    "Tu peux encore ajouter un repas ou une collation sans dépasser ton objectif."
 
-    "Préparer plusieurs portions à l’avance peut aider à respecter ton budget 🛒",
+  ],
 
-    "Le poids peut varier d’un jour à l’autre : regarde surtout la tendance 📈"
+  caloriesHigh: [
+
+    "Tu approches de ton objectif calorique.",
+
+    "Privilégie une source de protéines et des légumes pour terminer la journée."
+
+  ],
+
+  hydration: [
+
+    "Pense à boire régulièrement.",
+
+    "Une bonne hydratation aide à maintenir de bonnes habitudes alimentaires."
+
+  ],
+
+  motivation: [
+
+    "Une journée imparfaite ne ruine absolument pas ta progression.",
+
+    "La régularité compte beaucoup plus qu'une journée parfaite.",
+
+    "Continue simplement ton plan aujourd’hui."
+
   ]
+
 };
 
 
 /* =========================================================
-   OBJECTIFS / BADGES
+   NOTIFICATIONS
 ========================================================= */
 
-const ACHIEVEMENTS = [
+const NOTIFICATION_SETTINGS = {
 
-  {
-    id: "first_day",
-    name: "Premier jour",
-    description: "Enregistrer ton premier jour",
-    icon: "🌱",
-    unlocked: false
-  },
+  mealReminder: true,
 
-  {
-    id: "7_days",
-    name: "7 jours",
-    description: "Suivre ton alimentation pendant 7 jours",
-    icon: "🔥",
-    unlocked: false
-  },
+  shoppingReminder: true,
 
-  {
-    id: "30_days",
-    name: "30 jours",
-    description: "Suivre ton alimentation pendant 30 jours",
-    icon: "🏆",
-    unlocked: false
-  },
+  weighInReminder: true,
 
-  {
-    id: "protein_goal",
-    name: "Objectif protéines",
-    description: "Atteindre ton objectif de protéines",
-    icon: "💪",
-    unlocked: false
-  },
+  hydrationReminder: true,
 
-  {
-    id: "budget_master",
-    name: "Budget maîtrisé",
-    description: "Respecter ton budget hebdomadaire",
-    icon: "💰",
-    unlocked: false
-  },
+  weeklySummary: true,
 
-  {
-    id: "meal_planner",
-    name: "Planificateur",
-    description: "Créer une semaine complète",
-    icon: "📅",
-    unlocked: false
-  }
-];
+  streakReminder: true
+
+};
 
 
 /* =========================================================
-   PRÉFÉRENCES APPLICATION
+   APP SETTINGS
 ========================================================= */
 
-const APP_SETTINGS = {
+const DEFAULT_SETTINGS = {
 
   theme: "dark",
 
   language: "fr",
 
+  units: "metric",
+
+  currency: "EUR",
+
   notifications: true,
 
-  reminderMeal: true,
+  animations: true,
 
-  reminderWater: true,
-
-  reminderWeight: true,
-
-  notificationTime: "20:00",
-
-  firstDayOfWeek: "monday",
-
-  decimals: 1,
-
-  showCalories: true,
-
-  showMacros: true,
-
-  showFiber: true,
-
-  showBudget: true,
+  sound: false,
 
   autoSave: true
+
 };
 
 
 /* =========================================================
-   FILTRES RECETTES
+   PREMIUM
 ========================================================= */
 
-const RECIPE_FILTERS = {
+const PREMIUM_FEATURES = [
 
-  search: "",
+  {
+    id: "advanced_coach",
+    name: "Coach nutrition avancé"
+  },
 
-  category: "all",
+  {
+    id: "smart_planner",
+    name: "Planning intelligent"
+  },
 
-  maxCalories: null,
+  {
+    id: "budget_optimizer",
+    name: "Optimisation du budget"
+  },
 
-  minProtein: null,
+  {
+    id: "store_comparison",
+    name: "Comparaison des magasins"
+  },
 
-  maxPrice: null,
+  {
+    id: "advanced_progress",
+    name: "Suivi avancé de progression"
+  },
 
-  maxTime: null,
+  {
+    id: "unlimited_recipes",
+    name: "Recettes illimitées"
+  },
 
-  difficulty: "all",
+  {
+    id: "advanced_macros",
+    name: "Calcul avancé des macros"
+  },
 
-  favoriteOnly: false
-};
-
-
-/* =========================================================
-   FAVORIS
-========================================================= */
-
-const FAVORITES = {
-
-  foods: [],
-
-  recipes: [],
-
-  meals: []
-};
-
-
-/* =========================================================
-   LISTE DE COURSES ACTIVE
-========================================================= */
-
-const ACTIVE_SHOPPING_LIST = {
-
-  items: [],
-
-  totalEstimatedPrice: 0,
-
-  completedItems: [],
-
-  lastUpdated: null
-};
-
-
-/* =========================================================
-   CALCUL NUTRITION D'UN ALIMENT
-========================================================= */
-
-function calculateFoodNutrition(foodId, grams) {
-
-  const food = FOODS.find(
-    item => item.id === foodId
-  );
-
-  if (!food) {
-
-    return {
-      calories: 0,
-      protein: 0,
-      carbs: 0,
-      fat: 0,
-      fiber: 0
-    };
+  {
+    id: "custom_meals",
+    name: "Repas personnalisés"
   }
 
-  const amount =
-    Number(grams) || 0;
-
-  const factor =
-    amount / 100;
-
-  return {
-
-    calories:
-      food.kcal * factor,
-
-    protein:
-      food.protein * factor,
-
-    carbs:
-      food.carbs * factor,
-
-    fat:
-      food.fat * factor,
-
-    fiber:
-      (food.fiber || 0) * factor
-  };
-}
-
-
-/* =========================================================
-   CALCUL D'UNE RECETTE
-========================================================= */
-
-function calculateRecipeNutrition(recipeId) {
-
-  const recipe =
-    RECIPES.find(
-      item => item.id === recipeId
-    );
-
-  if (!recipe) {
-
-    return {
-      calories: 0,
-      protein: 0,
-      carbs: 0,
-      fat: 0,
-      fiber: 0
-    };
-  }
-
-  const total = {
-
-    calories: 0,
-    protein: 0,
-    carbs: 0,
-    fat: 0,
-    fiber: 0
-  };
-
-  recipe.ingredients.forEach(
-    ingredient => {
-
-      const nutrition =
-        calculateFoodNutrition(
-          ingredient.food,
-          ingredient.grams
-        );
-
-      total.calories += nutrition.calories;
-      total.protein += nutrition.protein;
-      total.carbs += nutrition.carbs;
-      total.fat += nutrition.fat;
-      total.fiber += nutrition.fiber;
-    }
-  );
-
-  return total;
-}
-
-
-/* =========================================================
-   CALCUL D'UN REPAS
-========================================================= */
-
-function calculateMealNutrition(meal) {
-
-  if (!meal) {
-
-    return {
-      calories: 0,
-      protein: 0,
-      carbs: 0,
-      fat: 0,
-      fiber: 0
-    };
-  }
-
-  if (meal.recipeId) {
-
-    return calculateRecipeNutrition(
-      meal.recipeId
-    );
-  }
-
-  if (meal.foodId) {
-
-    return calculateFoodNutrition(
-      meal.foodId,
-      meal.grams
-    );
-  }
-
-  return {
-    calories: 0,
-    protein: 0,
-    carbs: 0,
-    fat: 0,
-    fiber: 0
-  };
-}
-
-
-/* =========================================================
-   CALCUL D'UNE JOURNÉE
-========================================================= */
-
-function calculateDayNutrition(dayPlan) {
-
-  const total = {
-
-    calories: 0,
-    protein: 0,
-    carbs: 0,
-    fat: 0,
-    fiber: 0
-  };
-
-  if (!dayPlan || !dayPlan.meals) {
-    return total;
-  }
-
-  Object.values(dayPlan.meals).forEach(
-    meal => {
-
-      const nutrition =
-        calculateMealNutrition(meal);
-
-      total.calories += nutrition.calories;
-      total.protein += nutrition.protein;
-      total.carbs += nutrition.carbs;
-      total.fat += nutrition.fat;
-      total.fiber += nutrition.fiber;
-    }
-  );
-
-  return total;
-}
-
-
-/* =========================================================
-   CALCUL PRIX ALIMENT
-========================================================= */
-
-function calculateFoodPrice(foodId, grams) {
-
-  const food =
-    FOODS.find(
-      item => item.id === foodId
-    );
-
-  if (!food) return 0;
-
-  const amount =
-    Number(grams) || 0;
-
-  if (food.pricePerKg) {
-
-    return (
-      amount /
-      1000
-    ) * food.pricePerKg;
-  }
-
-  if (food.pricePerLiter) {
-
-    return (
-      amount /
-      1000
-    ) * food.pricePerLiter;
-  }
-
-  return 0;
-}
-
-
-/* =========================================================
-   CALCUL PRIX RECETTE
-========================================================= */
-
-function calculateRecipePrice(recipeId) {
-
-  const recipe =
-    RECIPES.find(
-      item => item.id === recipeId
-    );
-
-  if (!recipe) return 0;
-
-  return recipe.ingredients.reduce(
-    (total, ingredient) => {
-
-      return total +
-        calculateFoodPrice(
-          ingredient.food,
-          ingredient.grams
-        );
-
-    },
-    0
-  );
-}
-
-
-/* =========================================================
-   CALCUL IMC
-========================================================= */
-
-function calculateBMI(weightKg, heightCm) {
-
-  const weight =
-    Number(weightKg);
-
-  const height =
-    Number(heightCm) / 100;
-
-  if (!weight || !height) {
-    return 0;
-  }
-
-  return weight /
-    (height * height);
-}
-
-
-/* =========================================================
-   CATÉGORIES
-========================================================= */
-
-const FOOD_CATEGORIES = [
-
-  "Toutes",
-
-  "Viandes",
-
-  "Poissons",
-
-  "Œufs",
-
-  "Féculents",
-
-  "Légumes",
-
-  "Fruits",
-
-  "Produits laitiers",
-
-  "Légumineuses",
-
-  "Oléagineux",
-
-  "Matières grasses",
-
-  "Petit-déjeuner",
-
-  "Suppléments"
 ];
 
 
 /* =========================================================
-   NIVEAUX D'ACTIVITÉ
+   LOCAL STORAGE KEYS
 ========================================================= */
 
-const ACTIVITY_LEVELS = [
+const STORAGE_KEYS = {
 
-  {
-    id: "sedentary",
-    name: "Sédentaire",
-    multiplier: 1.2
-  },
+  profile: "budgetcook_profile",
 
-  {
-    id: "lightly_active",
-    name: "Légèrement actif",
-    multiplier: 1.375
-  },
+  weekPlan: "budgetcook_week_plan",
 
-  {
-    id: "moderately_active",
-    name: "Modérément actif",
-    multiplier: 1.55
-  },
+  pantry: "budgetcook_pantry",
 
-  {
-    id: "active",
-    name: "Actif",
-    multiplier: 1.725
-  },
+  progress: "budgetcook_progress",
 
-  {
-    id: "very_active",
-    name: "Très actif",
-    multiplier: 1.9
-  }
-];
+  streaks: "budgetcook_streaks",
 
+  settings: "budgetcook_settings",
 
-/* =========================================================
-   OBJECTIFS DISPONIBLES
-========================================================= */
+  shopping: "budgetcook_shopping",
 
-const GOAL_TYPES = [
+  favorites: "budgetcook_favorites"
 
-  {
-    id: "cut",
-    name: "Perte de graisse",
-    calorieAdjustment: -300
-  },
-
-  {
-    id: "maintenance",
-    name: "Maintien",
-    calorieAdjustment: 0
-  },
-
-  {
-    id: "lean_bulk",
-    name: "Prise de muscle",
-    calorieAdjustment: 200
-  },
-
-  {
-    id: "bulk",
-    name: "Prise de masse",
-    calorieAdjustment: 300
-  }
-];
-
-
-/* =========================================================
-   INITIALISATION DES CALCULS
-========================================================= */
-
-function initializeUserNutrition() {
-
-  const profile =
-    USER_PROFILE;
-
-  const bmr =
-    CALORIE_CALCULATOR
-      .calculateBMR(profile);
-
-  const tdee =
-    CALORIE_CALCULATOR
-      .calculateTDEE(profile);
-
-  const targetCalories =
-    CALORIE_CALCULATOR
-      .calculateTargetCalories(profile);
-
-  const macros =
-    CALORIE_CALCULATOR
-      .calculateMacros(profile);
-
-  profile.calculated = {
-
-    bmi:
-      calculateBMI(
-        profile.weightKg,
-        profile.heightCm
-      ),
-
-    bmr:
-      Math.round(bmr),
-
-    tdee:
-      Math.round(tdee),
-
-    targetCalories:
-      macros.calories,
-
-    proteinGrams:
-      macros.protein,
-
-    fatGrams:
-      macros.fat,
-
-    carbsGrams:
-      macros.carbs,
-
-    proteinCalories:
-      macros.proteinCalories,
-
-    fatCalories:
-      macros.fatCalories,
-
-    carbsCalories:
-      macros.carbsCalories
-  };
-
-  return profile.calculated;
-}
+};
 
 
 /* =========================================================
    EXPORT GLOBAL
-   ---------------------------------------------------------
-   Permet aux autres fichiers JS de retrouver toutes
-   les données même si le projet n'utilise pas de modules.
 ========================================================= */
 
-window.BudgetCookData = {
+const BUDGETCOOK_DATA = {
 
-  APP_DATA,
+  APP_CONFIG,
 
-  USER_PROFILE,
-  BODY_MEASUREMENTS,
-  MEASUREMENTS_HISTORY,
+  DEFAULT_PROFILE,
+
+  ACTIVITY_LEVELS,
 
   GOALS,
-  CALORIE_CALCULATOR,
 
   FOODS,
+
   RECIPES,
 
-  SHOPPING_ITEMS,
-  STORES,
-
-  PANTRY,
+  MEAL_TYPES,
 
   DAYS,
-  MEAL_TYPES,
-  WEEK_PLAN,
 
-  FOOD_LOG,
-  NUTRITION_HISTORY,
+  DEFAULT_WEEK_PLAN,
 
-  PROGRESS,
-  STREAKS,
+  SHOPPING_ITEMS,
 
-  WATER_TRACKER,
-  ACTIVITY_TRACKER,
-  WORKOUT_HISTORY,
+  DEFAULT_PANTRY,
 
-  BUDGET,
-  EXPENSE_HISTORY,
+  STORES,
 
-  COACH,
-  ACHIEVEMENTS,
+  DEFAULT_PROGRESS,
 
-  APP_SETTINGS,
+  DEFAULT_STREAKS,
 
-  RECIPE_FILTERS,
-  FAVORITES,
+  DAILY_TARGETS,
 
-  ACTIVE_SHOPPING_LIST,
+  COACH_MESSAGES,
 
-  FOOD_CATEGORIES,
-  ACTIVITY_LEVELS,
-  GOAL_TYPES,
+  NOTIFICATION_SETTINGS,
 
-  calculateFoodNutrition,
-  calculateRecipeNutrition,
-  calculateMealNutrition,
-  calculateDayNutrition,
+  DEFAULT_SETTINGS,
 
-  calculateFoodPrice,
-  calculateRecipePrice,
+  PREMIUM_FEATURES,
 
-  calculateBMI,
-  initializeUserNutrition
+  STORAGE_KEYS
+
 };
 
 
 /* =========================================================
-   INITIALISATION
+   COMPATIBILITÉ
 ========================================================= */
 
-initializeUserNutrition();
+if (typeof window !== "undefined") {
 
-console.log(
-  "🍳 BudgetCook V4 — DATA.JS chargé",
-  BudgetCookData
-);
+  window.BUDGETCOOK_DATA = BUDGETCOOK_DATA;
+
+  window.FOODS = FOODS;
+
+  window.RECIPES = RECIPES;
+
+  window.SHOPPING_ITEMS = SHOPPING_ITEMS;
+
+  window.DAYS = DAYS;
+
+  window.GOALS = GOALS;
+
+  window.DEFAULT_PROFILE = DEFAULT_PROFILE;
+
+}
