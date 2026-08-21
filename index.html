@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
+
   <meta charset="UTF-8">
 
   <meta
@@ -29,1033 +31,1187 @@
   <link rel="stylesheet" href="style.css">
 
   <title>BudgetCook V4</title>
+
 </head>
 
 <body>
 
-  <div id="app">
+<div id="app">
 
-    <!-- HEADER -->
-    <header class="topbar">
+  <!-- HEADER -->
 
-      <div class="logo">
-        <span class="logoIcon">🍝</span>
-        <span>BudgetCook</span>
-        <small>V4</small>
+  <header class="topbar">
+
+    <div class="logo">
+      <span class="logoIcon">🍝</span>
+      <span>BudgetCook</span>
+      <small>V4</small>
+    </div>
+
+    <button
+      class="profile-button"
+      id="profileButton"
+      aria-label="Profil"
+    >
+      👤
+    </button>
+
+  </header>
+
+
+  <!-- ========================= -->
+  <!-- ACCUEIL -->
+  <!-- ========================= -->
+
+  <main>
+
+    <section class="page active" id="homePage">
+
+      <div class="eyebrow">
+        TABLEAU DE BORD
       </div>
 
-      <button
-        class="profile-button"
-        id="profileButton"
-        aria-label="Profil"
-      >
-        👤
-      </button>
+      <h1>
+        Bonjour 👋
+      </h1>
 
-    </header>
+      <div class="calorie-card">
 
+        <div class="calorie-top">
 
-    <!-- ========================= -->
-    <!-- ACCUEIL -->
-    <!-- ========================= -->
+          <div>
 
-    <main>
+            <span class="label">
+              Objectif quotidien
+            </span>
 
-      <section class="page active" id="homePage">
+            <div class="calorie-number">
 
-        <div class="eyebrow">
-          TABLEAU DE BORD
-        </div>
+              <span id="dailyTarget">0</span>
 
-        <h1>
-          Bonjour 👋
-        </h1>
+              <small>
+                kcal
+              </small>
 
-        <div class="calorie-card">
-
-          <div class="calorie-top">
-
-            <div>
-              <span class="label">
-                Objectif quotidien
-              </span>
-
-              <div class="calorie-number">
-                <span id="dailyTarget">0</span>
-                <small>kcal</small>
-              </div>
-            </div>
-
-            <div
-              class="goal-pill"
-              id="goalPill"
-            >
-              Profil
             </div>
 
           </div>
 
-          <div class="progress-track">
-
-            <div
-              class="progress-fill"
-              id="calorieProgress"
-            ></div>
-
-          </div>
-
-          <div class="calorie-bottom">
-
-            <span>
-              <strong id="consumedCalories">0</strong>
-              consommées
-            </span>
-
-            <span>
-              <strong id="remainingCalories">0</strong>
-              restantes
-            </span>
-
-          </div>
-
-        </div>
-
-
-        <!-- MACROS -->
-
-        <div class="stats-grid">
-
-          <div class="stat-card">
-
-            <span class="stat-icon">
-              🥩
-            </span>
-
-            <strong id="homeProtein">
-              0 g
-            </strong>
-
-            <small>
-              Protéines
-            </small>
-
-          </div>
-
-          <div class="stat-card">
-
-            <span class="stat-icon">
-              🍚
-            </span>
-
-            <strong id="homeCarbs">
-              0 g
-            </strong>
-
-            <small>
-              Glucides
-            </small>
-
-          </div>
-
-          <div class="stat-card">
-
-            <span class="stat-icon">
-              🥑
-            </span>
-
-            <strong id="homeFat">
-              0 g
-            </strong>
-
-            <small>
-              Lipides
-            </small>
-
-          </div>
-
-        </div>
-
-
-        <!-- REPAS -->
-
-        <div class="section-header">
-
-          <h2>
-            Repas du jour
-          </h2>
-
-          <button
-            class="text-button"
-            data-page="journalPage"
+          <div
+            class="goal-pill"
+            id="goalPill"
           >
-            Voir tout
-          </button>
-
-        </div>
-
-        <div id="homeMeals"></div>
-
-
-        <!-- SERIE -->
-
-        <div class="section-header">
-
-          <h2>
-            🔥 Ma série
-          </h2>
-
-        </div>
-
-        <div class="card streak-card">
-
-          <div class="streak-number">
-
-            <span id="streakNumber">
-              0
-            </span>
-
-            <small>
-              jour
-            </small>
-
-          </div>
-
-          <div>
-
-            <strong>
-              Continue comme ça !
-            </strong>
-
-            <p>
-              Enregistre au moins un repas chaque jour.
-            </p>
-
+            Profil
           </div>
 
         </div>
 
-      </section>
+        <div class="progress-track">
 
-
-      <!-- ========================= -->
-      <!-- JOURNAL -->
-      <!-- ========================= -->
-
-      <section
-        class="page"
-        id="journalPage"
-      >
-
-        <div class="eyebrow">
-          NUTRITION
-        </div>
-
-        <h1>
-          Journal 🍽️
-        </h1>
-
-        <div class="macro-grid">
-
-          <div class="mini-stat">
-            <small>Calories</small>
-            <strong id="journalCalories">0</strong>
-          </div>
-
-          <div class="mini-stat">
-            <small>Protéines</small>
-            <strong id="journalProtein">0 g</strong>
-          </div>
-
-          <div class="mini-stat">
-            <small>Glucides</small>
-            <strong id="journalCarbs">0 g</strong>
-          </div>
-
-          <div class="mini-stat">
-            <small>Lipides</small>
-            <strong id="journalFat">0 g</strong>
-          </div>
+          <div
+            class="progress-fill"
+            id="calorieProgress"
+          ></div>
 
         </div>
 
-        <div class="section-header">
-
-          <h2>
-            Aujourd'hui
-          </h2>
-
-          <button
-            class="text-button"
-            id="clearJournalButton"
-          >
-            Vider
-          </button>
-
-        </div>
-
-        <div id="journalList"></div>
-
-        <button
-          class="primary-button"
-          id="addFoodButton"
-        >
-          + Ajouter un aliment
-        </button>
-
-      </section>
-
-
-      <!-- ========================= -->
-      <!-- RECETTES -->
-      <!-- ========================= -->
-
-      <section
-        class="page"
-        id="recipesPage"
-      >
-
-        <div class="eyebrow">
-          CUISINE
-        </div>
-
-        <h1>
-          Recettes 🍳
-        </h1>
-
-        <div class="card smart-card">
-
-          <div class="smart-icon">
-            ✨
-          </div>
-
-          <div>
-
-            <h2>
-              Portion intelligente
-            </h2>
-
-            <p>
-              BudgetCook adapte la quantité à tes objectifs.
-            </p>
-
-          </div>
-
-          <button
-            class="primary-button"
-            id="smartMealButton"
-          >
-            Me proposer un repas
-          </button>
-
-        </div>
-
-        <div class="section-header">
-
-          <h2>
-            Mes recettes
-          </h2>
-
-        </div>
-
-        <div id="recipeList"></div>
-
-      </section>
-
-
-      <!-- ========================= -->
-      <!-- PLANNING -->
-      <!-- ========================= -->
-
-      <section
-        class="page"
-        id="plannerPage"
-      >
-
-        <div class="eyebrow">
-          PLANIFICATION
-        </div>
-
-        <h1>
-          Ma semaine 📅
-        </h1>
-
-        <div
-          class="days-container"
-          id="daysContainer"
-        ></div>
-
-        <div class="card">
-
-          <div class="section-header no-margin">
-
-            <h2 id="selectedDayTitle">
-              Lundi
-            </h2>
-
-            <button
-              class="text-button"
-              id="regenerateWeekButton"
-            >
-              Régénérer
-            </button>
-
-          </div>
-
-          <div id="dayMeals"></div>
-
-        </div>
-
-      </section>
-
-
-      <!-- ========================= -->
-      <!-- COURSES -->
-      <!-- ========================= -->
-
-      <section
-        class="page"
-        id="shoppingPage"
-      >
-
-        <div class="eyebrow">
-          BUDGET
-        </div>
-
-        <h1>
-          Liste de courses 🛒
-        </h1>
-
-        <div class="stats-grid two">
-
-          <div class="stat-card">
-
-            <small>
-              Budget semaine
-            </small>
-
-            <strong>
-              <span id="weeklyBudget">0</span>
-              €
-            </strong>
-
-          </div>
-
-          <div class="stat-card">
-
-            <small>
-              Panier estimé
-            </small>
-
-            <strong>
-              <span id="estimatedBasket">0</span>
-              €
-            </strong>
-
-          </div>
-
-        </div>
-
-        <div class="section-header">
-
-          <h2>
-            Courses automatiques
-          </h2>
-
-          <button
-            class="text-button"
-            id="checkAllButton"
-          >
-            Tout cocher
-          </button>
-
-        </div>
-
-        <div
-          class="card shopping-card"
-          id="shoppingList"
-        ></div>
-
-      </section>
-
-
-      <!-- ========================= -->
-      <!-- PROGRESSION -->
-      <!-- ========================= -->
-
-      <section
-        class="page"
-        id="progressPage"
-      >
-
-        <div class="eyebrow">
-          OBJECTIFS
-        </div>
-
-        <h1>
-          Mes progrès 📈
-        </h1>
-
-        <div class="stats-grid two">
-
-          <div class="stat-card">
-
-            <small>
-              Poids actuel
-            </small>
-
-            <strong>
-              <span id="currentWeight">0</span>
-              kg
-            </strong>
-
-          </div>
-
-          <div class="stat-card">
-
-            <small>
-              Calories entretien
-            </small>
-
-            <strong id="maintenanceCalories">
-              0
-            </strong>
-
-          </div>
-
-          <div class="stat-card">
-
-            <small>
-              Objectif
-            </small>
-
-            <strong id="progressCalories">
-              0
-            </strong>
-
-          </div>
-
-          <div class="stat-card">
-
-            <small>
-              Protéines
-            </small>
-
-            <strong id="progressProtein">
-              0 g
-            </strong>
-
-          </div>
-
-        </div>
-
-        <div class="section-header">
-
-          <h2>
-            Historique du poids
-          </h2>
-
-        </div>
-
-        <div
-          class="card weight-chart"
-          id="weightChart"
-        >
-          <span class="empty-text">
-            Ajoute ton premier poids.
+        <div class="calorie-bottom">
+
+          <span>
+            <strong id="consumedCalories">0</strong>
+            consommées
           </span>
-        </div>
 
-        <div class="card input-card">
-
-          <input
-            id="newWeight"
-            type="number"
-            step="0.1"
-            placeholder="Ex : 87.5"
-          >
-
-          <button
-            class="secondary-button"
-            id="addWeightButton"
-          >
-            Ajouter
-          </button>
+          <span>
+            <strong id="remainingCalories">0</strong>
+            restantes
+          </span>
 
         </div>
 
-      </section>
+      </div>
 
 
-      <!-- ========================= -->
-      <!-- GARDE-MANGER -->
-      <!-- ========================= -->
+      <!-- MACROS -->
 
-      <section
-        class="page"
-        id="pantryPage"
-      >
+      <div class="stats-grid">
 
-        <div class="eyebrow">
-          STOCK
-        </div>
+        <div class="stat-card">
 
-        <h1>
-          Garde-manger 🥫
-        </h1>
+          <span class="stat-icon">
+            🥩
+          </span>
 
-        <div class="card input-card">
+          <strong id="homeProtein">
+            0 / 0 g
+          </strong>
 
-          <input
-            id="pantryInput"
-            type="text"
-            placeholder="Ex : riz, thon, œufs..."
-          >
-
-          <button
-            class="secondary-button"
-            id="addPantryButton"
-          >
-            Ajouter
-          </button>
+          <small>
+            Protéines
+          </small>
 
         </div>
 
-        <div class="section-header">
+        <div class="stat-card">
 
-          <h2>
-            Disponible chez moi
-          </h2>
+          <span class="stat-icon">
+            🍚
+          </span>
 
-        </div>
+          <strong id="homeCarbs">
+            0 / 0 g
+          </strong>
 
-        <div
-          class="card"
-          id="pantryList"
-        ></div>
-
-      </section>
-
-
-      <!-- ========================= -->
-      <!-- COACH -->
-      <!-- ========================= -->
-
-      <section
-        class="page"
-        id="coachPage"
-      >
-
-        <div class="eyebrow">
-          ASSISTANT
-        </div>
-
-        <h1>
-          Coach nutrition 🤖
-        </h1>
-
-        <div class="coach-card">
-
-          <div id="coachMessages">
-
-            <div class="coach-message">
-              Salut 👋 Je suis ton coach BudgetCook.
-              Demande-moi tes calories restantes,
-              tes protéines ou une idée de repas.
-            </div>
-
-          </div>
-
-          <div class="coach-input">
-
-            <input
-              id="coachInput"
-              type="text"
-              placeholder="Écris ta question..."
-            >
-
-            <button id="sendCoachButton">
-              ➤
-            </button>
-
-          </div>
+          <small>
+            Glucides
+          </small>
 
         </div>
 
-        <div class="quick-buttons">
+        <div class="stat-card">
 
-          <button class="secondary-button quick-button">
-            Que manger ce soir ?
-          </button>
+          <span class="stat-icon">
+            🥑
+          </span>
 
-          <button class="secondary-button quick-button">
-            Combien de protéines me reste-t-il ?
-          </button>
+          <strong id="homeFat">
+            0 / 0 g
+          </strong>
 
-          <button class="secondary-button quick-button">
-            Comment économiser ?
-          </button>
-
-        </div>
-
-      </section>
-
-
-      <!-- ========================= -->
-      <!-- PROFIL -->
-      <!-- ========================= -->
-
-      <section
-        class="page"
-        id="profilePage"
-      >
-
-        <div class="eyebrow">
-          PERSONNALISATION
-        </div>
-
-        <h1>
-          Mon profil 👤
-        </h1>
-
-        <div class="card profile-card">
-
-          <label>
-            Prénom
-
-            <input
-              id="profileName"
-              type="text"
-              placeholder="Ton prénom"
-            >
-          </label>
-
-          <div class="form-grid">
-
-            <label>
-              Âge
-
-              <input
-                id="profileAge"
-                type="number"
-                placeholder="20"
-              >
-            </label>
-
-            <label>
-              Sexe
-
-              <select id="profileSex">
-
-                <option value="male">
-                  Homme
-                </option>
-
-                <option value="female">
-                  Femme
-                </option>
-
-              </select>
-
-            </label>
-
-            <label>
-              Taille (cm)
-
-              <input
-                id="profileHeight"
-                type="number"
-                placeholder="179"
-              >
-            </label>
-
-            <label>
-              Poids (kg)
-
-              <input
-                id="profileWeight"
-                type="number"
-                step="0.1"
-                placeholder="88"
-              >
-            </label>
-
-          </div>
-
-          <label>
-            Niveau d'activité
-
-            <select id="profileActivity">
-
-              <option value="1.2">
-                Sédentaire
-              </option>
-
-              <option value="1.35">
-                Légèrement actif
-              </option>
-
-              <option value="1.5">
-                Modérément actif
-              </option>
-
-              <option value="1.65">
-                Actif
-              </option>
-
-              <option value="1.75">
-                Très actif
-              </option>
-
-            </select>
-
-          </label>
-
-          <label>
-            Entraînements par semaine
-
-            <input
-              id="profileTraining"
-              type="number"
-              min="0"
-              max="14"
-              placeholder="5"
-            >
-          </label>
-
-          <label>
-            Objectif
-
-            <select id="profileGoal">
-
-              <option value="cut">
-                🔥 Perdre du gras
-              </option>
-
-              <option value="maintain">
-                ⚖️ Maintenir
-              </option>
-
-              <option value="bulk">
-                💪 Prendre du muscle
-              </option>
-
-            </select>
-
-          </label>
-
-          <label>
-            Déficit / surplus
-
-            <select id="profileAdjustment">
-
-              <option value="200">
-                200 kcal
-              </option>
-
-              <option value="300">
-                300 kcal
-              </option>
-
-              <option value="400">
-                400 kcal
-              </option>
-
-              <option value="500">
-                500 kcal
-              </option>
-
-            </select>
-
-          </label>
-
-          <label>
-            Budget nourriture / semaine
-
-            <input
-              id="profileBudget"
-              type="number"
-              min="0"
-              placeholder="50"
-            >
-          </label>
-
-          <button
-            class="primary-button"
-            id="saveProfileButton"
-          >
-            Enregistrer mon profil
-          </button>
+          <small>
+            Lipides
+          </small>
 
         </div>
 
-        <div class="section-header">
-
-          <h2>
-            Calcul personnalisé
-          </h2>
-
-        </div>
-
-        <div class="stats-grid">
-
-          <div class="stat-card">
-            <small>BMR</small>
-            <strong id="profileBmr">0</strong>
-          </div>
-
-          <div class="stat-card">
-            <small>Entretien</small>
-            <strong id="profileTdee">0</strong>
-          </div>
-
-          <div class="stat-card">
-            <small>Objectif</small>
-            <strong id="profileTarget">0</strong>
-          </div>
-
-        </div>
-
-        <button
-          class="secondary-button full-button"
-          id="darkModeButton"
-        >
-          🌙 Mode sombre
-        </button>
-
-      </section>
-
-    </main>
+      </div>
 
 
-    <!-- ========================= -->
-    <!-- NAVIGATION -->
-    <!-- ========================= -->
-
-    <nav class="bottom-navigation">
-
-      <button
-        class="nav-button active"
-        data-page="homePage"
-      >
-        🏠
-        <small>
-          Accueil
-        </small>
-      </button>
-
-      <button
-        class="nav-button"
-        data-page="plannerPage"
-      >
-        📅
-        <small>
-          Semaine
-        </small>
-      </button>
-
-      <button
-        class="nav-button"
-        data-page="journalPage"
-      >
-        🍽️
-        <small>
-          Journal
-        </small>
-      </button>
-
-      <!-- RECETTES AJOUTÉES ICI -->
-
-      <button
-        class="nav-button"
-        data-page="recipesPage"
-      >
-        🍳
-        <small>
-          Recettes
-        </small>
-      </button>
-
-      <button
-        class="nav-button"
-        data-page="shoppingPage"
-      >
-        🛒
-        <small>
-          Courses
-        </small>
-      </button>
-
-      <button
-        class="nav-button"
-        data-page="profilePage"
-      >
-        👤
-        <small>
-          Profil
-        </small>
-      </button>
-
-    </nav>
-
-  </div>
-
-
-  <!-- ========================= -->
-  <!-- MODALE ALIMENT -->
-  <!-- ========================= -->
-
-  <div
-    class="modal"
-    id="foodModal"
-  >
-
-    <div class="modal-sheet">
-
-      <div class="modal-header">
+      <div class="section-header">
 
         <h2>
-          Ajouter un aliment
+          Repas du jour
         </h2>
 
         <button
-          class="secondary-button"
-          id="closeFoodModal"
+          class="text-button"
+          data-page="journalPage"
         >
-          ✕
+          Voir tout
         </button>
 
       </div>
 
-      <input
-        class="search-input"
-        id="foodSearch"
-        type="search"
-        placeholder="Rechercher un aliment..."
+      <div id="homeMeals"></div>
+
+
+      <div class="section-header">
+
+        <h2>
+          🔥 Ma série
+        </h2>
+
+      </div>
+
+      <div class="card streak-card">
+
+        <div class="streak-number">
+
+          <span id="streakNumber">
+            0
+          </span>
+
+          <small>
+            jour
+          </small>
+
+        </div>
+
+        <div>
+
+          <strong>
+            Continue comme ça !
+          </strong>
+
+          <p>
+            Enregistre au moins un repas chaque jour.
+          </p>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ========================= -->
+    <!-- JOURNAL -->
+    <!-- ========================= -->
+
+    <section
+      class="page"
+      id="journalPage"
+    >
+
+      <div class="eyebrow">
+        NUTRITION
+      </div>
+
+      <h1>
+        Journal 🍽️
+      </h1>
+
+      <div class="macro-grid">
+
+        <div class="mini-stat">
+          <small>Calories</small>
+          <strong id="journalCalories">0</strong>
+        </div>
+
+        <div class="mini-stat">
+          <small>Protéines</small>
+          <strong id="journalProtein">0 g</strong>
+        </div>
+
+        <div class="mini-stat">
+          <small>Glucides</small>
+          <strong id="journalCarbs">0 g</strong>
+        </div>
+
+        <div class="mini-stat">
+          <small>Lipides</small>
+          <strong id="journalFat">0 g</strong>
+        </div>
+
+      </div>
+
+      <div class="section-header">
+
+        <h2>
+          Aujourd'hui
+        </h2>
+
+        <button
+          class="text-button"
+          id="clearJournalButton"
+        >
+          Vider
+        </button>
+
+      </div>
+
+      <div id="journalList"></div>
+
+      <button
+        class="primary-button"
+        id="addFoodButton"
+      >
+        + Ajouter un aliment
+      </button>
+
+    </section>
+
+
+    <!-- ========================= -->
+    <!-- RECETTES -->
+    <!-- ========================= -->
+
+    <section
+      class="page"
+      id="recipesPage"
+    >
+
+      <div class="eyebrow">
+        CUISINE
+      </div>
+
+      <h1>
+        Recettes 🍳
+      </h1>
+
+      <div class="card smart-card">
+
+        <div class="smart-icon">
+          ✨
+        </div>
+
+        <div>
+
+          <h2>
+            Portion intelligente
+          </h2>
+
+          <p>
+            BudgetCook adapte la quantité à tes objectifs.
+          </p>
+
+        </div>
+
+        <button
+          class="primary-button"
+          id="smartMealButton"
+        >
+          Me proposer un repas
+        </button>
+
+      </div>
+
+      <div class="section-header">
+
+        <h2>
+          Mes recettes
+        </h2>
+
+      </div>
+
+      <div id="recipeList"></div>
+
+    </section>
+
+
+    <!-- ========================= -->
+    <!-- PLANNING -->
+    <!-- ========================= -->
+
+    <section
+      class="page"
+      id="plannerPage"
+    >
+
+      <div class="eyebrow">
+        PLANIFICATION
+      </div>
+
+      <h1>
+        Ma semaine 📅
+      </h1>
+
+      <div
+        class="days-container"
+        id="daysContainer"
+      ></div>
+
+      <div class="card">
+
+        <div class="section-header no-margin">
+
+          <h2 id="selectedDayTitle">
+            Lundi
+          </h2>
+
+          <button
+            class="text-button"
+            id="regenerateWeekButton"
+          >
+            Régénérer
+          </button>
+
+        </div>
+
+        <div id="dayMeals"></div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ========================= -->
+    <!-- COURSES -->
+    <!-- ========================= -->
+
+    <section
+      class="page"
+      id="shoppingPage"
+    >
+
+      <div class="eyebrow">
+        BUDGET
+      </div>
+
+      <h1>
+        Liste de courses 🛒
+      </h1>
+
+      <div class="stats-grid two">
+
+        <div class="stat-card">
+
+          <small>
+            Budget semaine
+          </small>
+
+          <strong>
+
+            <span id="weeklyBudget">
+              0
+            </span>
+
+            €
+
+          </strong>
+
+        </div>
+
+        <div class="stat-card">
+
+          <small>
+            Panier estimé
+          </small>
+
+          <strong>
+
+            <span id="estimatedBasket">
+              0
+            </span>
+
+            €
+
+          </strong>
+
+        </div>
+
+      </div>
+
+      <div class="section-header">
+
+        <h2>
+          Courses automatiques
+        </h2>
+
+        <button
+          class="text-button"
+          id="checkAllButton"
+        >
+          Tout cocher
+        </button>
+
+      </div>
+
+      <div
+        class="card shopping-card"
+        id="shoppingList"
+      ></div>
+
+    </section>
+
+
+    <!-- ========================= -->
+    <!-- PROGRESSION -->
+    <!-- ========================= -->
+
+    <section
+      class="page"
+      id="progressPage"
+    >
+
+      <div class="eyebrow">
+        OBJECTIFS
+      </div>
+
+      <h1>
+        Mes progrès 📈
+      </h1>
+
+      <div class="stats-grid two">
+
+        <div class="stat-card">
+
+          <small>
+            Poids actuel
+          </small>
+
+          <strong>
+
+            <span id="currentWeight">
+              0
+            </span>
+
+            kg
+
+          </strong>
+
+        </div>
+
+        <div class="stat-card">
+
+          <small>
+            Calories entretien
+          </small>
+
+          <strong id="maintenanceCalories">
+            0
+          </strong>
+
+        </div>
+
+        <div class="stat-card">
+
+          <small>
+            Objectif
+          </small>
+
+          <strong id="progressCalories">
+            0
+          </strong>
+
+        </div>
+
+        <div class="stat-card">
+
+          <small>
+            Protéines
+          </small>
+
+          <strong id="progressProtein">
+            0 g
+          </strong>
+
+        </div>
+
+      </div>
+
+      <div class="section-header">
+
+        <h2>
+          Historique du poids
+        </h2>
+
+      </div>
+
+      <div
+        class="card weight-chart"
+        id="weightChart"
       >
 
-      <div id="foodResults"></div>
+        <span class="empty-text">
+          Ajoute ton premier poids.
+        </span>
+
+      </div>
+
+      <div class="card input-card">
+
+        <input
+          id="newWeight"
+          type="number"
+          step="0.1"
+          placeholder="Ex : 87.5"
+        >
+
+        <button
+          class="secondary-button"
+          id="addWeightButton"
+        >
+          Ajouter
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <!-- ========================= -->
+    <!-- GARDE MANGER -->
+    <!-- ========================= -->
+
+    <section
+      class="page"
+      id="pantryPage"
+    >
+
+      <div class="eyebrow">
+        STOCK
+      </div>
+
+      <h1>
+        Garde-manger 🥫
+      </h1>
+
+      <div class="card input-card">
+
+        <input
+          id="pantryInput"
+          type="text"
+          placeholder="Ex : riz, thon, œufs..."
+        >
+
+        <button
+          class="secondary-button"
+          id="addPantryButton"
+        >
+          Ajouter
+        </button>
+
+      </div>
+
+      <div class="section-header">
+
+        <h2>
+          Disponible chez moi
+        </h2>
+
+      </div>
+
+      <div
+        class="card"
+        id="pantryList"
+      ></div>
+
+    </section>
+
+
+    <!-- ========================= -->
+    <!-- COACH -->
+    <!-- ========================= -->
+
+    <section
+      class="page"
+      id="coachPage"
+    >
+
+      <div class="eyebrow">
+        ASSISTANT
+      </div>
+
+      <h1>
+        Coach nutrition 🤖
+      </h1>
+
+      <div class="coach-card">
+
+        <div id="coachMessages">
+
+          <div class="coach-message">
+
+            Salut 👋 Je suis ton coach BudgetCook.
+            Demande-moi tes calories restantes,
+            tes protéines ou une idée de repas.
+
+          </div>
+
+        </div>
+
+        <div class="coach-input">
+
+          <input
+            id="coachInput"
+            type="text"
+            placeholder="Écris ta question..."
+          >
+
+          <button id="sendCoachButton">
+            ➤
+          </button>
+
+        </div>
+
+      </div>
+
+      <div class="quick-buttons">
+
+        <button class="secondary-button quick-button">
+          Que manger ce soir ?
+        </button>
+
+        <button class="secondary-button quick-button">
+          Combien de protéines me reste-t-il ?
+        </button>
+
+        <button class="secondary-button quick-button">
+          Combien de glucides me reste-t-il ?
+        </button>
+
+        <button class="secondary-button quick-button">
+          Combien de lipides me reste-t-il ?
+        </button>
+
+        <button class="secondary-button quick-button">
+          Comment économiser ?
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <!-- ========================= -->
+    <!-- PROFIL -->
+    <!-- ========================= -->
+
+    <section
+      class="page"
+      id="profilePage"
+    >
+
+      <div class="eyebrow">
+        PERSONNALISATION
+      </div>
+
+      <h1>
+        Mon profil 👤
+      </h1>
+
+      <div class="card profile-card">
+
+        <label>
+
+          Prénom
+
+          <input
+            id="profileName"
+            type="text"
+            placeholder="Ton prénom"
+          >
+
+        </label>
+
+        <div class="form-grid">
+
+          <label>
+
+            Âge
+
+            <input
+              id="profileAge"
+              type="number"
+              placeholder="20"
+            >
+
+          </label>
+
+          <label>
+
+            Sexe
+
+            <select id="profileSex">
+
+              <option value="male">
+                Homme
+              </option>
+
+              <option value="female">
+                Femme
+              </option>
+
+            </select>
+
+          </label>
+
+          <label>
+
+            Taille (cm)
+
+            <input
+              id="profileHeight"
+              type="number"
+              placeholder="179"
+            >
+
+          </label>
+
+          <label>
+
+            Poids (kg)
+
+            <input
+              id="profileWeight"
+              type="number"
+              step="0.1"
+              placeholder="88"
+            >
+
+          </label>
+
+        </div>
+
+        <label>
+
+          Niveau d'activité
+
+          <select id="profileActivity">
+
+            <option value="1.2">
+              Sédentaire
+            </option>
+
+            <option value="1.35">
+              Légèrement actif
+            </option>
+
+            <option value="1.5">
+              Modérément actif
+            </option>
+
+            <option value="1.65">
+              Actif
+            </option>
+
+            <option value="1.75">
+              Très actif
+            </option>
+
+          </select>
+
+        </label>
+
+        <label>
+
+          Entraînements par semaine
+
+          <input
+            id="profileTraining"
+            type="number"
+            min="0"
+            max="14"
+            placeholder="5"
+          >
+
+        </label>
+
+        <label>
+
+          Objectif
+
+          <select id="profileGoal">
+
+            <option value="cut">
+              🔥 Perdre du gras
+            </option>
+
+            <option value="maintain">
+              ⚖️ Maintenir
+            </option>
+
+            <option value="bulk">
+              💪 Prendre du muscle
+            </option>
+
+          </select>
+
+        </label>
+
+        <label>
+
+          Déficit / surplus
+
+          <select id="profileAdjustment">
+
+            <option value="200">
+              200 kcal
+            </option>
+
+            <option value="300">
+              300 kcal
+            </option>
+
+            <option value="400">
+              400 kcal
+            </option>
+
+            <option value="500">
+              500 kcal
+            </option>
+
+          </select>
+
+        </label>
+
+        <label>
+
+          Budget nourriture / semaine
+
+          <input
+            id="profileBudget"
+            type="number"
+            min="0"
+            placeholder="50"
+          >
+
+        </label>
+
+        <button
+          class="primary-button"
+          id="saveProfileButton"
+        >
+          Enregistrer mon profil
+        </button>
+
+      </div>
+
+
+      <div class="section-header">
+
+        <h2>
+          Calcul personnalisé
+        </h2>
+
+      </div>
+
+
+      <div class="stats-grid">
+
+        <div class="stat-card">
+
+          <small>
+            BMR
+          </small>
+
+          <strong id="profileBmr">
+            0
+          </strong>
+
+        </div>
+
+        <div class="stat-card">
+
+          <small>
+            Entretien
+          </small>
+
+          <strong id="profileTdee">
+            0
+          </strong>
+
+        </div>
+
+        <div class="stat-card">
+
+          <small>
+            Objectif
+          </small>
+
+          <strong id="profileTarget">
+            0
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <!-- OBJECTIFS MACROS -->
+
+      <div class="section-header">
+
+        <h2>
+          🎯 Mes objectifs nutritionnels
+        </h2>
+
+      </div>
+
+      <div class="card">
+
+        <div class="macro-line">
+
+          <div class="macro-line-top">
+
+            <span>
+              🥩 Protéines
+            </span>
+
+            <strong id="profileProteinTarget">
+              0 g
+            </strong>
+
+          </div>
+
+        </div>
+
+        <div class="macro-line">
+
+          <div class="macro-line-top">
+
+            <span>
+              🍚 Glucides
+            </span>
+
+            <strong id="profileCarbsTarget">
+              0 g
+            </strong>
+
+          </div>
+
+        </div>
+
+        <div class="macro-line">
+
+          <div class="macro-line-top">
+
+            <span>
+              🥑 Lipides
+            </span>
+
+            <strong id="profileFatTarget">
+              0 g
+            </strong>
+
+          </div>
+
+        </div>
+
+        <p class="empty-text">
+
+          Protéines : 2 g/kg • Lipides : 0,8 g/kg •
+          Glucides : calories restantes
+
+        </p>
+
+      </div>
+
+
+      <button
+        class="secondary-button full-button"
+        id="darkModeButton"
+      >
+        🌙 Mode sombre
+      </button>
+
+    </section>
+
+  </main>
+
+
+  <!-- ========================= -->
+  <!-- NAVIGATION -->
+  <!-- ========================= -->
+
+  <nav class="bottom-navigation">
+
+    <button
+      class="nav-button active"
+      data-page="homePage"
+    >
+
+      🏠
+
+      <small>
+        Accueil
+      </small>
+
+    </button>
+
+    <button
+      class="nav-button"
+      data-page="plannerPage"
+    >
+
+      📅
+
+      <small>
+        Semaine
+      </small>
+
+    </button>
+
+    <button
+      class="nav-button"
+      data-page="journalPage"
+    >
+
+      🍽️
+
+      <small>
+        Journal
+      </small>
+
+    </button>
+
+    <button
+      class="nav-button"
+      data-page="recipesPage"
+    >
+
+      🍳
+
+      <small>
+        Recettes
+      </small>
+
+    </button>
+
+    <button
+      class="nav-button"
+      data-page="shoppingPage"
+    >
+
+      🛒
+
+      <small>
+        Courses
+      </small>
+
+    </button>
+
+    <button
+      class="nav-button"
+      data-page="profilePage"
+    >
+
+      👤
+
+      <small>
+        Profil
+      </small>
+
+    </button>
+
+  </nav>
+
+</div>
+
+
+<!-- ========================= -->
+<!-- MODALE ALIMENT -->
+<!-- ========================= -->
+
+<div
+  class="modal"
+  id="foodModal"
+>
+
+  <div class="modal-sheet">
+
+    <div class="modal-header">
+
+      <h2>
+        Ajouter un aliment
+      </h2>
+
+      <button
+        class="secondary-button"
+        id="closeFoodModal"
+      >
+        ✕
+      </button>
 
     </div>
 
+    <input
+      class="search-input"
+      id="foodSearch"
+      type="search"
+      placeholder="Rechercher un aliment..."
+    >
+
+    <div id="foodResults"></div>
+
   </div>
 
-
-  <!-- ========================= -->
-  <!-- TOAST -->
-  <!-- ========================= -->
-
-  <div
-    class="toast"
-    id="toast"
-  ></div>
+</div>
 
 
-  <!-- ========================= -->
-  <!-- SCRIPTS -->
-  <!-- ========================= -->
+<!-- TOAST -->
 
-  <script src="data.js"></script>
-  <script src="app.js"></script>
+<div
+  class="toast"
+  id="toast"
+></div>
+
+
+<!-- SCRIPTS -->
+
+<script src="data.js"></script>
+<script src="app.js"></script>
 
 </body>
 </html>
