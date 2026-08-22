@@ -1227,16 +1227,8 @@ function saveProfileFromDOM() {
 
 function renderDashboard() {
 
-  /*
-    ⭐ Même fonction que le profil.
-    Il est donc impossible d'avoir une cible
-    de glucides différente entre les deux.
-  */
-
-  const targets =
-    getDailyTargets(
-      state.profile
-    );
+  const macros =
+    calculateMacros(state.profile);
 
   const day =
     getCurrentDay();
@@ -1244,33 +1236,169 @@ function renderDashboard() {
   const totals =
     calculateDayNutrition(day);
 
+
+  /* =====================================================
+     CALORIES
+  ===================================================== */
+
   const remainingCalories =
     Math.max(
       0,
-      targets.calories -
-        totals.kcal
+      macros.calories - totals.kcal
     );
+
+  const caloriePercent =
+    macros.calories > 0
+      ? Math.min(
+          100,
+          (totals.kcal / macros.calories) * 100
+        )
+      : 0;
+
+
+  setText(
+    "#homeCaloriesConsumed",
+    Math.round(totals.kcal)
+  );
+
+  setText(
+    "#homeCaloriesTarget",
+    Math.round(macros.calories)
+  );
+
+  setText(
+    "#homeCaloriesRemaining",
+    `${Math.round(remainingCalories)} kcal restantes`
+  );
+
+  setText(
+    "#homeCaloriesPercent",
+    `${Math.round(caloriePercent)}%`
+  );
+
+
+  /* =====================================================
+     PROTÉINES
+  ===================================================== */
 
   const remainingProtein =
     Math.max(
       0,
-      targets.protein -
-        totals.protein
+      macros.protein - totals.protein
     );
+
+  setText(
+    "#homeProteinConsumed",
+    round(totals.protein)
+  );
+
+  setText(
+    "#homeProteinTarget",
+    round(macros.protein)
+  );
+
+
+  /* =====================================================
+     GLUCIDES
+  ===================================================== */
 
   const remainingCarbs =
     Math.max(
       0,
-      targets.carbs -
-        totals.carbs
+      macros.carbs - totals.carbs
     );
+
+  setText(
+    "#homeCarbsConsumed",
+    round(totals.carbs)
+  );
+
+  setText(
+    "#homeCarbsTarget",
+    round(macros.carbs)
+  );
+
+
+  /* =====================================================
+     LIPIDES
+  ===================================================== */
 
   const remainingFat =
     Math.max(
       0,
-      targets.fat -
-        totals.fat
+      macros.fat - totals.fat
     );
+
+  setText(
+    "#homeFatConsumed",
+    round(totals.fat)
+  );
+
+  setText(
+    "#homeFatTarget",
+    round(macros.fat)
+  );
+
+
+  /* =====================================================
+     BARRE CALORIES
+  ===================================================== */
+
+  updateProgressBar(
+    "#homeCaloriesProgress",
+    totals.kcal,
+    macros.calories
+  );
+
+
+  /* =====================================================
+     BARRE PROTÉINES
+  ===================================================== */
+
+  updateProgressBar(
+    "#homeProteinProgress",
+    totals.protein,
+    macros.protein
+  );
+
+
+  /* =====================================================
+     BARRE GLUCIDES
+  ===================================================== */
+
+  updateProgressBar(
+    "#homeCarbsProgress",
+    totals.carbs,
+    macros.carbs
+  );
+
+
+  /* =====================================================
+     BARRE LIPIDES
+  ===================================================== */
+
+  updateProgressBar(
+    "#homeFatProgress",
+    totals.fat,
+    macros.fat
+  );
+
+
+  /* =====================================================
+     AUTRES INFOS ACCUEIL
+  ===================================================== */
+
+  setText(
+    "#homeWeight",
+    `${Number(state.profile.weight) || 0} kg`
+  );
+
+
+  /*
+    On conserve également les anciens sélecteurs
+    pour éviter de casser une éventuelle ancienne
+    partie de l'interface.
+  */
 
   setText(
     "[data-total-kcal]",
@@ -1279,7 +1407,7 @@ function renderDashboard() {
 
   setText(
     "[data-target-kcal]",
-    `${targets.calories} kcal`
+    `${Math.round(macros.calories)} kcal`
   );
 
   setText(
@@ -1289,7 +1417,7 @@ function renderDashboard() {
 
   setText(
     "[data-target-protein]",
-    `${targets.protein} g`
+    `${round(macros.protein)} g`
   );
 
   setText(
@@ -1299,7 +1427,7 @@ function renderDashboard() {
 
   setText(
     "[data-target-carbs]",
-    `${targets.carbs} g`
+    `${round(macros.carbs)} g`
   );
 
   setText(
@@ -1309,260 +1437,30 @@ function renderDashboard() {
 
   setText(
     "[data-target-fat]",
-    `${targets.fat} g`
+    `${round(macros.fat)} g`
   );
 
   setText(
     "[data-remaining-kcal]",
-    `${Math.round(
-      remainingCalories
-    )} kcal`
+    `${Math.round(remainingCalories)} kcal`
   );
 
   setText(
     "[data-remaining-protein]",
-    `${round(
-      remainingProtein
-    )} g`
+    `${round(remainingProtein)} g`
   );
 
   setText(
     "[data-remaining-carbs]",
-    `${round(
-      remainingCarbs
-    )} g`
+    `${round(remainingCarbs)} g`
   );
 
   setText(
     "[data-remaining-fat]",
-    `${round(
-      remainingFat
-    )} g`
+    `${round(remainingFat)} g`
   );
 
-  updateProgressBar(
-    "[data-progress-kcal]",
-    totals.kcal,
-    targets.calories
-  );
-
-  updateProgressBar(
-    "[data-progress-protein]",
-    totals.protein,
-    targets.protein
-  );
-
-  updateProgressBar(
-    "[data-progress-carbs]",
-    totals.carbs,
-    targets.carbs
-  );
-
-  updateProgressBar(
-    "[data-progress-fat]",
-    totals.fat,
-    targets.fat
-  );
 }
-
-
-/* =========================================================
-   JOURNAL
-========================================================= */
-
-function getCurrentDay() {
-
-  return state.meals;
-}
-
-
-function calculateDayNutrition(
-  day
-) {
-
-  const allItems = [
-
-    ...(day.breakfast || []),
-    ...(day.lunch || []),
-    ...(day.snack || []),
-    ...(day.dinner || [])
-
-  ];
-
-  return calculateMealNutrition(
-    allItems
-  );
-}
-
-
-function renderJournal() {
-
-  const container =
-    $("[data-journal-list]");
-
-  if (!container) return;
-
-  const meals = [
-
-    [
-      "breakfast",
-      "Petit-déjeuner",
-      "🌅"
-    ],
-
-    [
-      "lunch",
-      "Déjeuner",
-      "🍽️"
-    ],
-
-    [
-      "snack",
-      "Collation",
-      "🍎"
-    ],
-
-    [
-      "dinner",
-      "Dîner",
-      "🌙"
-    ]
-
-  ];
-
-  container.innerHTML =
-    meals.map(
-      ([key, label, emoji]) => {
-
-        const items =
-          state.meals[key] || [];
-
-        const nutrition =
-          calculateMealNutrition(
-            items
-          );
-
-        return `
-          <div class="meal-card">
-
-            <div class="meal-header">
-
-              <div>
-                <span>${emoji}</span>
-                <strong>${label}</strong>
-              </div>
-
-              <span>
-                ${Math.round(
-                  nutrition.kcal
-                )} kcal
-              </span>
-
-            </div>
-
-            <div class="meal-macros">
-              P ${round(
-                nutrition.protein
-              )}g
-              · G ${round(
-                nutrition.carbs
-              )}g
-              · L ${round(
-                nutrition.fat
-              )}g
-            </div>
-
-            <div class="meal-items">
-
-              ${
-                items.length
-                  ? items
-                      .map(
-                        (item, index) =>
-                          renderMealItem(
-                            item,
-                            key,
-                            index
-                          )
-                      )
-                      .join("")
-                  : `
-                    <div class="empty-meal">
-                      Aucun aliment
-                    </div>
-                  `
-              }
-
-            </div>
-
-          </div>
-        `;
-      }
-    ).join("");
-}
-
-
-function renderMealItem(
-  item,
-  meal,
-  index
-) {
-
-  const food =
-    getFood(item.food);
-
-  if (!food) return "";
-
-  const nutrition =
-    calculateFoodNutrition(
-      item.food,
-      item.grams
-    );
-
-  return `
-    <div class="food-row">
-
-      <div class="food-info">
-
-        <span class="food-emoji">
-          ${food.emoji || "🍽️"}
-        </span>
-
-        <div>
-
-          <strong>
-            ${escapeHTML(
-              food.name
-            )}
-          </strong>
-
-          <small>
-            ${item.grams}${food.unit || "g"}
-          </small>
-
-        </div>
-
-      </div>
-
-      <div class="food-nutrition">
-        ${Math.round(
-          nutrition.kcal
-        )} kcal
-      </div>
-
-      <button
-        type="button"
-        data-action="delete-meal-item"
-        data-meal="${meal}"
-        data-index="${index}"
-      >
-        ✕
-      </button>
-
-    </div>
-  `;
-}
-
 
 /* =========================================================
    AJOUT ALIMENT
