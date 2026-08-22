@@ -794,11 +794,14 @@ function calculateBodyFat(
    NAVIGATION
 ========================================================= */
 
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
 function setupNavigation() {
 
-  function setupNavigation() {
-
-  const navButtons = $$("[data-section], [data-page]");
+  const navButtons =
+    $$("[data-section], [data-page]");
 
   navButtons.forEach(button => {
 
@@ -823,6 +826,7 @@ function showSection(sectionName) {
 
   if (!sectionName) return;
 
+  /* Pages */
   $$("[data-page]").forEach(page => {
 
     page.classList.remove("active");
@@ -831,11 +835,15 @@ function showSection(sectionName) {
       page.dataset.page === sectionName ||
       page.id === `page-${sectionName}`
     ) {
+
       page.classList.add("active");
+
     }
 
   });
 
+
+  /* Boutons navigation */
   $$("[data-section], [data-page]").forEach(button => {
 
     const value =
