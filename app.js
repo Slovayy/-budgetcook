@@ -800,26 +800,19 @@ function calculateBodyFat(
 ========================================================= */
 
 function setupNavigation() {
-
-  const navButtons =
-    $$("[data-section], [data-page]");
+  const navButtons = $$("[data-section], [data-page]");
 
   navButtons.forEach(button => {
-
     button.addEventListener("click", () => {
-
       const sectionName =
         button.dataset.section ||
         button.dataset.page;
 
-      if (!sectionName) return;
-
-      showSection(sectionName);
-
+      if (sectionName) {
+        showSection(sectionName);
+      }
     });
-
   });
-
 }
 
 
