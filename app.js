@@ -107,7 +107,8 @@ function initializeApp() {
   calculateProfileTargets();
 
   setupNavigation();
-  setupGlobalEvents();
+setupGlobalEvents();
+setupButtonEvents();
 
   renderProfile();
   renderDashboard();
@@ -871,7 +872,112 @@ function showSection(sectionName) {
   );
 }
 
+/* =========================================================
+   BOUTONS DE L'INTERFACE
+========================================================= */
 
+function setupButtonEvents() {
+
+  const quickAddButton = $("#quickAddButton");
+
+  if (quickAddButton) {
+    quickAddButton.addEventListener("click", openFoodModal);
+  }
+
+
+  const generateDayButton = $("#generateDayButton");
+
+  if (generateDayButton) {
+    generateDayButton.addEventListener("click", generateDay);
+  }
+
+
+  const emptyGenerateButton = $("#emptyGenerateButton");
+
+  if (emptyGenerateButton) {
+    emptyGenerateButton.addEventListener("click", generateDay);
+  }
+
+
+  const addMealButton = $("#addMealButton");
+
+  if (addMealButton) {
+    addMealButton.addEventListener("click", openFoodModal);
+  }
+
+
+  const journalAddButton = $("#journalAddButton");
+
+  if (journalAddButton) {
+    journalAddButton.addEventListener("click", openFoodModal);
+  }
+
+
+  $$(".add-small-button").forEach(button => {
+
+    button.addEventListener("click", () => {
+
+      openFoodModal();
+
+      const meal = button.dataset.meal;
+
+      const mealSelect =
+        $("#modalFoodMeal");
+
+      if (mealSelect && meal) {
+        mealSelect.value = meal;
+      }
+
+    });
+
+  });
+
+
+  const mobileMenuButton =
+    $("#mobileMenuButton");
+
+  if (mobileMenuButton) {
+
+    mobileMenuButton.addEventListener(
+      "click",
+      () => {
+
+        const sidebar =
+          $(".sidebar");
+
+        if (sidebar) {
+
+          sidebar.classList.toggle(
+            "mobile-open"
+          );
+
+        }
+
+      }
+    );
+
+  }
+
+
+  const premiumButton =
+    $("#premiumButton");
+
+  if (premiumButton) {
+
+    premiumButton.addEventListener(
+      "click",
+      () => {
+
+        notify(
+          "BudgetCook Premium arrive bientôt ⭐"
+        );
+
+      }
+    );
+
+  }
+
+}
 /* =========================================================
    ÉVÉNEMENTS GLOBAUX
 ========================================================= */
