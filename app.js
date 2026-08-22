@@ -977,6 +977,36 @@ function setupButtonEvents() {
   }
 
 }
+function setupButtonEvents() {
+  const buttons = [
+    ["#quickAddButton", openFoodModal],
+    ["#addMealButton", openFoodModal],
+    ["#journalAddButton", openFoodModal],
+    ["#generateDayButton", generateDay],
+    ["#emptyGenerateButton", generateDay]
+  ];
+
+  buttons.forEach(([selector, action]) => {
+    const button = $(selector);
+
+    if (button) {
+      button.addEventListener("click", action);
+    }
+  });
+
+  $$(".add-small-button").forEach(button => {
+    button.addEventListener("click", () => {
+      openFoodModal();
+
+      const meal = button.dataset.meal;
+      const select = $("#modalFoodMeal");
+
+      if (select && meal) {
+        select.value = meal;
+      }
+    });
+  });
+}
 /* =========================================================
    ÉVÉNEMENTS GLOBAUX
 ========================================================= */
