@@ -817,24 +817,30 @@ function setupNavigation() {
 
 
 function showSection(sectionName) {
-
   if (!sectionName) return;
 
-  /* Pages */
   $$("[data-page]").forEach(page => {
-
     page.classList.remove("active");
 
     if (
       page.dataset.page === sectionName ||
       page.id === `page-${sectionName}`
     ) {
-
       page.classList.add("active");
-
     }
-
   });
+
+  $$("[data-section], [data-page]").forEach(button => {
+    const value =
+      button.dataset.section ||
+      button.dataset.page;
+
+    button.classList.toggle(
+      "active",
+      value === sectionName
+    );
+  });
+}
 
 
   /* Boutons navigation */
