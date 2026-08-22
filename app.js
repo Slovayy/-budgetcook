@@ -818,33 +818,6 @@ function setupNavigation() {
 ;
 
 
-  /* Boutons navigation */
-  $$("[data-section], [data-page]").forEach(button => {
-
-    const value =
-      button.dataset.section ||
-      button.dataset.page;
-
-    button.classList.toggle(
-      "active",
-      value === sectionName
-    );
-
-  });
-
-}
-
-  $$("[data-section]").forEach(
-    button => {
-
-      button.classList.toggle(
-        "active",
-        button.dataset.section ===
-          sectionName
-      );
-    }
-  );
-}
 
 /* =========================================================
    BOUTONS DE L'INTERFACE
