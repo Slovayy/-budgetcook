@@ -796,49 +796,60 @@ function calculateBodyFat(
 
 function setupNavigation() {
 
-  const navButtons =
-    $$("[data-section]");
+  function setupNavigation() {
+
+  const navButtons = $$("[data-section], [data-page]");
 
   navButtons.forEach(button => {
 
-    button.addEventListener(
-      "click",
-      () => {
+    button.addEventListener("click", () => {
 
-        const sectionName =
-          button.dataset.section;
+      const sectionName =
+        button.dataset.section ||
+        button.dataset.page;
 
-        showSection(
-          sectionName
-        );
-      }
-    );
+      if (!sectionName) return;
+
+      showSection(sectionName);
+
+    });
+
   });
+
 }
 
 
-function showSection(
-  sectionName
-) {
+function showSection(sectionName) {
 
-  $$("[data-page]").forEach(
-    page => {
+  if (!sectionName) return;
 
-      page.classList.remove(
-        "active"
-      );
+  $$("[data-page]").forEach(page => {
 
-      if (
-        page.dataset.page ===
-        sectionName
-      ) {
+    page.classList.remove("active");
 
-        page.classList.add(
-          "active"
-        );
-      }
+    if (
+      page.dataset.page === sectionName ||
+      page.id === `page-${sectionName}`
+    ) {
+      page.classList.add("active");
     }
-  );
+
+  });
+
+  $$("[data-section], [data-page]").forEach(button => {
+
+    const value =
+      button.dataset.section ||
+      button.dataset.page;
+
+    button.classList.toggle(
+      "active",
+      value === sectionName
+    );
+
+  });
+
+}
 
   $$("[data-section]").forEach(
     button => {
