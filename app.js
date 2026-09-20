@@ -24,16 +24,6 @@ const MEAL_LABELS = {
   dinner: "🌙 Dîner"
 };
 
-const DAYS = [
-  "Lundi",
-  "Mardi",
-  "Mercredi",
-  "Jeudi",
-  "Vendredi",
-  "Samedi",
-  "Dimanche"
-];
-
 const MEAL_CALORIE_SPLIT = {
   breakfast: 0.22,
   lunch: 0.36,
@@ -43,71 +33,14 @@ const MEAL_CALORIE_SPLIT = {
 
 
 /* =========================================================
-   PROFIL PAR DÉFAUT
-========================================================= */
-
-const DEFAULT_PROFILE = {
-
-  name: "",
-
-  age: 20,
-
-  sex: "male",
-
-  height: 179,
-
-  weight: 88,
-
-  bodyFat: 30,
-
-  chest: 0,
-
-  waist: 0,
-
-  hips: 0,
-
-  arm: 0,
-
-  thigh: 0,
-
-  neck: 0,
-
-  trainingDays: 5,
-
-  activity: "active",
-
-  goal: "recomp",
-
-  targetWeight: 80,
-
-  targetBodyFat: 15,
-
-  deficit: 300,
-
-  proteinPerKg: 2,
-
-  fatPerKg: 0.8,
-
-  budget: 50,
-
-  store: "",
-
-  preferences: {
-
-    autoGenerate: false,
-
-    budgetOptimization: true,
-
-    highProtein: true
-
-  }
-
-};
-
-
-/* =========================================================
    OUTILS
 ========================================================= */
+
+function clone(value) {
+
+  return JSON.parse(JSON.stringify(value));
+
+}
 
 function clone(value) {
 
