@@ -1,8 +1,54 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="120" fill="#11140f"/>
-  <circle cx="256" cy="256" r="155" fill="#c7ef58"/>
-  <text x="256" y="315"
-        text-anchor="middle"
-        font-size="190"
-        font-family="Arial, sans-serif">🍝</text>
+  <rect width="512" height="512" rx="112" fill="#0b0f14"/>
+
+  <rect
+    x="96"
+    y="96"
+    width="320"
+    height="320"
+    rx="76"
+    fill="#151d27"
+    stroke="#6ee7b7"
+    stroke-width="14"
+  />
+
+  <path
+    d="M170 190
+       C170 166 188 148 212 148
+       C236 148 254 166 254 190
+       V286
+       C254 310 236 328 212 328
+       C188 328 170 310 170 286
+       Z"
+    fill="#6ee7b7"
+  />
+
+  <path
+    d="M258 190
+       C258 166 276 148 300 148
+       C324 148 342 166 342 190
+       V286
+       C342 310 324 328 300 328
+       C276 328 258 310 258 286
+       Z"
+    fill="#34d399"
+  />
+
+  <circle
+    cx="256"
+    cy="256"
+    r="42"
+    fill="#0b0f14"
+  />
+
+  <path
+    d="M235 256
+       L250 271
+       L280 238"
+    fill="none"
+    stroke="#6ee7b7"
+    stroke-width="12"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
 </svg>
