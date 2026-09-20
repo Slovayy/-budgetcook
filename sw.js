@@ -1,4 +1,4 @@
-const CACHE_NAME = "budgetcook-v5";
+const CACHE_NAME = "budgetcook-v6";
 
 const FILES_TO_CACHE = [
   "./",
