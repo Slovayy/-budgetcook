@@ -42,12 +42,6 @@ function clone(value) {
 
 }
 
-function clone(value) {
-
-  return JSON.parse(JSON.stringify(value));
-
-}
-
 
 function id(prefix = "item") {
 
