@@ -584,57 +584,38 @@ function normalizeGoal(goal) {
 
 function targets(profile = state.profile) {
 
-  const weight =
-    Math.max(
-      1,
-      number(profile.weight, 88)
-    );
+  const weight = number(profile.weight);
+  const height = number(profile.height);
+  const age = number(profile.age);
 
-  const height =
-    Math.max(
-      1,
-      number(profile.height, 179)
-    );
-
-  const age =
-    Math.max(
-      1,
-      number(profile.age, 20)
-    );
-
+  // Pas de calcul si le profil n'est pas encore renseigné
+  if (weight <= 0 || height <= 0 || age <= 0) {
+    return {
+      calories: 0,
+      protein: 0,
+      fat: 0,
+      carbs: 0,
+      bmr: 0,
+      maintenance: 0
+    };
+  }
 
   /* Mifflin-St Jeor */
-
   const bmr =
     profile.sex === "female"
-
-      ? 10 * weight +
-        6.25 * height -
-        5 * age -
-        161
-
-      : 10 * weight +
-        6.25 * height -
-        5 * age +
-        5;
-
+      ? 10 * weight + 6.25 * height - 5 * age - 161
+      : 10 * weight + 6.25 * height - 5 * age + 5;
 
   const activityFactor =
-    getActivityFactor(
-      profile.activity
-    );
-
+    getActivityFactor(profile.activity);
 
   const maintenance =
     bmr * activityFactor;
 
-
   const goal =
     normalizeGoal(profile.goal);
 
-
   let adjustment = 0;
-
 
   if (goal === "cut") {
 
@@ -666,29 +647,16 @@ function targets(profile = state.profile) {
 
   }
 
-
-  let calories =
-    Math.round(
-      maintenance + adjustment
-    );
-
-
-  /*
-     Évite les objectifs extrêmement bas.
-     Le minimum ici est une protection technique,
-     pas une recommandation médicale.
-  */
-
-  calories =
+  const calories =
     Math.max(
       1200,
-      calories
+      Math.round(
+        maintenance + adjustment
+      )
     );
 
-
   /*
-     Protéines et lipides sont calculés EN PREMIER.
-     Les glucides correspondent uniquement aux calories restantes.
+     PROTÉINES EN PREMIER
   */
 
   const protein =
@@ -700,6 +668,9 @@ function targets(profile = state.profile) {
       ) * weight
     );
 
+  /*
+     LIPIDES EN SECOND
+  */
 
   const fat =
     Math.max(
@@ -710,12 +681,15 @@ function targets(profile = state.profile) {
       ) * weight
     );
 
+  /*
+     GLUCIDES =
+     calories restantes / 4
+  */
 
   const remainingCalories =
     calories -
     protein * 4 -
     fat * 9;
-
 
   const carbs =
     Math.max(
@@ -723,22 +697,24 @@ function targets(profile = state.profile) {
       remainingCalories / 4
     );
 
-
   return {
 
     calories,
 
-    protein: round(protein),
+    protein:
+      round(protein),
 
-    fat: round(fat),
+    fat:
+      round(fat),
 
-    carbs: round(carbs),
+    carbs:
+      round(carbs),
 
-    bmr: Math.round(bmr),
+    bmr:
+      Math.round(bmr),
 
-    maintenance: Math.round(
-      maintenance
-    )
+    maintenance:
+      Math.round(maintenance)
 
   };
 
